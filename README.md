@@ -1,10 +1,10 @@
 # calendarize
 
-###DAT210 Group A Project
-####Yearly calendar
+### DAT210 Group A Project
+#### Yearly calendar
 An interactive timeline for keeping track of yearly recurring events.
 
-####Resources
+#### Resources
 More will be added as they become relevant
 * HTML/CSS/JS
     * [Material Design guidelines](https://material.io/guidelines/)
