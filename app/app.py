@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, session
 import mysql.connector
 
 app = Flask(__name__)
@@ -29,10 +29,24 @@ def teardown_db(error):
         db.close()
 
 
+def session_has_user():
+    if "username" in session:
+        return True
+    return False
+
+
 # TODO everything
 @app.route('/')
 def index():
-    return render_template('index.html')
+    """dev comment
+    Because the code as is doesn't create a session object, it will always direct you to the login page.
+    Uncomment the return statement below to bypass that and just have it send you to the index page.
+    """
+    # return render_template('index.html')
+    if session_has_user():
+        return render_template('index.html')
+    else:
+        return render_template('login.html')
 
 
 if __name__ == '__main__':
