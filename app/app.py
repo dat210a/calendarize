@@ -1,4 +1,6 @@
-from flask import Flask, render_template, g, session
+from flask import Flask, render_template, g, session,
+from app.classes.user import User
+from flask_login import *
 import mysql.connector
 
 app = Flask(__name__)
@@ -11,6 +13,9 @@ app.config["DATABASE_DB"] = ""
 app.config["DATABASE_HOST"] = ""
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 
 
 # database functions
@@ -20,6 +25,9 @@ def get_db():
                                        password=app.config["DATABASE_PASSWORD"], database=app.config["DATABASE_DB"])
     return g.db
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
 
 @app.teardown_appcontext
 def teardown_db(error):
