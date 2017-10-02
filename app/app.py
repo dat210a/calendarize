@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, session,
+from flask import Flask, render_template, g, session
 from app.classes.user import User
 from flask_login import *
 import mysql.connector
