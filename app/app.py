@@ -1,5 +1,6 @@
 from flask import Flask, render_template, g, session
 import mysql.connector
+import logging
 
 app = Flask(__name__)
 
@@ -11,6 +12,10 @@ app.config["DATABASE_DB"] = ""
 app.config["DATABASE_HOST"] = ""
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
+
+# TODO implement necessary loggers
+# Hold off on this until we have more than one python file to work with to avoid having to rework logging
+loggers = {}  # dict of loggers to init
 
 
 # database functions
@@ -35,6 +40,30 @@ def session_has_user():
     return False
 
 
+def setup_logging(log_name, log_file, log_level=logging.INFO):
+    """
+    :param log_name: String, descriptive name of log
+    :param log_file: String, a path to .log file to write to
+    :param log_level: logging.<PARAM>, INFO, DEBUG or WARNING, level of logging
+    :return: log object, not necessary to use the returned object,
+            but useful for storing logs in a list or dict for easier access
+    """
+    log = logging.getLogger(log_name)
+    log.setLevel(log_level)
+    handler = logging.FileHandler(filename=log_file, encoding='utf-8', mode='a')
+    fmt = logging.Formatter('[%(asctime)s] :%(levelname)s: %(message)s', datefmt='%H:%M:%S')
+    handler.setFormatter(fmt)
+    log.addHandler(handler)
+    return log
+
+
+def end_logging(log):
+    handlers = log.handlers[:]
+    for hdlr in handlers:
+        hdlr.close()
+        log.removeHandler(hdlr)
+
+
 # TODO everything
 @app.route('/')
 def index():
@@ -50,4 +79,13 @@ def index():
 
 
 if __name__ == '__main__':
+
+    active_loggers = []
+    for log in loggers:
+        lg = setup_logging(log, '{}.log'.format(log))
+        active_loggers.append(lg)
+
     app.run()
+
+    for log in active_loggers:
+        end_logging(log)
