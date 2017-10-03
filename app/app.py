@@ -1,4 +1,5 @@
-from flask import Flask, render_template, g, session
+from flask import Flask, render_template, g, session, request
+from funcs import checks
 import mysql.connector
 import logging
 
@@ -72,7 +73,9 @@ def index():
     Uncomment the return statement below to bypass that and just have it send you to the index page.
     """
     # return render_template('index.html')
-    if session_has_user():
+    checks.platform_check(s=session, ua=request.user_agent)
+    # if session_has_user():
+    if not session['mobile']:  # testing checks
         return render_template('index.html')
     else:
         return render_template('login.html')
