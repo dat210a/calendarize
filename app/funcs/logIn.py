@@ -1,12 +1,16 @@
 from flask import Blueprint, request
 from flask_login import login_user
-from app.classes.user import User
+from classes.user import User
+from classes.databaseQueries import DatabaseQueries
+from argon2 import PasswordHasher
 
 login_func = Blueprint('login_func', __name__)
+ph = PasswordHasher()
 
 
 def hash_password(password):
-    return 5
+    print(ph.hash(password))
+    return ph.hash(password)
 
 
 def check_login(password, username):
@@ -14,8 +18,8 @@ def check_login(password, username):
 
 
 def get_user_id(username):
-    return "test"
-
+    with DatabaseQueries as queries:
+        return queries.getUserId(username)
 
 @login_func.route("/login", methods=['POST'])
 def login():

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, g, session
-from app.classes.user import User
+from classes.user import User
 from flask_login import *
+from funcs.logIn import hash_password
 import mysql.connector
 
 app = Flask(__name__)
@@ -15,6 +16,8 @@ app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+hash_password("password")
 
 
 
