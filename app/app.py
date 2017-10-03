@@ -1,10 +1,9 @@
-from flask import Flask, render_template, g, session, request, url_for
-from flask.ext.mobility import Mobility
-from flask.ext.mobility.decorators import mobile_template
+from flask import Flask, render_template, g, session, request, url_for, redirect
+from flask_mobility import Mobility
+from flask_mobility.decorators import mobile_template
 from classes.user import User
 from flask_login import *
 from funcs.logIn import hash_password
-import mysql.connector
 import logging
 
 app = Flask(__name__)
@@ -28,31 +27,9 @@ hash_password("password")
 loggers = {}  # dict of loggers to init
 
 
-# database functions
-def get_db():
-    if not hasattr(g, "_database"):
-        g.db = mysql.connector.connect(host=app.config["DATABASE_HOST"], user=app.config["DATABASE_USER"],
-                                       password=app.config["DATABASE_PASSWORD"], database=app.config["DATABASE_DB"])
-    return g.db
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_id(user_id)
-
-
-@app.teardown_appcontext
-def teardown_db(error):
-    """Closes the database at the end of the request."""
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
-
-def session_has_user():
-    if "username" in session:
-        return True
-    return False
 
 
 def setup_logging(log_name, log_file, log_level=logging.INFO):
@@ -79,18 +56,42 @@ def end_logging(log):
         log.removeHandler(hdlr)
 
 
-# TODO everything
+##################################################################
+# Some of the routes below might warrant moving out and
+# into separate files, but until the scope of the operations
+# that need to be performed are clear, they stay here
+# as a skeleton for easy reference.
+##################################################################
+
 @app.route('/')
-@mobile_template('{mobile/}index.html')
+@mobile_template('/{mobile/}index.html')
 @login_required
 def index(template):
-    """dev comment
-    Because the code as is doesn't create a session object, it will always direct you to the login page.
-    Uncomment the return statement below to bypass that and just have it send you to the index page.
-    :param template: takes the template path as a parameter for mobile templates
-    """
-    # return render_template('index.html')
-    return render_template('index.html')
+    # TODO fetch user data
+    return render_template(template)
+
+
+@app.route('/view/<calendar_id>')
+@mobile_template('{mobile/}calendar.html')
+def view(template, calendar_id):
+    # TODO check if calendar exists and if the user has permission to view it
+    # TODO create template and call render
+    pass
+
+
+@app.route('/settings')
+@mobile_template('{mobile/}template.html')
+@login_required
+def settings():
+    # TODO load user's settings, then render a template with the settings
+    pass
+
+
+@app.route('/settings/save', methods=['POST'])  # <- could be done with AJAX?
+def save_settings():
+    # val = request.form.get(name_of_form_field, None) <- Syntax for getting form data
+    # TODO extract settings from form and store in db
+    return redirect(url_for(settings))  # reloads the settings page to show the new settings
 
 
 if __name__ == '__main__':
