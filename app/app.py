@@ -1,9 +1,11 @@
-from flask import Flask, render_template, g, session, request
-from funcs import checks
+from flask import Flask, render_template, g, session, request, url_for
+from flask.ext.mobility import Mobility
+from flask.ext.mobility.decorators import mobile_template
 import mysql.connector
 import logging
 
 app = Flask(__name__)
+Mobility(app)
 
 # Flask configuration parameters #
 # TODO set database vars
@@ -41,10 +43,6 @@ def session_has_user():
     return False
 
 
-def mobile():
-    return checks.platform_check(session, request.user_agent)
-
-
 def setup_logging(log_name, log_file, log_level=logging.INFO):
     """
     :param log_name: String, descriptive name of log
@@ -71,24 +69,18 @@ def end_logging(log):
 
 # TODO everything
 @app.route('/')
-def index():
+@mobile_template('{mobile/}index.html')
+def index(template):
     """dev comment
     Because the code as is doesn't create a session object, it will always direct you to the login page.
     Uncomment the return statement below to bypass that and just have it send you to the index page.
+    :param template: takes the template path as a parameter for mobile templates
     """
     # return render_template('index.html')
     if session_has_user():
-        if mobile():
-            # TODO redirect to mobile
-            pass
-        else:
-            return render_template('index.html')
+        return render_template(template)
     else:
-        if mobile():
-            # TODO redirect to mobile
-            pass
-        else:
-            return render_template('login.html')
+        return url_for()  # TODO login url goes here
 
 
 if __name__ == '__main__':
