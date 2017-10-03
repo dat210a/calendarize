@@ -21,6 +21,7 @@ def get_user_id(username):
     with DatabaseQueries as queries:
         return queries.getUserId(username)
 
+
 @login_func.route("/login", methods=['POST'])
 def login():
     password = request.form["password"]
