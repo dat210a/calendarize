@@ -8532,7 +8532,7 @@ if (Vel) {
       // The format to show on the `input` element
       format: 'd mmmm, yyyy',
 
-      // Classes
+      // classes
       klass: {
 
         table: prefix + 'table',
