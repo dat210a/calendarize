@@ -41,6 +41,10 @@ def session_has_user():
     return False
 
 
+def mobile():
+    return checks.platform_check(session, request.user_agent)
+
+
 def setup_logging(log_name, log_file, log_level=logging.INFO):
     """
     :param log_name: String, descriptive name of log
@@ -73,12 +77,18 @@ def index():
     Uncomment the return statement below to bypass that and just have it send you to the index page.
     """
     # return render_template('index.html')
-    checks.platform_check(s=session, ua=request.user_agent)
-    # if session_has_user():
-    if not session['mobile']:  # testing checks
-        return render_template('index.html')
+    if session_has_user():
+        if mobile():
+            # TODO redirect to mobile
+            pass
+        else:
+            return render_template('index.html')
     else:
-        return render_template('login.html')
+        if mobile():
+            # TODO redirect to mobile
+            pass
+        else:
+            return render_template('login.html')
 
 
 if __name__ == '__main__':
