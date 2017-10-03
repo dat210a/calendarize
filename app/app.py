@@ -1,6 +1,9 @@
 from flask import Flask, render_template, g, session, request, url_for
 from flask.ext.mobility import Mobility
 from flask.ext.mobility.decorators import mobile_template
+from classes.user import User
+from flask_login import *
+from funcs.logIn import hash_password
 import mysql.connector
 import logging
 
@@ -15,6 +18,10 @@ app.config["DATABASE_DB"] = ""
 app.config["DATABASE_HOST"] = ""
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+hash_password("password")
 
 # TODO implement necessary loggers
 # Hold off on this until we have more than one python file to work with to avoid having to rework logging
@@ -27,6 +34,11 @@ def get_db():
         g.db = mysql.connector.connect(host=app.config["DATABASE_HOST"], user=app.config["DATABASE_USER"],
                                        password=app.config["DATABASE_PASSWORD"], database=app.config["DATABASE_DB"])
     return g.db
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_id(user_id)
 
 
 @app.teardown_appcontext
@@ -70,6 +82,7 @@ def end_logging(log):
 # TODO everything
 @app.route('/')
 @mobile_template('{mobile/}index.html')
+@login_required
 def index(template):
     """dev comment
     Because the code as is doesn't create a session object, it will always direct you to the login page.
@@ -77,10 +90,7 @@ def index(template):
     :param template: takes the template path as a parameter for mobile templates
     """
     # return render_template('index.html')
-    if session_has_user():
-        return render_template(template)
-    else:
-        return url_for()  # TODO login url goes here
+    return render_template('index.html')
 
 
 if __name__ == '__main__':

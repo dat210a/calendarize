@@ -1,0 +1,4 @@
+Flask==0.12
+Flask_Login==0.4.0
+argon2==0.1.10
+mysql_connector_repackaged==0.3.1
