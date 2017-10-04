@@ -76,15 +76,15 @@ def index(template):
 def view(template, calendar_id):
     # TODO check if calendar exists and if the user has permission to view it
     # TODO create template and call render
-    pass
+    return render_template(template)
 
 
 @app.route('/settings')
 @mobile_template('{mobile/}template.html')
 @login_required
-def settings():
+def settings(template):
     # TODO load user's settings, then render a template with the settings
-    pass
+    return render_template(template)
 
 
 @app.route('/settings/save', methods=['POST'])  # <- could be done with AJAX?
