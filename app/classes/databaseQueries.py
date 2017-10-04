@@ -28,11 +28,20 @@ class DatabaseQueries:
     def db_generic_select(self, attr, table, val, cond):
         sql = "SELECT %s FROM %s WHERE %s = %s"
         res = self.__cur.execute(sql, (attr, table, val, cond))
-        return res
+        return res.fetchall()
 
     def get_user_id(self, username):
         uid = self.__cur.execute("SELECT UserID FROM user WHERE ? = Username", username)
-        return uid
+        return uid.fetchall()
+
+    def db_get_cal_admin(self, cid, eid=None):
+        # TODO properly format SQL, handle args
+        if not eid:
+            sql = "SELECT admins FROM calendars WHERE calendarID = %s"
+        else:
+            sql = "SELECT admins FROM calendars"
+        res = self.__cur.execute(sql, cid)
+        return res.fetchall()
 
     def db_del_user(self, uid):
         self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", uid)

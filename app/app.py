@@ -154,8 +154,9 @@ def delete_event():
     event = request.form.get('event_id', None)
     if event:
         with db.DatabaseQueries(app) as q:
-            pass
-
+            admins = q.db_get_cal_admin(event)
+            if user in admins:
+                q.db_del_event(event)
 
 
 @app.route('/delete_calendar', methods=['POST'])
