@@ -13,6 +13,7 @@ in the GitHub repository README.md
 """
 import logging
 import json
+from classes import databaseQueries as db
 from flask import Flask, render_template, g, session, request, url_for, redirect
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
@@ -141,8 +142,9 @@ def delete_user():
     req_user = get_user_id()
     del_user = request.form.get('user_id', None)
     if del_user and req_user == del_user:  # ensures only the user can delete themselves
-        # TODO mark user as deleted in the database
-        pass
+        with db.DatabaseQueries(app) as q:
+            q.db_del_user(del_user)
+    return redirect(url_for(index))
 
 
 @app.route('/delete_event', methods=['POST'])
@@ -151,10 +153,10 @@ def delete_event():
     user = get_user_id()
     event = request.form.get('event_id', None)
     if event:
-        # TODO
-        # Make db request to check if user has permission to delete this event
-        # Set event delete flag in db if yes
-        pass
+        with db.DatabaseQueries(app) as q:
+            admins = q.db_get_cal_admin(event)
+            if user in admins:
+                q.db_del_event(event)
 
 
 @app.route('/delete_calendar', methods=['POST'])
