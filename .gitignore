@@ -100,6 +100,7 @@ ENV/
 # mypy
 .mypy_cache/
 .idea/
+app/cfg/db.json
 
 # vscode localhost settings
 .vscode/iisexpress.json

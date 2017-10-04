@@ -208,5 +208,5 @@ function zoomInOut() {
             d3.selectAll('.data').selectAll('.detail').style('display', 'inline');
         }
         simUpdate();
-    }
-}
+    };
+};

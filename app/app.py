@@ -1,3 +1,18 @@
+"""
+calendarize Flask application file
+
+The code for this project loosely follows PEP 8 style guidelines.
+You can read about them here: https://www.python.org/dev/peps/pep-0008/
+Any code that does not comply will be modified to do so if possible.
+If you're using PyCharm, it will have built-in PEP8 linting,
+and similar packages should be available for other editors.
+
+Links to documentation for the packages used can be found
+in the GitHub repository README.md
+
+"""
+import logging
+import json
 from flask import Flask, render_template, g, session, request, url_for, redirect
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
@@ -9,12 +24,16 @@ import logging
 app = Flask(__name__)
 Mobility(app)
 
+conf_file = 'cfg/db.json'
+
 # Flask configuration parameters #
-# TODO set database vars
-app.config["DATABASE_USER"] = ""
-app.config["DATABASE_PASSWORD"] = ""
-app.config["DATABASE_DB"] = ""
-app.config["DATABASE_HOST"] = ""
+with open(conf_file, 'r') as cf:
+    # Loads login information from file for security
+    data = json.load(cf)
+    app.config["DATABASE_USER"] = data['user']
+    app.config["DATABASE_PASSWORD"] = data['password']
+    app.config["DATABASE_DB"] = data['database']
+    app.config["DATABASE_HOST"] = data['host']
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
 login_manager = LoginManager()
