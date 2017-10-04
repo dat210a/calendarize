@@ -2,15 +2,14 @@
 var width = 1600,
     height = 900;
 
-var radius = 8;
-
+var midScreen = height / 2;
 var xPadding = 50;
 var bottomOffset = 200;
 
 var currentYear = 2017;
+var radius = 8;
 
-var midScreen = height / 2;
-
+var tresholdNumPoints = 8;
 var k = 1;
 
 //TODO maybe add more ticks when zoomed in
@@ -173,19 +172,13 @@ function zoomInOut() {
                     if (highestX < x) {
                         highestX = x;
                         d3.select('.leftSideBar').select('text')
-                            .text(d.Name)
-                    }
+                            .text(d.Name);
+                    };
                     return 'translate('+x+','+0+')';
                 });
     
-    //Update data events position if there are any
-    if (!d3.selectAll('.data').empty()){   
-        if (k < 3.3){
-            d3.selectAll('.data').selectAll('.detail').style('display', 'none');
-        }
-        else{
-            d3.selectAll('.data').selectAll('.detail').style('display', 'inline');
-        }
+    if (!d3.selectAll('.data').empty()){  
+        //Update data points positions if there are any
         d3.selectAll(".data").selectAll('line')
             .attr("x1", function(d, i){
                 d.x = xNewScale(d.date);
@@ -197,9 +190,23 @@ function zoomInOut() {
             .attr("x2", function(d){
                 return d.x + d.duration*k;
             });
+
         d3.selectAll('.data').selectAll('g').sort(function(x, y){
-            return d3.descending(+x.x, +y.x)
+            return d3.descending(+x.x, +y.x);
         })
+
+        //how many points are displayed
+        var pointsOnScreen = d3.selectAll('.data').selectAll('g')
+                                    .filter(function(d, i){
+                                        return ((d.x > 0) && (d.x < width));
+                                    }).data().length
+        //show details if zoomed in or only few points on screen
+        if (k < 3.3 && tresholdNumPoints < pointsOnScreen){
+            d3.selectAll('.data').selectAll('.detail').style('display', 'none');
+        }
+        else{
+            d3.selectAll('.data').selectAll('.detail').style('display', 'inline');
+        }
         simUpdate();
     }
 }
