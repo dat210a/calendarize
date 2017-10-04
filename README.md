@@ -2,7 +2,8 @@
 
 ### DAT210 Group A Project
 #### Yearly calendar
-An interactive timeline for keeping track of yearly recurring events.
+An interactive timeline for keeping track of yearly recurring events.  
+[TODO list](app/README.md)
 
 #### Resources
 More will be added as they become relevant
@@ -16,6 +17,7 @@ More will be added as they become relevant
 * Local documentation
     * [cfg readme](app/cfg/README.md)
     * [funcs readme](app/funcs/README.md)
+    * [db readme](app/db/README.md)
     
 #### Guidelines
 The python code for this project loosely follows [PEP 8 style guidelines](https://www.python.org/dev/peps/pep-0008/).  
