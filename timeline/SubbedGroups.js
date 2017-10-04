@@ -1,13 +1,16 @@
+
 var dataPlaceHolder = ["Work", "School", "House", "Family", "Misc"]
 
 var bottomBarHeight = 200;
 
-var agendasContainer = d3.selectAll('svg')
-                            .append('g')
-                            .attr("class", "agendas")
-                            .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
-                            .attr('up', true)
-                        .selectAll(".agendas")
+//create bottom bar 
+d3.selectAll('svg')
+            .append('g')
+            .attr("class", "agendas")
+            .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
+            .attr('up', true)
+
+var agendasContainer = d3.selectAll(".agendas").selectAll('g')
                             .data(dataPlaceHolder)
                             .enter()
                             .append('g').attr('class', function(d){return d})
@@ -15,11 +18,12 @@ var agendasContainer = d3.selectAll('svg')
                                     return "translate("+(170*i + 20)+","+30+")"
                                 })
 
+//add toggle button
 d3.selectAll('.agendas')
     .insert('g', 'g')
         .attr('class', 'bottomMenu')
         .append('rect')
-            .attr('fill', 'transparent')
+            .style('fill', 'transparent')
             .attr('width', width)
             .attr('height', bottomBarHeight);
 
@@ -30,7 +34,6 @@ d3.selectAll('.bottomMenu')
              return 'translate('+(xPadding + width/2)+','+15+')'
         })
         .append('rect')
-            .attr('fill', 'white')
             .attr('width', 100)
             .attr('height', 40)
             .attr('x', -50)
@@ -44,22 +47,23 @@ d3.selectAll('.bottomMenuButton')
         .attr("font-size", 50)
         .on('click', ToggleAgendaMenu);
 
+//add subscribed calendar boxes
 agendasContainer
     .append("rect")
         .attr("width", 150)
         .attr("height", 150)
         .attr("rx", 20)
         .attr("ry", 20)
-        .attr("fill", function (d, i) {
-        return color(i);
+        .style("fill", function (d, i) {
+            return color(i);
         })
         .on('click', function (d, i) {
             ToggleAgenda(i)
-            var tempColor = d3.select(this).attr("fill")
+            var tempColor = d3.select(this).style("fill")
             if (tempColor == "lightgrey") { 
-                d3.select(this).attr("fill", function () {return color(i);}) 
+                d3.select(this).style("fill", function () {return color(i);}) 
             }
-            else { d3.select(this).attr("fill", "lightgrey") }
+            else { d3.select(this).style("fill", "lightgrey") }
         });
 
 agendasContainer
@@ -70,6 +74,7 @@ agendasContainer
         .style("font-size", 30)
         .text(function(d){return d}); 
 
+//toggle up/down
 function ToggleAgendaMenu(){
     d3.selectAll('.agendas')
         .transition()
@@ -84,8 +89,9 @@ function ToggleAgendaMenu(){
             d3.select(this).attr('up', !toggle)
             return "translate(0," + move + ")"
         })
-};
+}
 
+//toggle on/off
 function ToggleAgenda(data) {
     d3.selectAll(".data").selectAll('line')
         .filter(function(d){return +d.color == data})

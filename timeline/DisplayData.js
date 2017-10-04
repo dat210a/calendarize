@@ -1,23 +1,26 @@
 
 var timer = 0;
 
-var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70])
+var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-//d3 forces
-var dataGravity = d3.forceY(0).strength(0.1)
+var detailHeight = 100,
+    detailWidth = 200;
+
+//force pull towards the middle line
+var dataGravity = d3.forceY(0).strength(0.1);
 var detailsGravity = d3.forceY(function(d){
                                 return d.y > 0 ? 100 : -170
-                            }).strength(0.5)
+                            }).strength(0.5);
 
 //instantiate simulation
 var simulation = d3.forceSimulation()
                         .force('gravity', dataGravity)
                         .force('detailsGravity', detailsGravity)
                         .force('pointsCollider', pointCollider)
-                        .force('detailsBoxCollider', detailBoxCollider)
+                        .force('detailsBoxCollider', detailBoxCollider);
 
-//update collision detection for points
+//collision force for points on the line
 function pointCollider(alpha){
     var nodes = d3.selectAll('.data')
                     .selectAll('g')
@@ -27,10 +30,10 @@ function pointCollider(alpha){
                         .selectAll('line')
                             .data().reverse();
     for (i = 0, n = nodes.length; i < n; i++){
-        capsule = nodes[i]
+        capsule = nodes[i];
         for (j = i + 1; j < n; ++j){
-            point = nodes[j]
-            var dist = capsuleCollider(capsule, point, capsule.duration*k)
+            point = nodes[j];
+            var dist = capsuleCollider(capsule, point, capsule.duration*k);
             if (dist < radius*2+1) {
                 if (point.duration <= capsule.duration) point.vy -= (radius*2+1 - dist);
                 else capsule.vy -= (radius*2+1 - dist);
@@ -39,17 +42,17 @@ function pointCollider(alpha){
     }
 }
 
-//update collision detection for detail boxes
+//collision force for detail boxes
 function detailBoxCollider(alpha){
     var nodes = d3.selectAll('.data').selectAll('rect').data();
     d3.selectAll('.data').selectAll('rect')
         .each(function(point, i){
             var pParent = this.parentNode.__data__;
             d3.selectAll('.data').selectAll('rect')
-                .filter(function(d, j){return j > i})
+                .filter(function(d, j){return j > i;})
                 .each(function(capsule, j){
                     var cParent = this.parentNode.__data__;
-                    var dist = detailsCollider(capsule, point, 200, cParent, pParent);
+                    var dist = detailsCollider(capsule, point, detailWidth, cParent, pParent);
                     if (dist < 50*2+5) {
                         if (capsule.y > 0) capsule.vy += (50*2+5 - dist);
                         else capsule.vy -= (50*2+5 - dist);
@@ -58,10 +61,11 @@ function detailBoxCollider(alpha){
         })
 }
 
-//get data
+//load data async
+//TODO get data from SQL
 d3.queue()
     .defer(d3.csv, "myChart.csv")
-    .await(ready)
+    .await(ready);
 
 function ready(error, datapoints){
     if (error){
@@ -70,28 +74,29 @@ function ready(error, datapoints){
     }
 
     var myData = datapoints.sort(function(x, y){
-        return d3.descending(+x.date, +y.date)
+        return d3.descending(+x.date, +y.date);
     })
 
-    var detailsPoints = new Array(myData.length)
+    var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
         detailsPoints[i] = {'id': myData[i].id};
     }
 
     //setup simulation based on data
-    nodes = myData.concat(detailsPoints)
+    nodes = myData.concat(detailsPoints);
     simulation.nodes(nodes)
-                .on('tick', ticked)
+                .on('tick', ticked);
 
-    dataGravity.initialize(myData)
-    detailsGravity.initialize(detailsPoints)
+    //divide what forces affect which objects
+    dataGravity.initialize(myData);
+    detailsGravity.initialize(detailsPoints);
 
     //display data
     var dataGroup = d3.select(".timeLine").append('g').attr("class", "data").selectAll('g')
                     .data(myData)
                     .enter()
                         .append("g")
-                        .attr("class", function(d){return d.id})
+                        .attr("class", function(d){return d.id;});
                             
     var points = dataGroup.append("line")
                             .attr("stroke", function (d) {
@@ -103,7 +108,7 @@ function ready(error, datapoints){
                                 return d.x = xScale(d.date);
                             })
                             .attr("x2", function(d){
-                                d.duration = xScale(d.duration)
+                                d.duration = xScale(d.duration);
                                 return d.x + d.duration*k;
                             })
                             .attr("y1", function(d){
@@ -111,123 +116,133 @@ function ready(error, datapoints){
                             })
                             .attr("y2", 1)
                             .on('click', function (d, i) {
-                                console.log (d)
-                            })
+                                console.log (d);
+                            });
 
+    //initialize lines connecting point on timeline and detail boxes
     var connections = dataGroup
                         .append('path')
                             .attr('class', 'detail')
                             .attr("stroke", 'darkgrey')
-                            .attr("fill", 'none')
-                            .style('display', 'none')
+                            .style("fill", 'none')
+                            .style('display', 'none');
 
+    //initialize detail boxes'
+    //TODO has to use transform, so its easier to display data
     var details = dataGroup
                     .append("rect")
                         .attr('class', 'detail')
-                        .attr("width", 200)
-                        .attr("height", 100)
-                        .style('display', 'none')
+                        .attr("width", detailWidth)
+                        .attr("height", detailHeight)
+                        .style('display', 'none');
 
+    //bind data (locations) to lines
     connections
             .data(detailsPoints)
             .attr('d', function(d, i){
-                return link(d, this.parentNode.__data__)
-            })
+                return link(d, this.parentNode.__data__);
+            });
 
+    //bind data (locations) to detail boxes
     details 
             .data(detailsPoints)
             .attr("y", function(d,i){
-                d.y = -midScreen/2
-                return d.y - 50
+                d.y = -midScreen/2;
+                return d.y - 50;
             })
 
     points.each(function(data){
             d3.select(this.parentNode).selectAll('rect')
                 .attr("x", function(d){
-                        return d.x = data.x + 50
+                        return d.x = data.x + data.duration/2;
                     })
-                .attr('fill', function(){return color(data.color)})
-        })
+                .style('fill', function(){return color(data.color);});
+        });
 
-
-    //update drawings based on forces
+    //update data position based on forces
     function ticked() {
-        // if (timer == 1) {
+        // if (timer == 1) {            //for debuging purposes - only allows one tick 
         //     simulation.stop()
         // }
         // timer++;
 
         points
             .attr("x1", function (d) {
-                return d.x
+                return d.x;
             })
             .attr("x2", function (d) {
-                return d.x + d.duration*k
+                return d.x + d.duration*k;
             })
             .attr("y1", function (d) {
-                return d.y = d.y > 0 ? 0 : d.y
+                return d.y = d.y > 0 ? 0 : d.y;
             })
             .attr("y2", function (d) {
-                return d.y
-            })
+                return d.y;
+            });
         
         details
             .attr("x", function(d){
                 var parent = this.parentNode.__data__;
-                d.x = parent.x + parent.duration*k/2 + xOffset(Math.abs(d.y))
-                return d.x
+                d.x = parent.x + parent.duration*k/2 + xOffset(Math.abs(d.y));
+                return d.x;
             })
             .attr("y", function(d){
-                return d.y - 50
-            })
+                return d.y - 50;
+            });
         connections
-            .attr('d', function(d, i){return link(d, this.parentNode.__data__)})
-    }
-}
+            .attr('d', function(d, i){
+                return link(d, this.parentNode.__data__);
+            });
+    };
+};
 
-//update simulation based on changes
+//update simulation based on outside changes
 function simUpdate(){
     timer = 0;
     simulation
         .alpha(1)
-        .restart()
-}
+        .restart();
+};
 
 //draw lines data-details
 function link(target, source) {
-    var x1 = source.x + source.duration*k/2
-    var y1 = source.y
-    var x2 = target.x
-    var y2 = target.y
+    var x1 = source.x + source.duration*k/2;
+    var y1 = source.y;
+    var x2 = target.x;
+    var y2 = target.y;
     return "M" + x1 + "," + y1
     + "L" + (x2 - 20) + ',' + y2
-    + "L" + x2 + ',' + y2
-}
+    + "L" + x2 + ',' + y2;
+};
 
 // capsule colliders distance functions
 function capsuleCollider(capsule, point, duration){
-    return distToCapsule(capsule.x + capsule.vx, capsule.y + capsule.vy, point.x + point.vx, point.y + point.vy, duration)
-}
+    return distToCapsule(capsule.x + capsule.vx, 
+                         capsule.y + capsule.vy, 
+                         point.x + point.vx, 
+                         point.y + point.vy, 
+                         duration);
+};
 
 function detailsCollider(capsule, point, duration, cParent, pParent){
-    cx = cParent.x + cParent.duration*k/2 + xOffset(Math.abs(capsule.y + capsule.vy))
-    px = pParent.x + pParent.duration*k/2 + xOffset(Math.abs(point.y + point.vy))
-    if (px > cx + 225) return 225
-    return distToCapsule(cx, capsule.y + capsule.vy, px, point.y + point.vy, duration)
-}
+    cx = cParent.x + cParent.duration*k/2 + xOffset(Math.abs(capsule.y + capsule.vy));
+    px = pParent.x + pParent.duration*k/2 + xOffset(Math.abs(point.y + point.vy));
+    if (px > cx + detailWidth + 25) return width;
+    return distToCapsule(cx, capsule.y + capsule.vy, px, point.y + point.vy, duration);
+};
 
 // Capsule Collider helper functions
 function sqr(x){
-    return x*x
-}
+    return x*x;
+};
 
 function dist2(x1, y1, x2, y2){
-    return sqr(x1 - x2) + sqr(y1 - y2)
-}
+    return sqr(x1 - x2) + sqr(y1 - y2);
+};
 
 function distToCapsule(cx, cy, px, py, duration) {
-    if (duration == 0) return Math.sqrt(dist2(px, py, cx, cy))
+    if (duration == 0) return Math.sqrt(dist2(px, py, cx, cy));
     var t = (px - cx) / duration;
     t = Math.max(0, Math.min(1, t));
-    return Math.sqrt(dist2(px, py, cx + t * duration, cy))
-}
+    return Math.sqrt(dist2(px, py, cx + t * duration, cy));
+};
