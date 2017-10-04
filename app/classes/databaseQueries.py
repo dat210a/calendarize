@@ -22,4 +22,5 @@ class DatabaseQueries:
         self.__con.close()
 
     def get_user_id(self, username):
-        self.__cur.execute("select UserID FROM user where ? = Username", username)
+        uid = self.__cur.execute("select UserID FROM user where ? = Username", username)
+        return uid
