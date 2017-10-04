@@ -15,7 +15,6 @@ var k = 1;
 
 var weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-
 var xScale = d3.scaleLinear().domain([0, 365]).range([0, width]);
 
 var zoom = d3.zoom()
