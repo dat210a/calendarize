@@ -93,6 +93,36 @@ def save_settings():
     # TODO extract settings from form and store in db
     return redirect(url_for(settings))  # reloads the settings page to show the new settings
 
+##################################################################
+# DELETION FUNCTIONS - emphasized because these not working
+# properly is not good. Make sure to test properly.
+# TODO remove emphasis only after these functions are tested
+
+
+@app.route('/delete_user', methods=['POST'])
+@login_required
+def delete_user():
+    # TODO rewrite if necessary when login functionality is implemented
+    req_user = session['user']['id']
+    del_user = request.form.get('user_id', None)
+    if del_user and req_user == del_user:  # ensures only the user can delete themselves
+        # TODO mark user as deleted in the database
+        pass
+
+
+@app.route('/delete_calendar', methods=['POST'])
+@login_required
+def delete_cal():
+    user = session['user']['id']
+    cal = request.form.get('calendar_id', None)
+    if cal:
+        # TODO
+        # Make db request to check if user has permission to delete this calendar
+        # Set calendar delete flag in db if yes
+        pass
+
+##################################################################
+
 
 if __name__ == '__main__':
 
