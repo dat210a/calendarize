@@ -1,32 +1,22 @@
-
-var dataPlaceHolder = ["Work", "School", "House", "Family", "Misc"]
-
 var bottomBarHeight = 200;
+
+var groupBoxWidth = 150,
+    groupBoxHeight = 150;
+
+var padding = 20;
 
 //create bottom bar 
 d3.selectAll('svg')
-            .append('g')
-            .attr("class", "agendas")
-            .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
-            .attr('up', true)
-
-var agendasContainer = d3.selectAll(".agendas").selectAll('g')
-                            .data(dataPlaceHolder)
-                            .enter()
-                            .append('g').attr('class', function(d){return d})
-                                .attr('transform', function(d, i){
-                                    return "translate("+(170*i + 20)+","+30+")"
-                                })
-
-//add toggle button
-d3.selectAll('.agendas')
-    .insert('g', 'g')
-        .attr('class', 'bottomMenu')
+        .append('g')
+        .attr("class", "bottomMenu")
+        .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
+        .attr('up', true)
         .append('rect')
             .style('fill', 'transparent')
             .attr('width', width)
             .attr('height', bottomBarHeight);
-
+            
+//add toggle button
 d3.selectAll('.bottomMenu')
     .append('g')
         .attr("class", 'bottomMenuButton')
@@ -47,36 +37,49 @@ d3.selectAll('.bottomMenuButton')
         .attr("font-size", 50)
         .on('click', ToggleAgendaMenu);
 
-//add subscribed calendar boxes
-agendasContainer
-    .append("rect")
-        .attr("width", 150)
-        .attr("height", 150)
-        .attr("rx", 20)
-        .attr("ry", 20)
-        .style("fill", function (d, i) {
-            return color(i);
-        })
-        .on('click', function (d, i) {
-            ToggleAgenda(i)
-            var tempColor = d3.select(this).style("fill")
-            if (tempColor == "lightgrey") { 
-                d3.select(this).style("fill", function () {return color(i);}) 
-            }
-            else { d3.select(this).style("fill", "lightgrey") }
-        });
+d3.selectAll('.bottomMenu').append('g').attr('class', 'agendas')
 
-agendasContainer
-    .append("text")
-        .style('text-anchor', 'start')
-        .attr("x", 20)
-        .attr("y", 120)
-        .style("font-size", 30)
-        .text(function(d){return d}); 
+function AddGroupButtons(groups){
+    //initialize toggle objects and bind color data
+    var agendasContainer = d3.selectAll(".agendas").selectAll('g')
+                                .data(groups)
+                                .enter()
+                                .append('g').attr('class', function(d){return d.name})
+                                    .attr('transform', function(d, i){
+                                        return "translate("+((groupBoxWidth+padding)*i + padding)+","+30+")"
+                                    })
+                                    
+    //add subscribed calendar boxes and click event handler
+    agendasContainer
+        .append("rect")
+            .attr("width", groupBoxWidth)
+            .attr("height", groupBoxHeight)
+            .attr("rx", 20)
+            .attr("ry", 20)
+            .style("fill", function (d, i) {
+                return color(i);
+            })
+            .on('click', function (d, i) {
+                ToggleAgenda(i)
+                var tempColor = d3.select(this).style("fill")
+                if (tempColor == "lightgrey") { 
+                    d3.select(this).style("fill", function () {return color(i);}) 
+                }
+                else { d3.select(this).style("fill", "lightgrey") }
+            });
+
+    agendasContainer
+        .append("text")
+            .style('text-anchor', 'start')
+            .attr("x", 20)
+            .attr("y", 120)
+            .style("font-size", 30)
+            .text(function(d){return d.name}); 
+};
 
 //toggle up/down
 function ToggleAgendaMenu(){
-    d3.selectAll('.agendas')
+    d3.selectAll('.bottomMenu')
         .transition()
         .duration(1000)
         .attr('transform', function(){

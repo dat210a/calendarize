@@ -146,13 +146,13 @@ function zoomInOut() {
     var xNewScale = transform.rescaleX(xScale);
 
     //show/hide bottom bar when zooming in/out
-    if (!d3.selectAll('.agendas').empty())
+    if (!d3.selectAll('.bottomMenu').empty())
     {
         if (k > 3.3 && transform.k < 3.3){
-            if (d3.select('.agendas').attr('up') === 'false') ToggleAgendaMenu();
+            if (d3.select('.bottomMenu').attr('up') === 'false') ToggleAgendaMenu();
         }
         else if (k < 3.3 && transform.k > 3.3){
-            if (d3.select('.agendas').attr('up') === 'true') ToggleAgendaMenu();
+            if (d3.select('.bottomMenu').attr('up') === 'true') ToggleAgendaMenu();
         }
     }
     k = d3.event.transform.k;

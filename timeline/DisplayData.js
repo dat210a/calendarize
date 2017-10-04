@@ -73,10 +73,19 @@ function ready(error, datapoints){
         return;
     }
 
+    //populate groups on the bottom menu
+    var setOfGroups = [... new Set(datapoints.map(function(d){return d.group;}))];
+    var groups = new Array(setOfGroups.length)
+    setOfGroups.forEach(function(d, i){groups[i] = {name: setOfGroups[i], color: color(i)}})
+    AddGroupButtons(groups)
+
+    //sort data so it displays them from right to left
+    //due to overlap
     var myData = datapoints.sort(function(x, y){
         return d3.descending(+x.date, +y.date);
     })
 
+    //objects whith coordinates for detail boxes
     var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
         detailsPoints[i] = {'id': myData[i].id};
@@ -91,7 +100,7 @@ function ready(error, datapoints){
     dataGravity.initialize(myData);
     detailsGravity.initialize(detailsPoints);
 
-    //display data
+    //draw data
     var dataGroup = d3.select(".timeLine").append('g').attr("class", "data").selectAll('g')
                     .data(myData)
                     .enter()
@@ -100,7 +109,8 @@ function ready(error, datapoints){
                             
     var points = dataGroup.append("line")
                             .attr("stroke", function (d) {
-                                return color(d.color)
+                                d.color = groups.filter(function(gr){return gr.name == d.group})[0].color
+                                return d.color
                             })
                             .attr("stroke-width", radius*2)
                             .attr("stroke-linecap", "round")
@@ -156,10 +166,10 @@ function ready(error, datapoints){
                 .attr("x", function(d){
                         return d.x = data.x + data.duration/2;
                     })
-                .style('fill', function(){return color(data.color);});
+                .style('fill', function(){return data.color;});
         });
 
-    //update data position based on forces
+    //update data position after forces have taken effect
     function ticked() {
         // if (timer == 1) {            //for debuging purposes - only allows one tick 
         //     simulation.stop()
