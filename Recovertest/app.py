@@ -4,6 +4,7 @@ import mysql.connector
 from flask_mail import Mail, Message
 app = Flask(__name__)
 
+
 app.secret_key = "any random string"
 # Application config
 app.config["DATABASE_USER"] = "root"
