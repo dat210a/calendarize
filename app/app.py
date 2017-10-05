@@ -117,9 +117,20 @@ def index(template):
 @mobile_template('{mobile/}calendar.html')
 def view(template, calendar_id):
     log_basic()
-    # TODO check if calendar exists and if the user has permission to view it
-    # TODO create template and call render
-    return render_template(template)
+    with db.ConnectionInstance(app, shard()) as q:
+        cals = q.get_calendars()
+        if calendar_id in cals:
+            members = q.get_calendar_members(calendar_id)
+            if get_user_id() in members:
+                # TODO create template
+                return render_template(template)
+            else:
+                # return redirect(url_for(error))
+                pass
+        else:
+            # return redirect(url_for(error))
+            # TODO create error route, uncomment above lines
+            pass
 
 
 @app.route('/settings')
@@ -141,6 +152,7 @@ def save_settings():
 # DELETION FUNCTIONS - emphasized because these not working
 # properly is not good. Make sure to test properly.
 # TODO remove emphasis only after these functions are tested
+# TODO errors and error handling
 
 
 @app.route('/delete_user', methods=['POST'])

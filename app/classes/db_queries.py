@@ -20,6 +20,7 @@ class ConnectionInstance:
                                        host=self.__app.config['DATABASE_HOST'],
                                        database=self.__app.config['DATABASE_DB'])
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
+
         logging.INFO('Database connection with shard {} created.'.format(self.__shard))
 
     def __enter__(self):
@@ -27,6 +28,7 @@ class ConnectionInstance:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__con.close()
+        logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
     def db_generic_select(self, attr, table, val, cond):
         sql = "SELECT %s FROM %s WHERE %s = %s"
@@ -36,6 +38,16 @@ class ConnectionInstance:
     def get_user_id(self, username):
         uid = self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", username)
         return uid.fetchall()
+
+    def get_calendars(self):
+        sql = "SELECT calendar_id FROM calendars"
+        res = self.__cur(sql)
+        return [x for x in res.fetchall()]
+
+    def get_calendar_members(self, cid):
+        sql = "SELECT calendar_members FROM calendars WHERE calendar_id = %s"
+        res = self.__cur(sql, cid)
+        return [x for x in res.fetchall()]
 
     def db_get_cal_admin(self, cid=None, eid=None):
         # Fetches a list of admins for a calendar
@@ -49,6 +61,7 @@ class ConnectionInstance:
         else:
             return None
         payload = [x for x in res.fetchall()]
+        logging.DEBUG('Result of calendar admin db request: {}'.format(payload))
         return payload
 
     def db_del_user(self, uid):
