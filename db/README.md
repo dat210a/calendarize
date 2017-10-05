@@ -7,48 +7,49 @@ Current overview of the database:
 ```
 calendarize_db
 ├── users
-│   ├── UserID [INT(11)]
-│   ├── UserType [INT(11)]
-│   ├── UserName [VARCHAR(45)]
-│   ├── UserEmail [VARCHAR(45)]
-│   ├── UserPhone [INT(11)]
-│   ├── UserRole [VARCHAR(45)]
-│   ├── UserPassword [VARCHAR(45)]
-│   ├── UserFriendList [VARCHAR(45)]
-│   ├── UserCalendars [VARCHAR(45)]
-│   ├── UserSubscribedToThisCalendar [VARCHAR(45)]
-│   ├── UserEvents [VARCHAR(45)]
-│   ├── UserExtra [VARCHAR(45)]
+│   ├── user_id [INT(11)]
+│   ├── user_type [INT(11)]
+│   ├── user_name [VARCHAR(45)]
+│   ├── user_email [VARCHAR(45)]
+│   ├── user_phone [INT(11)]
+│   ├── user_role [VARCHAR(45)]
+│   ├── user_password [VARCHAR(45)]
+│   ├── user_friends [VARCHAR(45)]
+│   ├── user_calendars [VARCHAR(45)]
+│   ├── user_events [VARCHAR(45)]
+│   ├── user_extra [VARCHAR(45)]
 │   └── deleted [INT(11)]
 ├── userconfig
-│   ├── UserConfigID [INT(11)]
-│   ├── UserConfigPassword [VARCHAR(45)]
-│   └── UserConfigExtra [VARCHAR(45)]
+│   ├── user_config_id [INT(11)]
+│   ├── user_config_password [VARCHAR(45)]
+│   └── user_config_extra [VARCHAR(45)]
 ├── calendars
-│   ├── calendarID [INT(11)]
-│   ├── calendarName [VARCHAR(45)]
-│   ├── calendarDateCreated [DATE]
-│   ├── calendarDetails [VARCHAR(45)]
-│   ├── calendarOwner [VARCHAR(45)]
-│   ├── calendarMembers [VARCHAR(45)]
-│   ├── calendarTime [INT(11)]
-│   ├── calendarDay [INT(11)]
-│   ├── calendarMonth [INT(11)]
-│   ├── calendarYear [INT(11)]
-│   ├── calendarExtra [VARCHAR(45)]
+│   ├── calendar_id [INT(11)]
+│   ├── calendar_name [VARCHAR(45)]
+│   ├── calendar_date_created [DATE]
+│   ├── calendar_details [VARCHAR(45)]
+│   ├── calendar_owner [VARCHAR(45)]
+│   ├── calendar_members [VARCHAR(45)]
+│   ├── calendar_time [INT(11)]
+│   ├── calendar_day [INT(11)]
+│   ├── calendar_month [INT(11)]
+│   ├── calendar_year [INT(11)]
+│   ├── calendar_extra [VARCHAR(45)]
+│   ├── calendar_events [VARCHAR(45)]
+│   ├── calendar_admins [VARCHAR(45)]
 │   └── deleted [INT(11)]
 └── events
-    ├── EventID [INT(11)]
-    ├── EventName [VARCHAR(45)]
-    ├── EventDateCreated [DATE]
-    ├── EventDetails [VARCHAR(45)]
-    ├── EventLocation [VARCHAR(45)]
-    ├── EventStart [DATE]
-    ├── EventEnd [DATE]
-    ├── EventTime [VARCHAR(45)]
-    ├── EventMembers [VARCHAR(45)]
-    ├── EventIsUnderThisCalendar [VARCHAR(45)]
-    ├── EventExtra [VARCHAR(45)]
+    ├── event_id [INT(11)]
+    ├── event_name [VARCHAR(45)]
+    ├── event_date_created [DATE]
+    ├── event_details [VARCHAR(45)]
+    ├── event_location [VARCHAR(45)]
+    ├── event_start [DATE]
+    ├── event_end [DATE]
+    ├── event_time [VARCHAR(45)]
+    ├── event_members [VARCHAR(45)]
+    ├── event_belongs_to [VARCHAR(45)]
+    ├── event_extra [VARCHAR(45)]
     └── deleted [INT(11)]
 ```
 
@@ -56,6 +57,8 @@ calendarize_db
 Expand this checklist as needed.
 - [ ] Create appropriate foreign keys
 - [ ] Change data-types for marked attributes
-    - [ ] deleted to TINYINT(1)
-- [ ] Conform naming across all tables
+    - [x] deleted to TINYINT(1)
+- [x] Conform naming across all tables
+    - Naming changed to conform with pythonic variable names.
+    - The prefix_ is unnecessary, but left in for now
 - [ ] Set necessary default values

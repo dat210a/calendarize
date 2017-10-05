@@ -25,19 +25,20 @@ DROP TABLE IF EXISTS `calendars`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `calendars` (
-  `calendarID` int(11) NOT NULL,
-  `calendarName` varchar(45) NOT NULL,
-  `calendarDateCreated` date NOT NULL,
-  `calendarDetails` varchar(45) NOT NULL,
-  `calendarOwner` varchar(45) NOT NULL,
-  `calendarMembers` varchar(45) DEFAULT NULL,
-  `calendarTime` int(11) DEFAULT NULL,
-  `calendarDay` int(11) DEFAULT NULL,
-  `calendearMonth` int(11) DEFAULT NULL,
-  `calendarYear` int(11) DEFAULT NULL,
-  `calendarExtra` varchar(45) DEFAULT NULL,
-  `deleted` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`calendarID`)
+  `calendar_id` int(11) NOT NULL,
+  `calendar_name` varchar(45) NOT NULL,
+  `calendar_date_created` date NOT NULL,
+  `calendar_details` varchar(45) NOT NULL,
+  `calendar_owner` varchar(45) NOT NULL,
+  `calendar_members` varchar(45) DEFAULT NULL,
+  `calendar_time` int(11) DEFAULT NULL,
+  `calendar_day` int(11) DEFAULT NULL,
+  `calendar_month` int(11) DEFAULT NULL,
+  `calendar_year` int(11) DEFAULT NULL,
+  `calendar_extra` varchar(45) DEFAULT NULL,
+  `calendar_events` varchar(45) DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`calendar_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -58,19 +59,19 @@ DROP TABLE IF EXISTS `events`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `events` (
-  `EventID` int(11) NOT NULL,
-  `EventName` varchar(45) NOT NULL,
-  `EventDateCreated` date NOT NULL,
-  `EventDetails` varchar(45) NOT NULL,
-  `EventLocation` varchar(45) DEFAULT NULL,
-  `EventStart` date DEFAULT NULL,
-  `EventEnd` date DEFAULT NULL,
-  `EventTime` varchar(45) DEFAULT NULL,
-  `EventMembers` varchar(45) NOT NULL,
-  `EventIsUnderThisCalender` varchar(45) NOT NULL,
-  `EventExtra` varchar(45) DEFAULT NULL,
-  `deleted` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`EventID`),
+  `event_id` int(11) NOT NULL,
+  `event_name` varchar(45) NOT NULL,
+  `event_date_created` date NOT NULL,
+  `event_details` varchar(45) NOT NULL,
+  `event_location` varchar(45) DEFAULT NULL,
+  `event_start` date DEFAULT NULL,
+  `event_end` date DEFAULT NULL,
+  `event_time` varchar(45) DEFAULT NULL,
+  `event_members` varchar(45) NOT NULL,
+  `event_belongs_to` varchar(45) NOT NULL,
+  `event_extra` varchar(45) DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`event_id`),
   UNIQUE KEY `deleted_UNIQUE` (`deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -92,10 +93,10 @@ DROP TABLE IF EXISTS `userconfig`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `userconfig` (
-  `UserConfiqID` int(11) NOT NULL,
-  `UserConfigPassword` varchar(45) DEFAULT NULL,
-  `UserConfigExtra` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`UserConfiqID`)
+  `user_config_id` int(11) NOT NULL,
+  `user_config_password` varchar(45) DEFAULT NULL,
+  `user_config_extra` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`user_config_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -116,21 +117,20 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `UserID` int(11) NOT NULL,
-  `UserType` int(11) NOT NULL,
-  `UserName` varchar(45) NOT NULL,
-  `UserEmail` varchar(45) NOT NULL,
-  `UserPhone` int(11) DEFAULT NULL,
-  `UserRole` varchar(45) NOT NULL,
-  `UserRecord` varchar(45) DEFAULT NULL,
-  `UserPassword` varchar(45) NOT NULL,
-  `UserFriendList` varchar(45) DEFAULT NULL,
-  `UserCalendars` varchar(45) DEFAULT NULL,
-  `UserSubscribedToThisCalender` varchar(45) DEFAULT NULL,
-  `UserEvents` varchar(45) DEFAULT NULL,
-  `UserExtra` varchar(45) DEFAULT NULL,
-  `deleted` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`UserID`)
+  `user_id` int(11) NOT NULL,
+  `user_type` int(11) NOT NULL,
+  `user_name` varchar(45) NOT NULL,
+  `user_email` varchar(45) NOT NULL,
+  `user_phone` int(11) DEFAULT NULL,
+  `user_role` varchar(45) NOT NULL,
+  `user_record` varchar(45) DEFAULT NULL,
+  `user_password` varchar(45) NOT NULL,
+  `user_friends` varchar(45) DEFAULT NULL,
+  `user_calendars` varchar(45) DEFAULT NULL,
+  `user_events` varchar(45) DEFAULT NULL,
+  `user_extra` varchar(45) DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -160,4 +160,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-10-04 19:36:32
+-- Dump completed on 2017-10-05 17:42:17
