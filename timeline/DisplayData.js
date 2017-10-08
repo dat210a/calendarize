@@ -79,7 +79,7 @@ function ready(error, datapoints){
     setOfGroups.forEach(function(d, i){groups[i] = {name: setOfGroups[i], color: color(i)}})
     AddGroupButtons(groups)
 
-    //sort data so it displays them from right to left
+    //sort data so its displayed from right to left
     //due to overlap
     var myData = datapoints.sort(function(x, y){
         return d3.descending(+x.date, +y.date);
@@ -100,7 +100,7 @@ function ready(error, datapoints){
     dataGravity.initialize(myData);
     detailsGravity.initialize(detailsPoints);
 
-    //draw data
+    //display data
     var dataGroup = d3.select(".timeLine").append('g').attr("class", "data").selectAll('g')
                     .data(myData)
                     .enter()
@@ -206,7 +206,7 @@ function ready(error, datapoints){
     };
 };
 
-//update simulation based on outside changes
+//update simulation based on user changes
 function simUpdate(){
     timer = 0;
     simulation

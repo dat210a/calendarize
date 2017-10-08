@@ -1,9 +1,14 @@
-﻿//TODO change width/height dynamically
-var width = 1600,
-    height = 900;
+﻿
+//TODO change width/height dynamically
+var totalWidth = document.documentElement.clientWidth-10;
+var totalHeight = document.documentElement.clientHeight-50;
+
+var xPadding = 50;
+
+var width = totalWidth - 2*xPadding,
+    height = totalHeight;
 
 var midScreen = height / 2;
-var xPadding = 50;
 var bottomOffset = 200;
 
 var currentYear = 2017;
@@ -202,10 +207,35 @@ function zoomInOut() {
                                     }).data().length
         //show details if zoomed in or only few points on screen
         if (k < 3.3 && tresholdNumPoints < pointsOnScreen){
-            d3.selectAll('.data').selectAll('.detail').style('display', 'none');
+            if (d3.selectAll('.data').selectAll('rect').style('display') == 'inline'){
+                d3.selectAll('.data').selectAll('rect')
+                        .transition()
+                        .duration(500)
+                        .attr('y', 0)
+                        .attr('width', 1)
+                        .attr('height', 1)
+                        .on("start", function(){
+                            d3.selectAll('.data').selectAll('path').style('display', 'none');
+                        })
+                        .on("end", function(){d3.select(this).style('display', 'none')});
+            };
         }
         else{
-            d3.selectAll('.data').selectAll('.detail').style('display', 'inline');
+            if (d3.selectAll('.data').selectAll('rect').style('display') == 'none'){
+                d3.selectAll('.data').selectAll('rect')
+                            .transition()
+                            .duration(500)
+                            .attr('y', function(d){return d.y - 50})
+                            .attr('width', detailWidth)
+                            .attr('height', detailHeight)
+                            .on("start", function(){
+                                d3.select(this).style('display', 'inline')
+                                            .attr('y', 0);
+                            })
+                            .on("end", function(){
+                                d3.selectAll('.data').selectAll('path').style('display', 'inline');
+                            })
+            };
         }
         simUpdate();
     };

@@ -56,14 +56,13 @@ function AddGroupButtons(groups){
             .attr("height", groupBoxHeight)
             .attr("rx", 20)
             .attr("ry", 20)
-            .style("fill", function (d, i) {
-                return color(i);
+            .style("fill", function (d) {
+                return d.color;
             })
-            .on('click', function (d, i) {
-                ToggleAgenda(i)
-                var tempColor = d3.select(this).style("fill")
-                if (tempColor == "lightgrey") { 
-                    d3.select(this).style("fill", function () {return color(i);}) 
+            .on('click', function (d) {
+                ToggleAgenda(d.color)
+                if (d3.select(this).style("fill") == "lightgrey") { 
+                    d3.select(this).style("fill", function () {return d.color;}) 
                 }
                 else { d3.select(this).style("fill", "lightgrey") }
             });
@@ -97,7 +96,7 @@ function ToggleAgendaMenu(){
 //toggle on/off
 function ToggleAgenda(data) {
     d3.selectAll(".data").selectAll('line')
-        .filter(function(d){return +d.color == data})
+        .filter(function(d){return d.color == data})
         .each(function(){
             d3.select(this.parentNode).style("display", function(){
                 return d3.select(this).style("display") == 'inline' ? 'none' : 'inline';
