@@ -1,6 +1,13 @@
 import logging
+import hashlib
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
+
+
+def secure_fn(fname):
+    conv = fname.encode('utf-8')
+    sec = hashlib.sha224(conv)
+    return sec
 
 
 class ConnectionInstance:
