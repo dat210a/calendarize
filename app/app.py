@@ -30,7 +30,7 @@ conf_file = 'cfg/db.json'
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
     data = json.load(cf)
-    app.config['DATABASE_USER'] = data['user']
+    app.config['DATABASE_USER'] = data['username']
     app.config['DATABASE_PASSWORD'] = data['password']
     app.config['DATABASE_DB'] = data['database']
     app.config['DATABASE_HOST'] = data['host']
