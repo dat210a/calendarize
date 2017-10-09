@@ -9,9 +9,6 @@ class ConnectionInstance:
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
     """
 
-    __cur = None
-    __con = None
-
     def __init__(self, app, shard):
         self.__app = app
         self.__shard = shard

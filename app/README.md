@@ -8,3 +8,5 @@
     - [ ] Login
     - [ ] Password retrieval
     - [ ] Creation/deletion SQL functions
+ - [ ] Security
+    - [ ] Hash filenames
