@@ -18,7 +18,7 @@ calendarize_db
 │   ├── user_calendars [VARCHAR(45)]
 │   ├── user_events [VARCHAR(45)]
 │   ├── user_extra [VARCHAR(45)]
-│   └── deleted [INT(11)]
+│   └── deleted [TINYINT(1)]
 ├── userconfig
 │   ├── user_config_id [INT(11)]
 │   ├── user_config_password [VARCHAR(45)]
@@ -37,7 +37,7 @@ calendarize_db
 │   ├── calendar_extra [VARCHAR(45)]
 │   ├── calendar_events [VARCHAR(45)]
 │   ├── calendar_admins [VARCHAR(45)]
-│   └── deleted [INT(11)]
+│   └── deleted [TINYINT(1)]
 └── events
     ├── event_id [INT(11)]
     ├── event_name [VARCHAR(45)]
@@ -50,7 +50,7 @@ calendarize_db
     ├── event_members [VARCHAR(45)]
     ├── event_belongs_to [VARCHAR(45)]
     ├── event_extra [VARCHAR(45)]
-    └── deleted [INT(11)]
+    └── deleted [TINYINT(1)]
 ```
 
 ### TODO list for database
