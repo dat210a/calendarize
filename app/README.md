@@ -10,3 +10,4 @@
     - [ ] Creation/deletion SQL functions
  - [ ] Security
     - [ ] Hash filenames
+    - [ ] Timeout session
