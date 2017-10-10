@@ -31,7 +31,6 @@ class ConnectionInstance():
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.__con.commit()
         self.__con.close()
     #    logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
@@ -45,10 +44,10 @@ class ConnectionInstance():
         return uid.fetchall()
 
     def get_pass_hash(self, username):
-        #uid = self.__cur.execute("SELECT user_password FROM users WHERE ? = user_name", username)
-        uid = self.__cur.execute("SELECT user_password FROM users WHERE user_name = 'Natursvin'")
-        print(uid)
-        return uid.fetchone()
+        sql = "SELECT user_password FROM users WHERE user_name = ?"
+        self.__cur.execute(sql, [username])
+        res = self.__cur.fetchone()
+        return res[0].decode('utf-8')
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"

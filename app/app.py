@@ -19,7 +19,7 @@ from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
 from flask_login import *
-from funcs.logIn import check_password
+from funcs.logIn import check_password, hash_password
 
 app = Flask(__name__)
 Mobility(app)
@@ -96,8 +96,7 @@ def shard():
     app.config['shard'] += 1
     return shard
 
-print("test")
-print(check_password("password", "Natursvin", app))
+print(check_password("test", "Natursvin", app))
 
 ##################################################################
 # Some of the routes below might warrant moving out and
@@ -191,6 +190,16 @@ def delete_cal():
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)
+
+
+@login_func.route("/login", methods=['POST'])
+def login():
+    password = request.form["password"]
+    username = request.form["username"]
+
+    if check_password(password, username, app):
+            login_user(User(get_user_id(username)))
+
 
 ##################################################################
 
