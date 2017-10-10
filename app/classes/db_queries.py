@@ -10,7 +10,7 @@ def secure_fn(fname):
     return sec
 
 
-class ConnectionInstance:
+class ConnectionInstance():
     """
     PyCharm note: If you're getting linting errors, go to Settings/Preferences > Tools > Database > User Parameters,
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
@@ -42,6 +42,10 @@ class ConnectionInstance:
     def get_user_id(self, username):
         uid = self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", username)
         return uid.fetchall()
+
+    def get_pass_hash(self, username):
+        uid = self.__cur.execute("SELECT user_password FROM user WHERE ? = user_name", username)
+        return uid.fetchone()
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"

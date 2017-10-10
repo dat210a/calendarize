@@ -19,7 +19,7 @@ from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
 from flask_login import *
-from funcs.logIn import hash_password
+from funcs.logIn import check_password
 
 app = Flask(__name__)
 Mobility(app)
@@ -41,7 +41,8 @@ app.secret_key = 'hella secret'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-hash_password("password")
+print("test")
+print(check_password("password", "Natursvin"))
 
 
 @login_manager.user_loader

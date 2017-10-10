@@ -13,8 +13,8 @@ def hash_password(password):
     return ph.hash(password)
 
 def check_password(password, username):
-    with ConnectionInstance as queries:
-        return ph.verify(, password)
+    with ConnectionInstance(app, "1") as queries:
+        return ph.verify(queries.get_pass_hash(username), password)
 
 
 def check_login(password, username):
@@ -33,5 +33,6 @@ def login():
 
     if check_login(password, username):
         login_user(User(get_user_id(username)))
+
 
 
