@@ -12,6 +12,10 @@ def hash_password(password):
     print(ph.hash(password))
     return ph.hash(password)
 
+def check_password(password, username):
+    with ConnectionInstance as queries:
+        return ph.verify(, password)
+
 
 def check_login(password, username):
     password = hash_password(password)

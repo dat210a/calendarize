@@ -8,4 +8,4 @@ class User:
         self.__user_id = user_id
 
     def get_id(self):
-        return self.__user_id,
+        return self.__user_id
