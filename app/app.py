@@ -41,8 +41,7 @@ app.secret_key = 'hella secret'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-print("test")
-print(check_password("password", "Natursvin"))
+
 
 
 @login_manager.user_loader
@@ -97,6 +96,8 @@ def shard():
     app.config['shard'] += 1
     return shard
 
+print("test")
+print(check_password("password", "Natursvin", app))
 
 ##################################################################
 # Some of the routes below might warrant moving out and

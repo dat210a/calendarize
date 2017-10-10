@@ -12,18 +12,14 @@ def hash_password(password):
     print(ph.hash(password))
     return ph.hash(password)
 
-def check_password(password, username):
-    with ConnectionInstance(app, "1") as queries:
-        return ph.verify(queries.get_pass_hash(username), password)
+def check_password(password, username, app):
+    with ConnectionInstance(app , 1) as queries:
+        return ph.verify(queries.get_pass_hash(username), hash_password(password))
 
 
-def check_login(password, username):
-    password = hash_password(password)
-
-
-def get_user_id(username):
+def get_user_id(username, app):
     with ConnectionInstance as queries:
-        return queries.getUserId(username)
+        return queries.getUserId(username, app)
 
 
 @login_func.route("/login", methods=['POST'])

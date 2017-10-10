@@ -25,14 +25,15 @@ class ConnectionInstance():
                                        database=self.__app.config['DATABASE_DB'])
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
 
-        logging.INFO('Database connection with shard {} created.'.format(self.__shard))
+    #    logging.INFO('Database connection with shard {} created.'.format(self.__shard))
 
     def __enter__(self):
-        return self.__cur
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.__con.commit()
         self.__con.close()
-        logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
+    #    logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
     def db_generic_select(self, attr, table, val, cond):
         sql = "SELECT %s FROM %s WHERE %s = %s"
@@ -40,11 +41,13 @@ class ConnectionInstance():
         return res.fetchall()
 
     def get_user_id(self, username):
-        uid = self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", username)
+        uid = self.__cur.execute("SELECT user_id FROM users WHERE ? = user_name", username)
         return uid.fetchall()
 
     def get_pass_hash(self, username):
-        uid = self.__cur.execute("SELECT user_password FROM user WHERE ? = user_name", username)
+        #uid = self.__cur.execute("SELECT user_password FROM users WHERE ? = user_name", username)
+        uid = self.__cur.execute("SELECT user_password FROM users WHERE user_name = 'Natursvin'")
+        print(uid)
         return uid.fetchone()
 
     def get_calendars(self):
