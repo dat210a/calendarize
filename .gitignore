@@ -100,10 +100,12 @@ ENV/
 # mypy
 .mypy_cache/
 .idea/
-app/cfg/db.json
 
 # vscode localhost settings
 .vscode/iisexpress.json
 .vscode/launch.json
 timeline/.vscode/iisexpress.json
 timeline/.vscode/launch.json
+
+# sensitive information
+app/cfg/
