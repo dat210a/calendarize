@@ -1,0 +1,29 @@
+﻿{% extends 'nav_logedin.html' %}
+
+{% block title %}calendarize.calendar{% endblock %}
+
+{% block content %}
+    <style>
+        .timelineRow{flex: 1; width: 100%; min-height: 300px; margin-top: 5px; margin-bottom: 5px;}
+        .sidePanel{border-left: 2px solid black; margin-bottom: 0px;}
+        svg {background-color: transparent; border: 0px; border-right: 2px solid black;} 
+        rect {fill: white;}
+        text {text-anchor: middle; }
+    </style>
+    <div class="timelineRow row">
+        <div class="timelineScreen col s9">
+            <svg></svg>
+        </div>
+        <div class="sidePanel col s3">{% block side %}{% endblock %}</div>
+    </div>
+    <!-- TODO make a bundle -->
+    <script src="/static/js/lib/d3.min.js"></script>
+    <script src="/static/js/DisplayCalendar.js"></script>
+    <script src="/static/js/SubbedGroups.js"></script>
+    <script src="/static/js/DisplayData.js"></script>
+    <script src="/static/js/resize_timeline.js"></script>
+    <!-- test -->
+    <!-- <script src="/static/js/icon.js"></script> -->
+{% endblock %}
+
+<!--<i class="medium material-icons green-text">add_circle</i> -->

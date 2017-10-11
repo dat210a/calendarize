@@ -1,9 +1,7 @@
 ﻿
-//TODO change width/height dynamically
-var totalWidth = document.documentElement.clientWidth-10;
-var totalHeight = document.documentElement.clientHeight-50;
-
-var xPadding = 50;
+var totalWidth = 900;
+var totalHeight = 670;
+var xPadding = 75;
 
 var width = totalWidth - 2*xPadding,
     height = totalHeight;
@@ -21,17 +19,14 @@ var k = 1;
 var weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 var xScale = d3.scaleLinear().domain([0, 365]).range([0, width]);
-
 var zoom = d3.zoom()
                 .scaleExtent([1, 12])
-                .on("zoom", zoomInOut);
+                .on("zoom", rescale);
 
 //create canvas and all basic timeline objects
-var svg = d3.select('body')
-                .append("svg")
-                .attr("height", height)
-                .attr("width", width + xPadding*2)
-                .attr("transform", "translate(0, 0)");
+var svg = d3.select('svg')
+                    .attr('width', totalWidth)
+                    .attr('height', height)
 
 svg.append('g')
         .attr("class", "background_items")
@@ -46,6 +41,7 @@ svg.append('g')
 //middle line
 svg.select(".background_items")
         .append("line")
+            .attr('class', "midLine")
             .attr("stroke", "#ddd")
             .attr("stroke-width", radius)
             .attr("x1", 0)
@@ -114,7 +110,7 @@ rightSideBar.append('line')
             .attr("y2", +40);
 
 //load month specs
-d3.json("months.json", function(error, data){
+d3.json("static/assets/months.json", function(error, data){
     if (error) throw error;
     
     var monthsContainer = d3.selectAll(".months").selectAll('g')
@@ -122,8 +118,9 @@ d3.json("months.json", function(error, data){
                                 .enter()
                                     .append("g")
                                     .attr("class", function(d){return d.Name;})
-                                    .attr('transform', function(d, i){
-                                       return 'translate('+xScale(d.TotalDays)+','+0+')'
+                                    .attr('transform', function(d){
+                                        d.x = xScale(d.TotalDays);
+                                        return 'translate(' + d.x + ',' + 0 + ')'
                                     })
 
     var monthText = monthsContainer
@@ -144,8 +141,9 @@ d3.json("months.json", function(error, data){
                         .text(data[0].Name);
 })
 
+
 //zoom and scroll update function
-function zoomInOut() {
+function rescale() {
     var transform = d3.event.transform;
     var xNewScale = transform.rescaleX(xScale);
 
@@ -171,7 +169,7 @@ function zoomInOut() {
     //reposition month tags
     var highestX = 0;
     d3.selectAll('.months').selectAll('g')
-                .attr('transform', function(d, i){
+                .attr('transform', function(d){
                     var x = xNewScale(d.TotalDays) % adjustedYearLength;
                     if (x<0) x += adjustedYearLength;
                     if (highestX < x) {
@@ -179,7 +177,8 @@ function zoomInOut() {
                         d3.select('.leftSideBar').select('text')
                             .text(d.Name);
                     };
-                    return 'translate('+x+','+0+')';
+                    d.x = x;
+                    return 'translate(' + d.x + ',' + 0 + ')';
                 });
     
     if (!d3.selectAll('.data').empty()){  
@@ -205,6 +204,7 @@ function zoomInOut() {
                                     .filter(function(d, i){
                                         return ((d.x > 0) && (d.x < width));
                                     }).data().length
+
         //show details if zoomed in or only few points on screen
         if (k < 3.3 && tresholdNumPoints < pointsOnScreen){
             if (d3.selectAll('.data').selectAll('rect').style('display') == 'inline'){
@@ -240,3 +240,4 @@ function zoomInOut() {
         simUpdate();
     };
 };
+

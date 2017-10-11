@@ -1,7 +1,5 @@
 var bottomBarHeight = 200;
-
-var groupBoxWidth = 150,
-    groupBoxHeight = 150;
+var groupBoxHeight = 150;
 
 var padding = 20;
 
@@ -12,8 +10,9 @@ d3.selectAll('svg')
         .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
         .attr('up', true)
         .append('rect')
+            .attr('class', 'bottomBase')
             .style('fill', 'transparent')
-            .attr('width', width)
+            .attr('width', totalWidth)
             .attr('height', bottomBarHeight);
             
 //add toggle button
@@ -27,19 +26,16 @@ d3.selectAll('.bottomMenu')
             .attr('width', 100)
             .attr('height', 40)
             .attr('x', -50)
-            .attr('y', -37)
+            .attr('y', -50)
             .attr("stroke", "black")
             .on('click', ToggleAgendaMenu);
 
-d3.selectAll('.bottomMenuButton')
-    .append('text')
-        .text('===')
-        .attr("font-size", 50)
-        .on('click', ToggleAgendaMenu);
+//$('.bottomMenuButton').html('<i class="large material-icons">arrow_drop_up</i>');
 
 d3.selectAll('.bottomMenu').append('g').attr('class', 'agendas')
 
 function AddGroupButtons(groups){
+    groupBoxWidth = totalWidth/groups.length-padding;
     //initialize toggle objects and bind color data
     var agendasContainer = d3.selectAll(".agendas").selectAll('g')
                                 .data(groups)

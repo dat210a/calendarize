@@ -64,7 +64,7 @@ function detailBoxCollider(alpha){
 //load data async
 //TODO get data from SQL
 d3.queue()
-    .defer(d3.csv, "myChart.csv")
+    .defer(d3.csv, "/static/assets/random_chart.csv")
     .await(ready);
 
 function ready(error, datapoints){
@@ -237,7 +237,7 @@ function capsuleCollider(capsule, point, duration){
 function detailsCollider(capsule, point, duration, cParent, pParent){
     cx = cParent.x + cParent.duration*k/2 + xOffset(Math.abs(capsule.y + capsule.vy));
     px = pParent.x + pParent.duration*k/2 + xOffset(Math.abs(point.y + point.vy));
-    if (px > cx + detailWidth + 25) return width;
+    if (px > cx + detailWidth + 25) return detailWidth;
     return distToCapsule(cx, capsule.y + capsule.vy, px, point.y + point.vy, duration);
 };
 
