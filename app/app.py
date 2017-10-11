@@ -34,7 +34,7 @@ with open(conf_file, 'r') as cf:
     app.config['DATABASE_PASSWORD'] = data['password']
     app.config['DATABASE_DB'] = data['database']
     app.config['DATABASE_HOST'] = data['host']
-app.config['shards'] = 1  # Not actually sharding, just a handy way of keeping track of multiple connections
+app.config['shards'] = []  # Not actually sharding, just a handy way of keeping track of multiple connections
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
 
@@ -92,6 +92,7 @@ def get_user_id():
 
 
 def shard():
+    # DEPRECATED, TO BE REMOVED
     shard = app.config['shards']
     app.config['shards'] += 1
     return shard

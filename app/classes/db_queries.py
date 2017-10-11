@@ -16,24 +16,26 @@ class ConnectionInstance:
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
     """
 
-    def __init__(self, app, shard=None):
+    def __init__(self, app):
         # TODO fix shards
         self.__app = app
-        # self.__shard = shard
+        self.__shard = len(app.config['shards']) + 1
+        self.__app.config['shards'].append(self)
         self.__con = connector.connect(user=self.__app.config['DATABASE_USER'],
                                        password=self.__app.config['DATABASE_PASSWORD'],
                                        host=self.__app.config['DATABASE_HOST'],
                                        database=self.__app.config['DATABASE_DB'])
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
 
-        # logging.INFO('Database connection with shard {} created.'.format(self.__shard))
+        logging.INFO('Database connection with shard {} created.'.format(self.__shard))
 
     def __enter__(self):
         return self.__cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.__app.config['shards'].remove(self)
         self.__con.close()
-        # logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
+        logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
     def db_generic_select(self, attr, table, val, cond):
         sql = "SELECT %s FROM %s WHERE %s = %s"
