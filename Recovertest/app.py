@@ -58,7 +58,7 @@ def recover():
                     flash("Unregistered Email")
                     return redirect(url_for("recover"))
                 else:
-                    msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=["g_natdanai@hotmail.com"])
+                    msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
                     msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset"
                     mail.send(msg)
                     return render_template("recoverconfirm.html",email=email)
