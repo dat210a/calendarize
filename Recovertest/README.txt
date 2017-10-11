@@ -5,3 +5,4 @@ Recovering Password part:
 TO DO:
 -Need to define a method for generate random string for reset link.
 -Make the link usable once and within 24 hours.
+-Reset password page
