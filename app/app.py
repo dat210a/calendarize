@@ -92,8 +92,8 @@ def get_user_id():
 
 
 def shard():
-    shard = app.config['shard']
-    app.config['shard'] += 1
+    shard = app.config['shards']
+    app.config['shards'] += 1
     return shard
 
 
@@ -162,7 +162,7 @@ def delete_user():
     req_user = get_user_id()
     del_user = request.form.get('user_id', None)
     if del_user and req_user == del_user:  # ensures only the user can delete themselves
-        with db.ConnectionInstance(app, shard()) as q:
+        with db.ConnectionInstance(app) as q:
             q.db_del_user(del_user)
     return redirect(url_for(index))
 
@@ -173,7 +173,7 @@ def delete_event():
     user = get_user_id()
     event = request.form.get('event_id', None)
     if event:
-        with db.ConnectionInstance(app, shard()) as q:
+        with db.ConnectionInstance(app) as q:
             admins = q.db_get_cal_admin(eid=event)
             if user in admins:
                 q.db_del_event(event)
@@ -185,7 +185,7 @@ def delete_cal():
     user = get_user_id()
     cal = request.form.get('calendar_id', None)
     if cal:
-        with db.ConnectionInstance(app, shard()) as q:
+        with db.ConnectionInstance(app) as q:
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)

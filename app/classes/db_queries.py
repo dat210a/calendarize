@@ -7,7 +7,7 @@ from mysql.connector.cursor import MySQLCursorPrepared
 def secure_fn(fname):
     conv = fname.encode('utf-8')
     sec = hashlib.sha224(conv)
-    return sec
+    return sec.hexdigest()
 
 
 class ConnectionInstance:
@@ -16,23 +16,24 @@ class ConnectionInstance:
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
     """
 
-    def __init__(self, app, shard):
+    def __init__(self, app, shard=None):
+        # TODO fix shards
         self.__app = app
-        self.__shard = shard
+        # self.__shard = shard
         self.__con = connector.connect(user=self.__app.config['DATABASE_USER'],
                                        password=self.__app.config['DATABASE_PASSWORD'],
                                        host=self.__app.config['DATABASE_HOST'],
                                        database=self.__app.config['DATABASE_DB'])
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
 
-        logging.INFO('Database connection with shard {} created.'.format(self.__shard))
+        # logging.INFO('Database connection with shard {} created.'.format(self.__shard))
 
     def __enter__(self):
         return self.__cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__con.close()
-        logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
+        # logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
     def db_generic_select(self, attr, table, val, cond):
         sql = "SELECT %s FROM %s WHERE %s = %s"
@@ -77,3 +78,7 @@ class ConnectionInstance:
     def db_del_cal(self, cid):
         self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", cid)
 
+
+if __name__ == '__main__':
+    tname = 'test.doc'
+    print(secure_fn(tname).hexdigest())
