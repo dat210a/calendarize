@@ -17,7 +17,6 @@ class ConnectionInstance:
     """
 
     def __init__(self, app):
-        # TODO fix shards
         self.__app = app
         self.__shard = len(app.config['shards']) + 1
         self.__app.config['shards'].append(self)
