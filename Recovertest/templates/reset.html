@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block main %}
+<form action="" method="POST">
+	<label type="text" id="user" name="user" value= {{ user }} hidden></label>
+	<label for="new_password">New Password:</label>
+	<input type="new_password" id="new_password" name="new_password">
+	<br/>
+	<br/>
+	<label for="repeat_password">Repeat Password:</label>
+	<input type="repeat_password" id="repeat_password" name="repeat_password">
+	<br/>
+	<br/>
+	<input type="submit">
+	<button><a href="{{ url_for('index') }}">Cancel</a></button>
+</form>
+
+{% endblock %}
