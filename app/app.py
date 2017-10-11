@@ -110,8 +110,11 @@ def shard():
 def index(template):
     log_basic()
     from classes.dummy_classes import ShardTestingClass
-    st = ShardTestingClass(app)
-    print(app.config['shards'])
+    for i in range(0, 5):
+        with ShardTestingClass(app) as st:
+            print(app.config['shards'])
+            st.work()
+        print(app.config['shards'])
     # TODO fetch user data
     return render_template(template)
 
