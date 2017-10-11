@@ -34,7 +34,7 @@ with open(conf_file, 'r') as cf:
     app.config['DATABASE_PASSWORD'] = data['password']
     app.config['DATABASE_DB'] = data['database']
     app.config['DATABASE_HOST'] = data['host']
-app.config['shards'] = 1  # Not actually sharding, just a handy way of keeping track of multiple connections
+app.config['shards'] = []  # Not actually sharding, just a handy way of keeping track of multiple connections
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
 
@@ -109,6 +109,9 @@ def shard():
 # @login_required
 def index(template):
     log_basic()
+    from classes.dummy_classes import ShardTestingClass
+    st = ShardTestingClass(app)
+    print(app.config['shards'])
     # TODO fetch user data
     return render_template(template)
 
