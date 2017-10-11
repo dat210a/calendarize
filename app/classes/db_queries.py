@@ -77,8 +77,3 @@ class ConnectionInstance:
 
     def db_del_cal(self, cid):
         self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", cid)
-
-
-if __name__ == '__main__':
-    tname = 'test.doc'
-    print(secure_fn(tname).hexdigest())
