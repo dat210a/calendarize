@@ -85,7 +85,6 @@ def end_logging(log):
 
 @app.route('/')
 @mobile_template('/{mobile/}index.html')
-@login_required
 def index(template):
     # TODO fetch user data
     return render_template(template)
