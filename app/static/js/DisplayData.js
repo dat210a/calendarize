@@ -1,4 +1,3 @@
-
 var timer = 0;
 
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
@@ -6,60 +5,6 @@ var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 var detailHeight = 100,
     detailWidth = 200;
-
-//force pull towards the middle line
-var dataGravity = d3.forceY(0).strength(0.1);
-var detailsGravity = d3.forceY(function(d){
-                                return d.y > 0 ? 100 : -170
-                            }).strength(0.5);
-
-//instantiate simulation
-var simulation = d3.forceSimulation()
-                        .force('gravity', dataGravity)
-                        .force('detailsGravity', detailsGravity)
-                        .force('pointsCollider', pointCollider)
-                        .force('detailsBoxCollider', detailBoxCollider);
-
-//collision force for points on the line
-function pointCollider(alpha){
-    var nodes = d3.selectAll('.data')
-                    .selectAll('g')
-                        .filter(function(d){
-                            return d3.select(this).style('display') == 'inline';
-                        })
-                        .selectAll('line')
-                            .data().reverse();
-    for (i = 0, n = nodes.length; i < n; i++){
-        capsule = nodes[i];
-        for (j = i + 1; j < n; ++j){
-            point = nodes[j];
-            var dist = capsuleCollider(capsule, point, capsule.duration*k);
-            if (dist < radius*2+1) {
-                if (point.duration <= capsule.duration) point.vy -= (radius*2+1 - dist);
-                else capsule.vy -= (radius*2+1 - dist);
-            }
-        }
-    }
-}
-
-//collision force for detail boxes
-function detailBoxCollider(alpha){
-    var nodes = d3.selectAll('.data').selectAll('rect').data();
-    d3.selectAll('.data').selectAll('rect')
-        .each(function(point, i){
-            var pParent = this.parentNode.__data__;
-            d3.selectAll('.data').selectAll('rect')
-                .filter(function(d, j){return j > i;})
-                .each(function(capsule, j){
-                    var cParent = this.parentNode.__data__;
-                    var dist = detailsCollider(capsule, point, detailWidth, cParent, pParent);
-                    if (dist < 50*2+5) {
-                        if (capsule.y > 0) capsule.vy += (50*2+5 - dist);
-                        else capsule.vy -= (50*2+5 - dist);
-                    }
-                })
-        })
-}
 
 //load data async
 //TODO get data from SQL
@@ -82,13 +27,13 @@ function ready(error, datapoints){
     //sort data so its displayed from right to left
     //due to overlap
     var myData = datapoints.sort(function(x, y){
-        return d3.descending(+x.date, +y.date);
+        return d3.descending(+x.start_date, +y.start_date);
     })
 
     //objects whith coordinates for detail boxes
     var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
-        detailsPoints[i] = {'id': myData[i].id};
+        detailsPoints[i] = {'id': myData[i].id, 'date': myData[i].start_date};
     }
 
     //setup simulation based on data
@@ -101,158 +46,203 @@ function ready(error, datapoints){
     detailsGravity.initialize(detailsPoints);
 
     //display data
-    var dataGroup = d3.select(".timeLine").append('g').attr("class", "data").selectAll('g')
-                    .data(myData)
-                    .enter()
-                        .append("g")
-                        .attr("class", function(d){return d.id;});
+    var dataGroup = d3.select(".timeline")
+                        .insert('g', '.g-today')
+                        .attr("class", "data")
+                        .selectAll('.datapoints')
+                            .data(myData)
+                            .enter()
+                                .append("g")
+                                    .attr("class", function(d){return 'datapoints ' + d.id;})
+                                    .style('display', 'inline')
                             
-    var points = dataGroup.append("line")
-                            .attr("stroke", function (d) {
+    var points = dataGroup.append("rect")
+                            .attr('class', 'points')
+                            .style('pointer-events', 'visible')
+                            .style("fill", function (d) {
                                 d.color = groups.filter(function(gr){return gr.name == d.group})[0].color
                                 return d.color
                             })
-                            .attr("stroke-width", radius*2)
-                            .attr("stroke-linecap", "round")
-                            .attr("x1", function(d){
-                                return d.x = xScale(d.date);
+                            .attr("height", radius*2)
+                            .attr("rx", radius)
+                            .attr("x", function(d){
+                                return d.x = time(parse(d.start_date))
                             })
-                            .attr("x2", function(d){
-                                d.duration = xScale(d.duration);
-                                return d.x + d.duration*k;
+                            .attr("y", function(d){
+                                d.y = 0;
+                                return d.y - radius;
                             })
-                            .attr("y1", function(d){
-                                return d.y = 1;
+                            .attr("width", function(d){
+                                d.length = time(parse(d.end_date)) - d.x
+                                return radius*2 + d.length;
                             })
-                            .attr("y2", 1)
                             .on('click', function (d, i) {
-                                console.log (d);
+                                display(d);
                             });
 
     //initialize lines connecting point on timeline and detail boxes
     var connections = dataGroup
                         .append('path')
-                            .attr('class', 'detail')
+                            .attr('class', 'connector')
                             .attr("stroke", 'darkgrey')
                             .style("fill", 'none')
                             .style('display', 'none');
 
-    //initialize detail boxes'
-    //TODO has to use transform, so its easier to display data
-    var details = dataGroup
-                    .append("rect")
-                        .attr('class', 'detail')
-                        .attr("width", detailWidth)
-                        .attr("height", detailHeight)
-                        .style('display', 'none');
+    //initialize detail boxes
+    var detailContainer = dataGroup
+                            .append('g')
+                                .attr('class', 'detailContainer')
+                                .style('display', 'none')
+
+    detailContainer      
+        .append("rect")
+            .attr('class', 'detailBox')
+            .attr("width", detailWidth)
+            .attr("height", detailHeight)
+
 
     //bind data (locations) to lines
     connections
-            .data(detailsPoints)
-            .attr('d', function(d, i){
-                return link(d, this.parentNode.__data__);
-            });
-
-    //bind data (locations) to detail boxes
-    details 
-            .data(detailsPoints)
-            .attr("y", function(d,i){
-                d.y = -midScreen/2;
-                return d.y - 50;
-            })
-
-    points.each(function(data){
-            d3.select(this.parentNode).selectAll('rect')
-                .attr("x", function(d){
-                        return d.x = data.x + data.duration/2;
-                    })
-                .style('fill', function(){return data.color;});
+        .data(detailsPoints)
+        .attr('d', function(d, i){
+            return link(d, this.parentNode.__data__);
         });
 
-    //update data position after forces have taken effect
-    function ticked() {
-        // if (timer == 1) {            //for debuging purposes - only allows one tick 
-        //     simulation.stop()
-        // }
-        // timer++;
+    //bind data (locations) to detail boxes
+    detailContainer 
+        .data(detailsPoints)
+        .on('click', function (d, i) {
+            display(this.parentNode.__data__);
+        });
+    
+    detailContainer
+        .append('text')
+            .attr('class', 'miniID')
+            .attr('x', 15)
+            .attr('y', 30)
+            .style("font-size", 20)
+            .text(function(){
+                return this.parentNode.__data__.id;
+            });
 
-        points
-            .attr("x1", function (d) {
-                return d.x;
-            })
-            .attr("x2", function (d) {
-                return d.x + d.duration*k;
-            })
-            .attr("y1", function (d) {
-                return d.y = d.y > 0 ? 0 : d.y;
-            })
-            .attr("y2", function (d) {
-                return d.y;
+    detailContainer
+        .append('line')
+            .attr('x1', 5)
+            .attr('x2', detailWidth - 10)
+            .attr('y1', detailHeight/2 - 10)
+            .attr('y2', detailHeight/2 - 10)
+            .attr('stroke-width', 2)
+            .attr('stroke', 'black');
+                
+    detailContainer
+        .append('text')
+            .attr('class', 'miniDate')
+            .attr('x', 15)
+            .attr('y', detailHeight/2 + 30)
+            .style("font-size", 30)
+            .text(function(){
+                return d3.timeFormat('%d / %m')(parse(this.parentNode.__data__.date));
             });
-        
-        details
-            .attr("x", function(d){
-                var parent = this.parentNode.__data__;
-                d.x = parent.x + parent.duration*k/2 + xOffset(Math.abs(d.y));
-                return d.x;
-            })
-            .attr("y", function(d){
-                return d.y - 50;
-            });
-        connections
-            .attr('d', function(d, i){
-                return link(d, this.parentNode.__data__);
-            });
-    };
+
+    dataGroup
+        .each(function(data){
+            d3.select(this).selectAll('.detailBox')
+                .style('fill', function(){return data.color;});
+        });
 };
 
-//update simulation based on user changes
-function simUpdate(){
-    timer = 0;
-    simulation
-        .alpha(1)
-        .restart();
+//update data position after forces have taken effect
+function ticked() {
+    // if (timer == 1) {            //for debuging purposes - only allows one tick 
+    //     simulation.stop()
+    // }
+    // timer++;
+
+    var selection = d3.selectAll('.datapoints')
+                        .filter(function(){
+                            return d3.select(this).style('display') == 'inline';
+                        })
+
+    selection.selectAll('.points')
+        .attr("x", function (d) {
+            return d.x;
+        })
+        .attr("y", function (d) {
+            d.y = d.y > 0 ? 0 : d.y;
+            return d.y -radius;
+        })
+    
+    selection.selectAll('.detailContainer')
+        .attr('transform', function(d){
+            var parent = this.parentNode.__data__;
+            d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
+            return 'translate(' + d.x + ',' + (d.y-detailHeight/2) + ')';
+        });
+
+    selection.selectAll('.connector')
+        .attr('d', function(d, i){
+            return link(d, this.parentNode.__data__);
+        });
 };
+
+function showDetails(){
+    //how many points are displayed
+    var pointsOnScreen = d3.selectAll('.data').selectAll('.datapoints')
+        .filter(function(d){
+            return ((d.x > 0) && (d.x < width) && d3.select(this).style("display") == 'inline');
+        }).data().length
+
+    if (k < 3.3 && tresholdNumPoints < pointsOnScreen){
+        if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'inline'){
+            d3.selectAll('.data').selectAll('.detailContainer')
+                    .transition()
+                    .duration(500)
+                    .attr('transform', function(d){
+                        return 'translate(' + d.x + ',' + 0 + ')scale(0)';
+                    })
+                    .on("start", function(){
+                        d3.selectAll('.data').selectAll('path').style('display', 'none');
+                    })
+                    .on("end", function(){d3.select(this).style('display', 'none')});
+        };
+    }
+    else {
+        if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'none'){
+            d3.selectAll('.data').selectAll('.detailContainer')
+                        .transition()
+                        .duration(500)
+                        .attr('transform', function(d){
+                            var parent = this.parentNode.__data__;
+                            d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
+                            return 'translate(' + d.x + ',' + (d.y-50) + ')scale(1)';
+                        })
+                        .on("start", function(){
+                            d3.select(this).style('display', 'inline')
+                                .attr('transform', function(d){
+                                    return 'translate(' + d.x + ',' + 0 + ')scale(0)';
+                                })
+                        })
+                        .on("end", function(){ 
+                            d3.selectAll('.miniID')
+                                .attr('x', 15)
+                                .attr('y', 30)
+                            d3.selectAll('.miniDate')
+                                .attr('x', 15)
+                                .attr('y', detailHeight/2 + 30)                              
+                            d3.selectAll('.data').selectAll('path').style('display', 'inline');
+                        })
+        } 
+    }
+    simUpdate();
+}
 
 //draw lines data-details
 function link(target, source) {
-    var x1 = source.x + source.duration*k/2;
-    var y1 = source.y;
-    var x2 = target.x;
-    var y2 = target.y;
+    var x1 = Math.round(source.x + source.length*k/2 + radius);
+    var y1 = Math.round(source.y);
+    var x2 = Math.round(target.x);
+    var y2 = Math.round(target.y);
     return "M" + x1 + "," + y1
     + "L" + (x2 - 20) + ',' + y2
     + "L" + x2 + ',' + y2;
-};
-
-// capsule colliders distance functions
-function capsuleCollider(capsule, point, duration){
-    return distToCapsule(capsule.x + capsule.vx, 
-                         capsule.y + capsule.vy, 
-                         point.x + point.vx, 
-                         point.y + point.vy, 
-                         duration);
-};
-
-function detailsCollider(capsule, point, duration, cParent, pParent){
-    cx = cParent.x + cParent.duration*k/2 + xOffset(Math.abs(capsule.y + capsule.vy));
-    px = pParent.x + pParent.duration*k/2 + xOffset(Math.abs(point.y + point.vy));
-    if (px > cx + detailWidth + 25) return detailWidth;
-    return distToCapsule(cx, capsule.y + capsule.vy, px, point.y + point.vy, duration);
-};
-
-// Capsule Collider helper functions
-function sqr(x){
-    return x*x;
-};
-
-function dist2(x1, y1, x2, y2){
-    return sqr(x1 - x2) + sqr(y1 - y2);
-};
-
-function distToCapsule(cx, cy, px, py, duration) {
-    if (duration == 0) return Math.sqrt(dist2(px, py, cx, cy));
-    var t = (px - cx) / duration;
-    t = Math.max(0, Math.min(1, t));
-    return Math.sqrt(dist2(px, py, cx + t * duration, cy));
 };
