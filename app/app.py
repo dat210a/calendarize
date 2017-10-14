@@ -20,7 +20,6 @@ from flask_mobility.decorators import mobile_template
 from classes.user import User
 from flask_login import *
 from funcs.logIn import hash_password
-import logging
 
 app = Flask(__name__)
 Mobility(app)
@@ -38,14 +37,11 @@ with open(conf_file, 'r') as cf:
 app.config['shards'] = []  # Not actually sharding, just a handy way of keeping track of multiple connections
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 hash_password("password")
-
-# TODO implement necessary loggers
-# Hold off on this until we have more than one python file to work with to avoid having to rework logging
-loggers = {}  # dict of loggers to init
 
 
 @login_manager.user_loader
@@ -53,21 +49,22 @@ def load_user(user_id):
     return User.get_id(user_id)
 
 
-def setup_logging(log_name, log_file, log_level=logging.INFO):
-    """
-    :param log_name: String, descriptive name of log
-    :param log_file: String, a path to .log file to write to
-    :param log_level: logging.<PARAM>, INFO, DEBUG or WARNING, level of logging
-    :return: log object, not necessary to use the returned object,
-            but useful for storing logs in a list or dict for easier access
-    """
-    log = logging.getLogger(log_name)
-    log.setLevel(log_level)
-    handler = logging.FileHandler(filename=log_file, encoding='utf-8', mode='a')
-    fmt = logging.Formatter('[%(asctime)s] :%(levelname)s: %(message)s', datefmt='%H:%M:%S')
-    handler.setFormatter(fmt)
-    log.addHandler(handler)
-    return log
+# TODO implement necessary loggers
+def setup_logging():
+    try:
+        lg = logging.getLogger(__name__)
+        lg.setLevel(logging.INFO)
+        handler = logging.FileHandler(filename='calendarize.log', encoding='utf-8', mode='a')
+        fmt = logging.Formatter('[%(asctime)s]:%(module)s:%(levelname)s: %(message)s', datefmt='%H:%M:%S')
+        handler.setFormatter(fmt)
+        lg.addHandler(handler)
+        return lg
+    except PermissionError as e:
+        print('{}\n'
+              'WARNING: Logging not enabled.\n'
+              'If you get this error, change your IDE working directory.\n'
+              'The application will still work, but nothing will be logged.'.format(e))
+        # In PyCharm, go to Run>Edit Configuration to set the working directory to the calendarize folder.
 
 
 def end_logging(log):
@@ -77,8 +74,6 @@ def end_logging(log):
         log.removeHandler(hdlr)
 
 
-<<<<<<< HEAD
-=======
 def request_data(req):
     res = '{} requested by {}'.format(req.url, req.remote_addr)
     return res
@@ -96,14 +91,6 @@ def get_user_id():
     return None
 
 
-def shard():
-    # DEPRECATED, TO BE REMOVED
-    shard = app.config['shards']
-    app.config['shards'] += 1
-    return shard
-
-
->>>>>>> ff0343f9123d58980b822bf10ae40ad5f279b1c6
 ##################################################################
 # Some of the routes below might warrant moving out and
 # into separate files, but until the scope of the operations
@@ -113,11 +100,9 @@ def shard():
 
 @app.route('/')
 @mobile_template('/{mobile/}index.html')
+# @login_required
 def index(template):
-<<<<<<< HEAD
-=======
     log_basic()
->>>>>>> ff0343f9123d58980b822bf10ae40ad5f279b1c6
     # TODO fetch user data
     return render_template(template)
 
@@ -125,13 +110,8 @@ def index(template):
 @app.route('/view/<calendar_id>')
 @mobile_template('{mobile/}calendar.html')
 def view(template, calendar_id):
-<<<<<<< HEAD
-    # TODO check if calendar exists and if the user has permission to view it
-    # TODO create template and call render
-    return render_template(template)
-=======
     log_basic()
-    with db.ConnectionInstance(app, shard()) as q:
+    with db.ConnectionInstance(app) as q:
         cals = q.get_calendars()
         if calendar_id in cals:
             members = q.get_calendar_members(calendar_id)
@@ -145,17 +125,13 @@ def view(template, calendar_id):
             # return redirect(url_for(error))
             # TODO create error route, uncomment above lines
             pass
->>>>>>> ff0343f9123d58980b822bf10ae40ad5f279b1c6
 
 
 @app.route('/settings')
 @mobile_template('{mobile/}template.html')
 @login_required
 def settings(template):
-<<<<<<< HEAD
-=======
     log_basic()
->>>>>>> ff0343f9123d58980b822bf10ae40ad5f279b1c6
     # TODO load user's settings, then render a template with the settings
     return render_template(template)
 
@@ -177,7 +153,7 @@ def save_settings():
 @login_required
 def delete_user():
     # TODO rewrite if necessary when login functionality is implemented
-    req_user = session['user']['id']
+    req_user = get_user_id()
     del_user = request.form.get('user_id', None)
     if del_user and req_user == del_user:  # ensures only the user can delete themselves
         with db.ConnectionInstance(app) as q:
@@ -200,7 +176,7 @@ def delete_event():
 @app.route('/delete_calendar', methods=['POST'])
 @login_required
 def delete_cal():
-    user = session['user']['id']
+    user = get_user_id()
     cal = request.form.get('calendar_id', None)
     if cal:
         with db.ConnectionInstance(app) as q:
@@ -213,12 +189,8 @@ def delete_cal():
 
 if __name__ == '__main__':
 
-    active_loggers = []
-    for log in loggers:
-        lg = setup_logging(log, '{}.log'.format(log))
-        active_loggers.append(lg)
+    logger = setup_logging()
 
     app.run()
 
-    for log in active_loggers:
-        end_logging(log)
+    end_logging(logger)
