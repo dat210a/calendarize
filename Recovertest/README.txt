@@ -1,8 +1,16 @@
-Recovering Password part:
-- build on my own database for testing if the functions work. Need to be update with our database table/names.
--This part checking if the input email is registered in our database, then give en error or sending email with password reset link.
+Requirement:
+- Flask, python
+- pip install Flask-Mail
 
-TO DO:
--Need to define a method for generate random string for reset link.
--Make the link usable once and within 24 hours.
--Reset password page
+
+So far:
+- Checking if the input email is registered in database:
+- Yes > Send an email with reset password link ( still need to work with reset-link)
+- No > Flash an error message.
+- When user enter the reset-link (http://localhost:5000/reset/<resetlink>
+- With valid reset-key --> Reset password page. --> Store new password in database.
+- Invalid key --> error message.
+
+TODO:
+- Generate unique reset-key and store in database.
+- Make the link 1 time usable within 24 hours
