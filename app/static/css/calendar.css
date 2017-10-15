@@ -1,0 +1,24 @@
+
+svg {
+    min-height: 300px;
+    background-color: white;
+} 
+
+rect {
+    fill: white;
+}
+
+text {
+    pointer-events: none;
+}
+
+line {
+    pointer-events: none;
+}
+
+.calendarToolbox{
+    position: absolute; 
+    width:100%; 
+    bottom: 181px; 
+    height: 45px;
+}
