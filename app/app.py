@@ -34,9 +34,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.get_id(user_id)
 
 
 # TODO implement necessary loggers
@@ -79,7 +80,6 @@ def get_user_id():
     if 'user' in session:
         return session['user']['id']
     return None
-
 
 
 ##################################################################
@@ -189,7 +189,7 @@ def login():
     username = request.form["username"]
 
     if check_password(password, username, app):
-            with db.ConnectionInstance(app, shard()) as q:
+            with db.ConnectionInstance() as q:
                 login_user(user)
                 print(user.is_authenticated)
 
