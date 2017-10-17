@@ -122,8 +122,8 @@ def register():
     _password = request.form['inputPassword']
     # validate the received values
     if _name and _email and _password:
-        with db.ConnectionInstance(app) as q:
-            added = q.add_user((_name, _email, hash_password(_password)))
+        with db.ConnectionInstance() as q:
+            added = q.add_user(_name, _email, hash_password(_password))
             if (added):
                 return json.dumps({"message": "User created successfully !"})
             else:

@@ -90,19 +90,14 @@ class ConnectionInstance():
         logging.DEBUG('Result of calendar admin db request: {}'.format(payload))
         return payload
 
-    def add_user(self, values=()):
-        fields = ('user_name', 'user_email', 'user_password')
-        query = 'INSERT INTO %s (%s) VALUES (%s)', (
-                    'user',
-                    ', '.join(fields),
-                    ', '.join(['?'] * len(values))
-                )
-        self.__cur.execute(query, values)
-        dat = self.__cur.fetchall()
-        if len(dat) is 0:
+    def add_user(self, username, email, hashedpass):
+        query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?)'
+        try:
+            self.__cur.execute(query, (username, email, hashedpass))
             self.__con.commit()
             return True
-        else:
+        except:
+            self.__con.rollback()
             return False
 
     def db_del_user(self, uid):

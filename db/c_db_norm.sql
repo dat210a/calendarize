@@ -213,13 +213,13 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `user_id` int(11) NOT NULL,
-  `user_type` int(11) NOT NULL,
+  `user_id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_type` int(11) DEFAULT NULL,
   `user_name` varchar(45) NOT NULL,
   `user_email` varchar(45) NOT NULL,
   `user_phone` int(11) DEFAULT NULL,
   `user_record` varchar(45) DEFAULT NULL,
-  `user_password` varchar(45) NOT NULL,
+  `user_password` varchar(80) NOT NULL,
   `user_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`)
