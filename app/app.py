@@ -104,7 +104,6 @@ def index(template):
 #            st.work()
 #        print(app.config['shards'])
     # TODO fetch user data
-    print(current_user)
     return render_template(template)
 
 
