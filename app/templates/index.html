@@ -2,28 +2,29 @@
 {% block title %}calendarize.login{% endblock %}
 {% block content %}
     <link href="static/css/login.css" type="text/css" rel="stylesheet" media="screen,projection" />
-    
+
     <div class="col s12 valign-wrapper center login_form" id="myModal">
         <ul class="collapsible popout" data-collapsible="accordion">
             <li>
                 <div class="collapsible-header grey lighten-3">
-                    <h5>Login</h5></div>
+                    <h5>Login</h5>
+                </div>
                 <div class="collapsible-body" style="background-color: white">
-                    <div class="">
-                        <form class="">
+                    <div>
+                        <form id="formLogin" class="formLogin">
                             <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="email" type="email" class="validate">
-                                    <label for="email">Email</label>
+                                <div class="input-field col s6">
+                                    <input id="loginUsername" name="inputUsername" type="text" class="validate" required autofocus />
+                                    <label for="loginUsername">Username</label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="password" type="password" class="validate">
-                                    <label for="password">Password</label>
+                                    <input id="loginPassword" name="inputPassword" type="password" class="validate" required />
+                                    <label for="loginPassword">Password</label>
                                 </div>
                                 <div class="col s12">
-                                    <a href="" class="left">Forgot password</a>
+                                    <a href="#" class="left">Forgot password</a>
                                 </div>
                             </div>
                             <div class="row valign-wrapper">
@@ -32,7 +33,7 @@
                                     <label for="test5">Remember me</label>
                                 </div>
                                 <div class="col s6">
-                                    <button class="right btn waves-effect waves-light" type="submit" name="action">Login
+                                    <button id="btnLogin" class="right btn waves-effect waves-light" type="submit">Login
                                         <i class="material-icons right">send</i>
                                     </button>
                                 </div>
@@ -43,48 +44,44 @@
             </li>
             <li>
                 <div class="collapsible-header grey lighten-3">
-                    <h5>Register</h5></div>
+                    <h5>Register</h5>
+                </div>
                 <div class="collapsible-body" style="background-color: white">
-                    <div class="">
-                        <form class="">
+                    <div>
+                        <form id="formRegister" class="formRegister">
                             <div class="row">
                                 <div class="input-field col s6">
-                                    <input id="first_name" type="text" class="validate">
-                                    <label for="first_name">First Name</label>
-                                </div>
-                                <div class="input-field col s6">
-                                    <input id="last_name" type="text" class="validate">
-                                    <label for="last_name">Last Name</label>
+                                    <input id="registerUsername" name="inputUsername" type="text" class="validate" required />
+                                    <label for="registerUsername" data-error="Cannot be blank">Username</label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="email" type="email" class="validate">
-                                    <label for="email">Email</label>
+                                    <input id="registerEmail" name="inputEmail" type="email" class="validate" required />
+                                    <label for="registerEmail" data-error="Not a valid email address">Email</label>
                                 </div>
                             </div>
+                            <!-- <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="confirm_email" type="email" class="validate" required>
+                                    <label for="confirm_email" data-error="Emails do not match">Repeat Email</label>
+                                </div>
+                            </div> -->
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="email" type="email" class="validate">
-                                    <label for="email">Repeat Email</label>
+                                    <input id="registerPassword" name="inputPassword" type="password" pattern="(?=.*\d)(?=.*[a-z]).{6,20}" class="validate" required />
+                                    <label for="registerPassword" data-error="Not strong enough">Password</label>
                                 </div>
                             </div>
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="password" type="password" class="validate">
-                                    <label for="password">Password</label>
+                                    <input id="confirm_password" type="password" class="validate" required>
+                                    <label for="confirm_password" data-error="Passwords do not match">Repeat password</label>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="password" type="password" class="validate">
-                                    <label for="password">Repeat password</label>
-                                </div>
-                            </div>
+                            </div> -->
                             <div class="row valign-wrapper">
                                 <div class="col s6">
-                                    <button class="right btn waves-effect waves-light" type="submit" name="action">Register
-                                    </button>
+                                    <button id="btnRegister" class="right btn waves-effect waves-light" type="submit">Register</button>
                                 </div>
                             </div>
                         </form>
