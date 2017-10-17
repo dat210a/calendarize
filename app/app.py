@@ -104,6 +104,7 @@ def index(template):
 #            st.work()
 #        print(app.config['shards'])
     # TODO fetch user data
+    print(current_user)
     return render_template(template)
 
 
@@ -190,6 +191,7 @@ def delete_cal():
 
 @app.route("/login", methods=['POST'])
 def login():
+    print(request.form)
     password = request.form["password"]
     username = request.form["username"]
     user = load_user(username)
