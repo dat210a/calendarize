@@ -76,6 +76,8 @@ class ConnectionInstance:
 
     def db_del_event(self, eid):
         self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", [eid])
+        self.__con.commit()
 
     def db_del_cal(self, cid):
         self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", [cid])
+        self.__con.commit()
