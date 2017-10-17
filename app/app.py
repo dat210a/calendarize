@@ -188,7 +188,7 @@ def login():
     password = request.form["password"]
     username = request.form["username"]
 
-    if check_password(password, username, app):
+    if check_password(password, username):
             with db.ConnectionInstance() as q:
                 login_user(user)
                 print(user.is_authenticated)

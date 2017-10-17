@@ -12,13 +12,13 @@ def hash_password(password):
     return ph.hash(password)
 
 
-def check_password(password, username, app):
-    with ConnectionInstance(app , 1) as queries:
+def check_password(password, username):
+    with ConnectionInstance() as queries:
         return ph.verify(queries.get_pass_hash(username), password)
 
 
-def get_user_id(username, app):
+def get_user_id(username):
     with ConnectionInstance as queries:
-        return queries.getUserId(username, app)
+        return queries.getUserId(username)
 
 
