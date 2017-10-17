@@ -21,6 +21,7 @@ from classes.user import User
 from flask_login import *
 from flask_login import login_user
 from funcs.logIn import check_password, hash_password
+from funcs.logIn import login_func
 
 app = Flask(__name__)
 Mobility(app)
@@ -41,8 +42,7 @@ app.secret_key = 'hella secret'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-
+login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -96,7 +96,8 @@ def shard():
     app.config['shards'] += 1
     return shard
 
-print(check_password("test", "Natursvin", app))
+
+# print(check_password("test", "Natursvin", app))
 
 ##################################################################
 # Some of the routes below might warrant moving out and

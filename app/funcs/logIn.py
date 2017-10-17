@@ -11,6 +11,7 @@ ph = PasswordHasher()
 def hash_password(password):
     return ph.hash(password)
 
+
 def check_password(password, username, app):
     with ConnectionInstance(app , 1) as queries:
         return ph.verify(queries.get_pass_hash(username), password)
