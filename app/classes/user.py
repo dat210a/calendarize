@@ -1,11 +1,22 @@
-class User:
-    is_authenticated = False
-    is_active = False
-    is_anonymous = False
-    __user_id = 0
+class User():
 
-    def __init__(self, user_id):
-        self.__user_id = user_id
+    def __init__(self, id):
+        id = self.id
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
 
     def get_id(self):
-        return self.__user_id
+            return str(self.id)  # python 3
+
+    def __repr__(self):
+        return '<User %r>' % (self.nickname)

@@ -19,6 +19,7 @@ from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
 from flask_login import *
+from flask_login import login_user
 from funcs.logIn import check_password, hash_password
 
 app = Flask(__name__)
@@ -43,10 +44,9 @@ login_manager.init_app(app)
 
 
 
-
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get_id(user_id)
+    return User.get(user_id)
 
 
 # TODO implement necessary loggers
@@ -92,8 +92,8 @@ def get_user_id():
 
 
 def shard():
-    shard = app.config['shard']
-    app.config['shard'] += 1
+    shard = app.config['shards']
+    app.config['shards'] += 1
     return shard
 
 print(check_password("test", "Natursvin", app))
@@ -192,13 +192,18 @@ def delete_cal():
                 q.db_del_cal(cal)
 
 
-@login_func.route("/login", methods=['POST'])
+@app.route("/login", methods=['POST'])
 def login():
+    user = User("1")
     password = request.form["password"]
     username = request.form["username"]
 
     if check_password(password, username, app):
-            login_user(User(get_user_id(username)))
+            with db.ConnectionInstance(app, shard()) as q:
+                login_user(user)
+                print(user.is_authenticated)
+
+    return redirect("/")
 
 
 ##################################################################
