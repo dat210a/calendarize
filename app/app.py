@@ -19,7 +19,7 @@ from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
 from flask_login import *
-from flask_login import login_user
+from flask_login import login_user, current_user
 from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
 
@@ -45,8 +45,9 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
+def load_user(username):
+    return User(username,app)
+
 
 
 # TODO implement necessary loggers
@@ -195,15 +196,15 @@ def delete_cal():
 
 @app.route("/login", methods=['POST'])
 def login():
-    user = User("1")
     password = request.form["password"]
     username = request.form["username"]
+    user = load_user(username)
 
     if check_password(password, username, app):
-            with db.ConnectionInstance(app, shard()) as q:
+            with db.ConnectionInstance(app) as q:
                 login_user(user)
-                print(user.is_authenticated)
 
+    print(current_user)
     return redirect("/")
 
 

@@ -13,7 +13,7 @@ def hash_password(password):
 
 
 def check_password(password, username, app):
-    with ConnectionInstance(app , 1) as queries:
+    with ConnectionInstance(app) as queries:
         return ph.verify(queries.get_pass_hash(username), password)
 
 

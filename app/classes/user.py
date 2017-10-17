@@ -1,22 +1,25 @@
+from classes.db_queries import ConnectionInstance
+
 class User():
 
-    def __init__(self, id):
-        id = self.id
 
-    @property
+
+    def __init__(self, username,app):
+        self.username = username
+        with ConnectionInstance(app) as con:
+            self.password = con.get_pass_hash(self.username)
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
     def is_authenticated(self):
         return True
 
-    @property
     def is_active(self):
         return True
 
-    @property
     def is_anonymous(self):
         return False
 
     def get_id(self):
-            return str(self.id)  # python 3
-
-    def __repr__(self):
-        return '<User %r>' % (self.nickname)
+        return str(self.username)

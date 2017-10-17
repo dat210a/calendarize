@@ -16,9 +16,9 @@ class ConnectionInstance():
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
     """
 
-    def __init__(self, app, shard):
+    def __init__(self, app):
         self.__app = app
-        self.__shard = shard
+    #    self.__shard = shard
         self.__con = connector.connect(user=self.__app.config['DATABASE_USER'],
                                        password=self.__app.config['DATABASE_PASSWORD'],
                                        host=self.__app.config['DATABASE_HOST'],
@@ -40,8 +40,9 @@ class ConnectionInstance():
         return res.fetchall()
 
     def get_user_id(self, username):
-        uid = self.__cur.execute("SELECT user_id FROM users WHERE ? = user_name", username)
-        return uid.fetchall()
+        sql = "SELECT user_id FROM users WHERE ? = user_name"
+        self.__cur.execute(sql, [username])
+        return self.__cur.fetchall()
 
     def get_pass_hash(self, username):
         sql = "SELECT user_password FROM users WHERE user_name = ?"
