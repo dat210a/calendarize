@@ -12,7 +12,6 @@ in the GitHub repository README.md
 
 """
 import logging
-import json
 from classes import db_queries as db
 from flask import Flask, render_template, g, session, request, url_for, redirect
 from flask_mobility import Mobility
@@ -26,17 +25,8 @@ from funcs.logIn import login_func
 app = Flask(__name__)
 Mobility(app)
 
-conf_file = 'cfg/db.json'
 
 # Flask configuration parameters #
-with open(conf_file, 'r') as cf:
-    # Loads login information from file for security
-    data = json.load(cf)
-    app.config['DATABASE_USER'] = data['username']
-    app.config['DATABASE_PASSWORD'] = data['password']
-    app.config['DATABASE_DB'] = data['database']
-    app.config['DATABASE_HOST'] = data['host']
-app.config['shards'] = 1  # Not actually sharding, just a handy way of keeping track of multiple connections
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
 
@@ -91,13 +81,6 @@ def get_user_id():
     return None
 
 
-def shard():
-    shard = app.config['shards']
-    app.config['shards'] += 1
-    return shard
-
-
-# print(check_password("test", "Natursvin", app))
 
 ##################################################################
 # Some of the routes below might warrant moving out and
@@ -111,6 +94,12 @@ def shard():
 # @login_required
 def index(template):
     log_basic()
+    from classes.dummy_classes import ShardTestingClass
+    for i in range(0, 5):
+        with ShardTestingClass(app) as st:
+            print(app.config['shards'])
+            st.work()
+        print(app.config['shards'])
     # TODO fetch user data
     return render_template(template)
 
@@ -119,7 +108,7 @@ def index(template):
 @mobile_template('{mobile/}calendar.html')
 def view(template, calendar_id):
     log_basic()
-    with db.ConnectionInstance(app, shard()) as q:
+    with db.ConnectionInstance() as q:
         cals = q.get_calendars()
         if calendar_id in cals:
             members = q.get_calendar_members(calendar_id)
@@ -164,7 +153,7 @@ def delete_user():
     req_user = get_user_id()
     del_user = request.form.get('user_id', None)
     if del_user and req_user == del_user:  # ensures only the user can delete themselves
-        with db.ConnectionInstance(app, shard()) as q:
+        with db.ConnectionInstance() as q:
             q.db_del_user(del_user)
     return redirect(url_for(index))
 
@@ -175,7 +164,7 @@ def delete_event():
     user = get_user_id()
     event = request.form.get('event_id', None)
     if event:
-        with db.ConnectionInstance(app, shard()) as q:
+        with db.ConnectionInstance() as q:
             admins = q.db_get_cal_admin(eid=event)
             if user in admins:
                 q.db_del_event(event)
@@ -187,7 +176,7 @@ def delete_cal():
     user = get_user_id()
     cal = request.form.get('calendar_id', None)
     if cal:
-        with db.ConnectionInstance(app, shard()) as q:
+        with db.ConnectionInstance() as q:
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)
