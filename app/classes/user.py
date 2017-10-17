@@ -6,7 +6,7 @@ class User():
 
     def __init__(self, username,app):
         self.username = username
-        with ConnectionInstance(app) as con:
+        with ConnectionInstance() as con:
             self.password = con.get_pass_hash(self.username)
 
     def __repr__(self):
