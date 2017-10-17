@@ -54,6 +54,10 @@ class ConnectionInstance():
         self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", [username])
         return self.__cur.fetchall()
 
+    def get_nick(self, uid):
+        self.__cur.execute("SELECT user_name FROM users WHERE user_id = ?", [uid])
+        return self.__cur.fetchall()
+
     def get_pass_hash(self, username):
         sql = "SELECT user_password FROM users WHERE user_name = ?"
         self.__cur.execute(sql, [username])
