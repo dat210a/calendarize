@@ -47,6 +47,9 @@ class ConnectionInstance:
         self.__cur.execute(sql, [attr, table, val, cond])
         return self.__cur.fetchall()
 
+#######################################################################################
+        # Retrieval
+
     def get_user_id(self, username):
         sql = "SELECT user_id FROM users WHERE ? = user_name"
         self.__cur.execute(sql, [username])
@@ -83,6 +86,9 @@ class ConnectionInstance:
         logging.DEBUG('Result of calendar admin db request: {}'.format(payload))
         return payload
 
+#######################################################################################
+        # Insertion
+
     def add_user(self, username, email, hashedpass):
         query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?)'
         try:
@@ -93,17 +99,52 @@ class ConnectionInstance:
             self.__con.rollback()
             return False
 
-    def db_del_user(self, uid):
-        self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", [uid])
-        self.__con.commit()
+    def add_event(self, event_data):
+        sql = "INSERT INTO events " \
+              "(event_id, event_name, event_date_created, event_details, " \
+              "event_location, event_start, event_end, event_time, event_extra)" \
+              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        self.__cur.execute(
+            sql,
+            [
+                event_data['id'],
+                event_data['name'],
+                event_data['created'],
+                event_data['details'],
+                event_data['location'],
+                event_data['start'],
+                event_data['end'],
+                event_data['time'],
+                event_data['extra']
+            ]
+        )
+        sql = "INSERT INTO calendar_events (calendar_id, event_id) VALUES (?, ?)"
+        self.__cur.execute(sql, [event_data['parent'], event_data['id']])
+        try:
+            self.__con.commit()
+        except Exception as e:
+            print(e)
+            self.__con.rollback()
 
-    def db_del_event(self, eid):
-        self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", [eid])
-        self.__con.commit()
-
-    def db_del_cal(self, cid):
-        self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", [cid])
-        self.__con.commit()
+    def add_calendar(self, cal_data):
+        sql = "INSERT INTO calendars " \
+              "(calendar_id, calendar_name, calendar_date_created, calendar_details, calendar_owner, calendar_extra) " \
+              "VALUES (?, ?, ?, ?, ?, ?)"
+        self.__cur.execute(sql, [
+            cal_data['id'],
+            cal_data['name'],
+            cal_data['created'],
+            cal_data['details'],
+            cal_data['owner'],
+            cal_data['extra']
+        ])
+        sql = "INSERT INTO user_calendars (user_id, calendar_id) VALUES (?, ?)"
+        self.__cur.execute(sql, [cal_data['owner'], cal_data['id']])
+        try:
+            self.__con.commit()
+        except Exception as e:
+            print(e)
+            self.__con.rollback()
 
     def fetch_data_for_display(self, uid):
         sql = "SELECT calendar_id FROM user_calendars WHERE user_id = %s"
@@ -124,3 +165,19 @@ class ConnectionInstance:
             for i in range(len(events)-1):
                 sql += " OR event_id = ?"
         # TODO complete with relevant values to fetch and return
+
+#######################################################################################
+            # Deletion
+
+    def db_del_user(self, uid):
+        self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", [uid])
+        self.__con.commit()
+
+    def db_del_event(self, eid):
+        self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", [eid])
+        self.__con.commit()
+
+    def db_del_cal(self, cid):
+        self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", [cid])
+        self.__con.commit()
+
