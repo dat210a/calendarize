@@ -104,9 +104,9 @@ def index(template):
     return render_template(template)
 
 
-# Temporary 
+#temorary
 @app.route('/calendar')
-# @login_required
+@login_required
 def calendar():
     log_basic()
     # TODO fetch user data
@@ -124,9 +124,13 @@ def register():
         with db.ConnectionInstance() as q:
             added = q.add_user(_name, _email, hash_password(_password))
             if (added):
-                return json.dumps({"message": "User created successfully !"})
+                user = load_user(_name)
+                login_user(user)
+                redirect(url_for('/calendar'))
             else:
                 return json.dumps({"message": "Something went wrong"})
+
+
 
 
 @app.route('/view/<calendar_id>')
