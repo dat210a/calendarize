@@ -216,13 +216,11 @@ def delete_cal():
 @app.route("/login", methods=['POST'])
 def login():
     print(request.form)
-    password = request.form["password"]
-    username = request.form["username"]
+    password = request.form["inputPassword"]
+    username = request.form["inputUsername"]
     user = load_user(username)
-
     if check_password(password, username):
-            with db.ConnectionInstance() as q:
-                login_user(user)
+        login_user(user)
 
     print(current_user)
     return redirect("/")
