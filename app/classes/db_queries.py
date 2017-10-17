@@ -34,7 +34,9 @@ class ConnectionInstance():
                                        database=DB_DB)
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
 
+
     #    logging.INFO('Database connection with shard {} created.'.format(self.__shard))
+
 
     def __enter__(self):
         return self
@@ -42,7 +44,9 @@ class ConnectionInstance():
     def __exit__(self, exc_type, exc_val, exc_tb):
     #    self.__app.config['shards'].remove(self)
         self.__con.close()
+
     #    logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
+
 
     def db_generic_select(self, attr, table, val, cond):
         # This is just a test to see how generic a secure SQL function can be, it's not intended to be used anywhere.
@@ -85,6 +89,21 @@ class ConnectionInstance():
         payload = self.__cur.fetchall()
         logging.DEBUG('Result of calendar admin db request: {}'.format(payload))
         return payload
+
+    def add_user(self, values=()):
+        fields = ('user_name', 'user_email', 'user_password')
+        query = 'INSERT INTO %s (%s) VALUES (%s)', (
+            'user',
+            ', '.join(fields),
+            ', '.join(['?'] * len(values))
+        )
+        self.__cur.execute(query, values)
+        data = self.__cur.fetchall()
+        if len(data) is 0:
+            self.__con.commit()
+            return True
+        else:
+            return False
 
     def db_del_user(self, uid):
         self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", [uid])

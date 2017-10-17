@@ -1,30 +1,94 @@
-{% extends 'nav_lay.html' %}
-{% block title %}calendarize.index{% endblock %}
+{% extends 'nav_index.html' %}
+{% block title %}calendarize.login{% endblock %}
 {% block content %}
-    <div class="container">
-        <div class="content">
-            <div class="row">
-                <div class="col s3 offset-s9">
-                    <div class="card-panel teal lighten-2">
-                        <span class="white-text">This is text in a card panel 1</span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col m3 offset-m9">
-                    <div class="card-panel teal lighten-2">
-                        <span class="white-text">This is text in a card panel 2</span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col l3 offset-l9">
-                    <div class="card-panel teal lighten-2">
-                        <span class="white-text">This is text in a card panel 3</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <link href="static/css/login.css" type="text/css" rel="stylesheet" media="screen,projection" />
 
+    <div class="col s12 valign-wrapper center login_form" id="myModal">
+        <ul class="collapsible popout" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header grey lighten-3">
+                    <h5>Login</h5>
+                </div>
+                <div class="collapsible-body" style="background-color: white">
+                    <div>
+                        <form id="formLogin" class="formLogin">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="loginUsername" name="inputUsername" type="text" class="validate" required autofocus />
+                                    <label for="loginUsername">Username</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="loginPassword" name="inputPassword" type="password" class="validate" required />
+                                    <label for="loginPassword">Password</label>
+                                </div>
+                                <div class="col s12">
+                                    <a href="#" class="left">Forgot password</a>
+                                </div>
+                            </div>
+                            <div class="row valign-wrapper">
+                                <div class="col s6">
+                                    <input type="checkbox" id="test5" />
+                                    <label for="test5">Remember me</label>
+                                </div>
+                                <div class="col s6">
+                                    <button id="btnLogin" class="right btn waves-effect waves-light" type="submit">Login
+                                        <i class="material-icons right">send</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header grey lighten-3">
+                    <h5>Register</h5>
+                </div>
+                <div class="collapsible-body" style="background-color: white">
+                    <div>
+                        <form id="formRegister" class="formRegister">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="registerUsername" name="inputUsername" type="text" class="validate" required />
+                                    <label for="registerUsername" data-error="Cannot be blank">Username</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="registerEmail" name="inputEmail" type="email" class="validate" required />
+                                    <label for="registerEmail" data-error="Not a valid email address">Email</label>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="confirm_email" type="email" class="validate" required>
+                                    <label for="confirm_email" data-error="Emails do not match">Repeat Email</label>
+                                </div>
+                            </div> -->
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="registerPassword" name="inputPassword" type="password" pattern="(?=.*\d)(?=.*[a-z]).{6,20}" class="validate" required />
+                                    <label for="registerPassword" data-error="Not strong enough">Password</label>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="confirm_password" type="password" class="validate" required>
+                                    <label for="confirm_password" data-error="Passwords do not match">Repeat password</label>
+                                </div>
+                            </div> -->
+                            <div class="row valign-wrapper">
+                                <div class="col s6">
+                                    <button id="btnRegister" class="right btn waves-effect waves-light" type="submit">Register</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+<script src="static/js/login_form.js "></script>
 {% endblock %}

@@ -68,7 +68,7 @@ function rescale() {
 
     firstMonth
         .text(function(){
-            return d3.timeFormat('%B')(timeRescaled.invert(-1));
+            return d3.timeFormat('%B')(timeRescaled.invert(0));
         })
     
     //reposition today

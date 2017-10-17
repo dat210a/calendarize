@@ -5,15 +5,16 @@ function resize(){
     oldWidth = width;
     oldHeight = height;
     totalWidth = $('.timelineScreen').width();
-    totalHeight = $('.timelineRow').height()-margin;
+    totalHeight = $('.bodyMain').height()-margin;
 
     //header: 70px footer: 64px svg min-height: 300px
     // var winH = $(window).height()-70-64-margin;
     // if (winH > 300 && winH < totalHeight) totalHeight = winH;
 
     // set dimensions
-    width = totalWidth - 2*xPadding,
+    width = totalWidth - 2*xPadding;
     height = totalHeight;
+    midScreen = height/2;
     
     // Scales
     time.range([0, width]);
@@ -21,37 +22,46 @@ function resize(){
     //frames
     $('.eventDetails').height(totalHeight-margin);
 
-    //main display elements
+    //background elements
     svg
         .attr('width', totalWidth)
         .attr('height', totalHeight)
     d3.select('.scrollArea').attr("width", width)
                             .attr('height', (height-bottomBarHeight))
-    d3.select('.midLine').attr("x2", width)
     d3.select('.Year').attr('transform', 'translate('+ width/2 +',' + 75 +')')
+
+    //sides
     rightSideBar
         .attr('transform', 'translate(' 
             + (xPadding + width) + ',' 
             + midScreen + ')')
         .select('rect')
             .attr('height', totalHeight)
+            .attr('y', -midScreen)
+
     leftSideBar
         .attr('transform', 'translate(' 
             + xPadding + ',' + midScreen + ')')
         .select('rect')
             .attr('height', totalHeight)
-    d3.select('.bottomBase').attr('width', totalWidth)
+            .attr('y', -midScreen)
 
     //bottom bar
     d3.select('.bottomMenu')
             .attr("transform", function(){
                 var up = d3.select(this).attr('up') === 'true';
                 var move = up ? height-bottomBarHeight : height;
-                return "translate("+0+","+move+")";
+                return "translate(0," + move + ")"
             })
+            .select('.bottomBase')
+                .attr('width', totalWidth)
 
-    //side panel
+    //side event panel
     d3.select('.sidePanel').style('height', totalHeight)
+
+    //readjust line position
+    d3.select('.timeline')
+        .attr("transform", 'translate(' +xPadding+ ','+midScreen+')')
 
     //realign movables
     var oldX = d3.zoomTransform(d3.select('.scrollArea').node()).x

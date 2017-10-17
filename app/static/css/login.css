@@ -1,0 +1,17 @@
+
+.collapsible{
+    margin: auto;
+    max-width: 40vh;
+    min-width: 40vh;
+}
+
+.login_form{
+    display: none;
+    position: fixed; 
+    top: 0px; 
+    left: 0px; 
+    height: 100%; 
+    width: 100%; 
+    z-index:1; 
+    background-color: rgba(0,0,0,0.1);
+}

@@ -41,28 +41,6 @@ svg.append('g')
             .attr("width", width)
             .style('fill', "transparent")
 
-//axis
-var displayAxis = svg.select(".background_items")
-                        .append('g')
-                            .attr('class', 'axis')
-                            .attr('transform', function(){
-                                return 'translate('+0+','+midScreen+')'
-                            })
-                            .style('font-size', 16)
-                            .call(axis)
-    
-displayAxis
-        .selectAll('path')
-            .attr("stroke-width", radius)
-            .attr("stroke", "lightgrey")
-
-displayAxis
-        .selectAll('line')
-            .attr('y1', function(){
-                return -d3.select(this).attr('y2')
-            })
-            .attr('stroke-width', '2px')
-
 //year display
 svg.select(".background_items")
         .append("g")
@@ -90,6 +68,35 @@ svg.append('g')
     .attr("class", "timeline")
     .attr("transform", 'translate(' +xPadding+ ','+midScreen+')')
 
+//axis
+var displayAxis = d3.select(".timeline")
+                    .append('g')
+                        .attr('class', 'axis')
+                        .style('font-size', 16)
+                        .call(axis)
+
+displayAxis.selectAll('path')
+                .attr("stroke-width", radius)
+                .attr("stroke", "lightgrey")
+
+displayAxis
+    .selectAll('line')
+        .attr('y1', function(){
+            return -d3.select(this).attr('y2')
+        })
+        .attr('stroke-width', '2px')
+
+//today
+d3.select('.timeline')
+    .append('g')
+    .attr('class', 'g-today')
+    .append('text')
+        .attr('class', 'today')
+        .attr('font-family', 'Material Icons')
+        .attr('font-size', '20px')
+        .text('account_circle')
+        .attr('y', 10)
+
 //left side padding
 var leftSideBar = svg.append('g')
                         .attr("class", "leftSideBar")
@@ -110,6 +117,14 @@ leftSideBar.append('line')
             .attr("y1", -60)
             .attr("y2", 60);
 
+var firstMonth = leftSideBar.append("text")
+                    .attr('transform', 'translate(' + (-12) + ','  + 0 + '), rotate(270)')
+                    .style('text-anchor', 'middle')
+                    .attr("font-size", 24)
+                    .text(function(){
+                        return d3.timeFormat('%B')(time.invert(0));
+                    })
+
 //right side padding
 var rightSideBar = svg.append('g')
                             .attr("class", "rightSideBar")
@@ -129,21 +144,3 @@ rightSideBar.append('line')
             .attr("y1", -40)
             .attr("y2", +40);
 
-var firstMonth = leftSideBar.append("text")
-                    .attr('transform', 'translate(' + (-12) + ','  + 0 + '), rotate(270)')
-                    .style('text-anchor', 'middle')
-                    .attr("font-size", 24)
-                    .text(function(){
-                        return d3.timeFormat('%B')(time.invert(-1));
-                    })
-
-//today
-d3.select('.timeline')
-    .append('g')
-        .attr('class', 'g-today')
-        .append('text')
-            .attr('class', 'today')
-            .attr('font-family', 'Material Icons')
-            .attr('font-size', '20px')
-            .text('account_circle')
-            .attr('y', 10)

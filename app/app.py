@@ -26,7 +26,6 @@ app = Flask(__name__)
 Mobility(app)
 
 
-# Flask configuration parameters #
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
 
@@ -83,14 +82,13 @@ def get_user_id():
 
 
 
-
-
 ##################################################################
+
 # Some of the routes below might warrant moving out and
 # into separate files, but until the scope of the operations
 # that need to be performed are clear, they stay here
 # as a skeleton for easy reference.
-##################################################################
+# #################################################################
 
 @app.route('/')
 @mobile_template('/{mobile/}index.html')
@@ -105,6 +103,39 @@ def index(template):
 #        print(app.config['shards'])
     # TODO fetch user data
     return render_template(template)
+
+# Temporary 
+@app.route('/calendar')
+# @login_required
+def calendar():
+    log_basic()
+    # TODO fetch user data
+    return render_template('calendar.html')
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    # read the posted values from the UI
+    _name = request.form['inputUsername']
+    _email = request.form['inputEmail']
+    _password = request.form['inputPassword']
+    print ('here')
+    # validate the received values
+    if _name and _email and _password:
+        with db.ConnectionInstance(app) as q:
+            added = q.add_user((_name, _email, hash_password(_password)))
+            if (added):
+                return json.dumps({"message": "User created successfully !"})
+            else:
+                return json.dumps({"message":"Something went wrong"})
+
+
+@app.route("/login", methods=['POST'])
+def login():
+    print ('log')
+    username = request.form["inputUsername"]
+    password = request.form["inputPassword"]
+    return json.dumps({"message":"Trying to log in as " + username})
 
 
 @app.route('/view/<calendar_id>')
