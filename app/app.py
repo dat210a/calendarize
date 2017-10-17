@@ -32,12 +32,12 @@ app.secret_key = 'hella secret'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = '/index'
 
 
 @login_manager.user_loader
-def load_user(username):
-    return User(username)
+def load_user(email):
+    return User(email)
 
 
 def setup_logging():
@@ -110,7 +110,7 @@ def index(template):
 def calendar():
     log_basic()
     # TODO fetch user data
-    return render_template('calendar.html', name=current_user.username)
+    return render_template('/calendar.html', name=current_user.username)
 
 
 @app.route('/register', methods=['POST'])
@@ -122,14 +122,16 @@ def register():
     # validate the received values
     if _name and _email and _password:
         with db.ConnectionInstance() as q:
-            added = q.add_user(_name, _email, hash_password(_password))
-            if (added):
-                user = load_user(_name)
-                login_user(user)
-                redirect(url_for('/calendar'))
+            if len(q.get_username(_email)) == 0:
+                added = q.add_user(_name, _email, hash_password(_password))
+                if (added):
+                    user = load_user(_email)
+                    login_user(user)
+                    return redirect('/calendar')
+                else:
+                    return json.dumps({"message": "Something went wrong"})
             else:
-                return json.dumps({"message": "Something went wrong"})
-
+                return json.dumps({"message": "User alredy exists"})
 
 
 
@@ -215,15 +217,14 @@ def delete_cal():
 
 @app.route("/login", methods=['POST'])
 def login():
-    print(request.form)
     password = request.form["inputPassword"]
-    username = request.form["inputUsername"]
-    user = load_user(username)
-    if check_password(password, username):
-        login_user(user)
+    email = request.form["inputEmail"]
+    user = load_user(email)
+    if check_password(password, email):
+                login_user(user)
 
     print(current_user)
-    return redirect("/")
+    return redirect('/calendar')
 
 
 ##################################################################

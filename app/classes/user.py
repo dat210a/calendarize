@@ -3,13 +3,14 @@ from classes.db_queries import ConnectionInstance
 
 class User:
 
-    def __init__(self, username):
-        self.username = username
+    def __init__(self, email):
+        self.email = email
         with ConnectionInstance() as con:
-            self.password = con.get_pass_hash(self.username)
+            self.username = con.get_username(self.email)
+            self.password = con.get_pass_hash(self.email)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
     def is_authenticated(self):
         return True
@@ -21,4 +22,4 @@ class User:
         return False
 
     def get_id(self):
-        return str(self.username)
+        return str(self.email)

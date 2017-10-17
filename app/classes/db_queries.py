@@ -51,14 +51,21 @@ class ConnectionInstance:
 #######################################################################################
         # Retrieval
 
-    def get_user_id(self, username):
-        sql = "SELECT user_id FROM users WHERE ? = user_name"
-        self.__cur.execute(sql, [username])
-        return self.__cur.fetchall()
+    def get_user_id(self, email):
+        sql = "SELECT user_id FROM users WHERE ? = user_email"
+        self.__cur.execute(sql, [email])
+        res = self.__cur.fetchone()
+        return res[0].decode('utf-8')
 
-    def get_pass_hash(self, username):
-        sql = "SELECT user_password FROM users WHERE user_name = ?"
-        self.__cur.execute(sql, [username])
+    def get_pass_hash(self, email):
+        sql = "SELECT user_password FROM users WHERE user_email = ?"
+        self.__cur.execute(sql, [email])
+        res = self.__cur.fetchone()
+        return res[0].decode('utf-8')
+
+    def get_username(self, email):
+        sql = "SELECT user_name FROM users WHERE user_email = ?"
+        self.__cur.execute(sql, [email])
         res = self.__cur.fetchone()
         return res[0].decode('utf-8')
 
