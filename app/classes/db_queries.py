@@ -1,7 +1,18 @@
 import logging
 import hashlib
+import json
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
+
+conf_file = 'cfg/db.json'
+
+with open(conf_file, 'r') as cf:
+    # Loads login information from file for security
+    data = json.load(cf)
+    DB_USER = data['username']
+    DB_PW = data['password']
+    DB_DB = data['database']
+    DB_HOST = data['host']
 
 
 def secure_fn(fname):
@@ -16,14 +27,11 @@ class ConnectionInstance:
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
     """
 
-    def __init__(self, app):
-        self.__app = app
-        self.__shard = len(app.config['shards']) + 1
-        self.__app.config['shards'].append(self)
-        self.__con = connector.connect(user=self.__app.config['DATABASE_USER'],
-                                       password=self.__app.config['DATABASE_PASSWORD'],
-                                       host=self.__app.config['DATABASE_HOST'],
-                                       database=self.__app.config['DATABASE_DB'])
+    def __init__(self):
+        self.__con = connector.connect(user=DB_USER,
+                                       password=DB_PW,
+                                       host=DB_HOST,
+                                       database=DB_DB)
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
 
         logging.INFO('Database connection with shard {} created.'.format(self.__shard))
