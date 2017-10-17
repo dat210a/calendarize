@@ -1,6 +1,7 @@
 import logging
 import hashlib
 import json
+import pprint as pp
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
@@ -123,7 +124,7 @@ class ConnectionInstance:
         try:
             self.__con.commit()
         except Exception as e:
-            print(e)
+            logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
 
     def add_calendar(self, cal_data):
@@ -143,7 +144,7 @@ class ConnectionInstance:
         try:
             self.__con.commit()
         except Exception as e:
-            print(e)
+            logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
             self.__con.rollback()
 
     def fetch_data_for_display(self, uid):
