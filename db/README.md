@@ -2,7 +2,9 @@
 This contains the schema for the database, and once the database is complete, or mostly complete, 
 also tools to populate and test it.
 
-Current overview of the database:
+Current overview of the database:  
+Note: The unique_id is an auto-incrementing primary key that allows for proper foreign keys.  
+Also note that foreign keys are not currently implemented.
 
 ```
 calendarize_db
