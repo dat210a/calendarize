@@ -6,6 +6,7 @@ from mysql.connector.cursor import MySQLCursorPrepared
 
 conf_file = 'cfg/db.json'
 
+
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
     data = json.load(cf)
@@ -21,7 +22,7 @@ def secure_fn(fname):
     return sec.hexdigest()
 
 
-class ConnectionInstance():
+class ConnectionInstance:
     """
     PyCharm note: If you're getting linting errors, go to Settings/Preferences > Tools > Database > User Parameters,
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
@@ -34,19 +35,11 @@ class ConnectionInstance():
                                        database=DB_DB)
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
 
-
-    #    logging.INFO('Database connection with shard {} created.'.format(self.__shard))
-
-
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-    #    self.__app.config['shards'].remove(self)
         self.__con.close()
-
-    #    logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
-
 
     def db_generic_select(self, attr, table, val, cond):
         # This is just a test to see how generic a secure SQL function can be, it's not intended to be used anywhere.
@@ -111,3 +104,23 @@ class ConnectionInstance():
     def db_del_cal(self, cid):
         self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", [cid])
         self.__con.commit()
+
+    def fetch_data_for_display(self, uid):
+        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = %s"
+        self.__cur.execute(sql, [uid])
+        res = self.__cur.fetchall()
+        cals = [r[0] for r in res]
+
+        sql = "SELECT event_id FROM calendar_events WHERE calendar_id = ?"
+        if len(cals) > 1:
+            for i in range(len(cals) - 1):
+                sql += " OR calendar_id = ?"
+        self.__cur.execute(sql, cals)
+        res = self.__cur.fetchall()
+        events = [r[0] for r in res]
+
+        sql = "SELECT * FROM events WHERE event_id = ?"
+        if len(events) > 1:
+            for i in range(len(events)-1):
+                sql += " OR event_id = ?"
+        # TODO complete with relevant values to fetch and return

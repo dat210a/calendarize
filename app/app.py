@@ -34,13 +34,12 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 @login_manager.user_loader
 def load_user(username):
-    return User(username,app)
+    return User(username)
 
 
-
-# TODO implement necessary loggers
 def setup_logging():
     try:
         lg = logging.getLogger(__name__)
@@ -82,7 +81,6 @@ def get_user_id():
     return None
 
 
-
 ##################################################################
 
 # Some of the routes below might warrant moving out and
@@ -105,13 +103,14 @@ def index(template):
     # TODO fetch user data
     return render_template(template)
 
+
 # Temporary 
 @app.route('/calendar')
 # @login_required
 def calendar():
     log_basic()
     # TODO fetch user data
-    return render_template('calendar.html')
+    return render_template('calendar.html', name=current_user.username)
 
 
 @app.route('/register', methods=['POST'])
@@ -127,8 +126,7 @@ def register():
             if (added):
                 return json.dumps({"message": "User created successfully !"})
             else:
-                return json.dumps({"message":"Something went wrong"})
-
+                return json.dumps({"message": "Something went wrong"})
 
 
 @app.route('/view/<calendar_id>')
@@ -137,7 +135,6 @@ def view(template, calendar_id):
     log_basic()
 
     with db.ConnectionInstance() as q:
-
 
         cals = q.get_calendars()
         if calendar_id in cals:
@@ -219,7 +216,7 @@ def login():
     username = request.form["username"]
     user = load_user(username)
 
-    if check_password(password, username, app):
+    if check_password(password, username):
             with db.ConnectionInstance() as q:
                 login_user(user)
 
