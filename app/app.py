@@ -112,7 +112,7 @@ def index(template):
 def view(template, calendar_id):
     log_basic()
 
-   with db.ConnectionInstance() as q:
+    with db.ConnectionInstance() as q:
 
 
         cals = q.get_calendars()

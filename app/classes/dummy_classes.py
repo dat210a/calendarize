@@ -1,4 +1,3 @@
-
 class ShardTestingClass:
     def __init__(self, app):
         self.__app = app
@@ -13,5 +12,5 @@ class ShardTestingClass:
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-#        self.__app.config['shards'].remove(self)
+#    def __exit__(self, exc_type, exc_val, exc_tb):
+#       self.__app.config['shards'].remove(self)
