@@ -2,7 +2,9 @@
 This contains the schema for the database, and once the database is complete, or mostly complete, 
 also tools to populate and test it.
 
-Current overview of the database:
+Current overview of the database:  
+Note: The unique_id is an auto-incrementing primary key that allows for proper foreign keys.  
+Also note that foreign keys are not currently implemented.
 
 ```
 calendarize_db
@@ -12,17 +14,25 @@ calendarize_db
 │   ├── user_name [VARCHAR(45)]
 │   ├── user_email [VARCHAR(45)]
 │   ├── user_phone [INT(11)]
-│   ├── user_role [VARCHAR(45)]
 │   ├── user_password [VARCHAR(45)]
-│   ├── user_friends [VARCHAR(45)]
-│   ├── user_calendars [VARCHAR(45)]
-│   ├── user_events [VARCHAR(45)]
 │   ├── user_extra [VARCHAR(45)]
 │   └── deleted [TINYINT(1)]
+│
+├── user_calendars
+│   ├── user_id [INT]
+│   ├── calendar_id [INT]
+│   └── unique_id [INT]
+│
+├── user_friends
+│   ├── user_id [INT]
+│   ├── friend_id [INT]
+│   └── unique_id [INT]
+│
 ├── userconfig
 │   ├── user_config_id [INT(11)]
 │   ├── user_config_password [VARCHAR(45)]
 │   └── user_config_extra [VARCHAR(45)]
+│
 ├── calendars
 │   ├── calendar_id [INT(11)]
 │   ├── calendar_name [VARCHAR(45)]
@@ -35,9 +45,19 @@ calendarize_db
 │   ├── calendar_month [INT(11)]
 │   ├── calendar_year [INT(11)]
 │   ├── calendar_extra [VARCHAR(45)]
-│   ├── calendar_events [VARCHAR(45)]
-│   ├── calendar_admins [VARCHAR(45)]
 │   └── deleted [TINYINT(1)]
+│
+├── calendar_events
+│   ├── calendar_id [INT]
+│   ├── event_id [INT]
+│   └── unique_id [INT]
+│
+├── calendar_roles
+│   ├── calendar_id [INT]
+│   ├── role [INT]
+│   ├── user_id [INT]
+│   └── unique_id [INT]
+│
 └── events
     ├── event_id [INT(11)]
     ├── event_name [VARCHAR(45)]
@@ -47,8 +67,6 @@ calendarize_db
     ├── event_start [DATE]
     ├── event_end [DATE]
     ├── event_time [VARCHAR(45)]
-    ├── event_members [VARCHAR(45)]
-    ├── event_belongs_to [VARCHAR(45)]
     ├── event_extra [VARCHAR(45)]
     └── deleted [TINYINT(1)]
 ```

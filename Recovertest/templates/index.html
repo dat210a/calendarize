@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block main %}
+<form action="" method="POST">
+	<label for="user">Username:</label>
+	<input type="text" id="user" name="user"><br/>
+	<label for="password">Password:</label>
+	<input type="password" id="password" name="password"><br/>
+	<a href="{{ url_for('recover') }}">Forgot password?</a><br/>
+	<input type="submit">
+</form>
+
+{% endblock %}

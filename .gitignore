@@ -100,4 +100,4 @@ ENV/
 # mypy
 .mypy_cache/
 .idea/
-app/cfg/db.json
+app/cfg/

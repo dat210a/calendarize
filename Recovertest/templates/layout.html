@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		{% block scripts %}
+		{% endblock %}
+	</head>
+	<body>
+		<header>
+			<div><h1>Recover Password</h1></div>
+			<nav id="menu">
+		</header>
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<ul class="notifications">
+				{% for message in messages %}
+					<li>{{ message }}</li>
+				{% endfor %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+
+		{% block main %}
+		{% endblock %}
+		<footer>
+		</footer>
+	</body>
+	</html>
