@@ -37,7 +37,7 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(username):
-    return User(username,app)
+    return User(username)
 
 
 def setup_logging():
@@ -216,7 +216,7 @@ def login():
     username = request.form["username"]
     user = load_user(username)
 
-    if check_password(password, username, app):
+    if check_password(password, username):
             with db.ConnectionInstance() as q:
                 login_user(user)
 

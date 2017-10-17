@@ -1,10 +1,9 @@
 from classes.db_queries import ConnectionInstance
 
-class User():
 
+class User:
 
-
-    def __init__(self, username,app):
+    def __init__(self, username):
         self.username = username
         with ConnectionInstance() as con:
             self.password = con.get_pass_hash(self.username)
