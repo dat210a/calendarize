@@ -111,7 +111,7 @@ def index(template):
 def calendar():
     log_basic()
     # TODO fetch user data
-    return render_template('calendar.html')
+    return render_template('calendar.html', name=current_user.username)
 
 
 @app.route('/register', methods=['POST'])
