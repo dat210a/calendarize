@@ -38,40 +38,41 @@ class ConnectionInstance:
 
     def db_generic_select(self, attr, table, val, cond):
         sql = "SELECT %s FROM %s WHERE %s = %s"
-        res = self.__cur.execute(sql, (attr, table, val, cond))
-        return res.fetchall()
+        self.__cur.execute(sql, (attr, table, val, cond))
+        return self.__cur.fetchall()
 
     def get_user_id(self, username):
-        uid = self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", username)
-        return uid.fetchall()
+        self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", username)
+        return self.__cur.fetchall()
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"
-        res = self.__cur.execute(sql)
-        return [x for x in res.fetchall()]
+        self.__cur.execute(sql)
+        return self.__cur.fetchall()
 
     def get_calendar_members(self, cid):
         sql = "SELECT calendar_members FROM calendars WHERE calendar_id = %s"
-        res = self.__cur.execute(sql, cid)
-        return [x for x in res.fetchall()]
+        self.__cur.execute(sql, cid)
+        return self.__cur.fetchall()
 
     def db_get_cal_admin(self, cid=None, eid=None):
         # Fetches a list of admins for a calendar
         if cid:
             sql = "SELECT calendar_admins FROM calendars WHERE calendar_id = %s"
-            res = self.__cur.execute(sql, cid)
+            self.__cur.execute(sql, cid)
         elif eid and not cid:
             sql = "SELECT calendar_admins " \
                   "FROM calendars WHERE calendar_id = (SELECT event_belongs_to FROM events WHERE event_id = %s)"
-            res = self.__cur.execute(sql, eid)
+            self.__cur.execute(sql, eid)
         else:
             return None
-        payload = [x for x in res.fetchall()]
+        payload = self.__cur.fetchall()
         logging.DEBUG('Result of calendar admin db request: {}'.format(payload))
         return payload
 
     def db_del_user(self, uid):
         self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", uid)
+        self.__con.commit()
 
     def db_del_event(self, eid):
         self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", eid)
