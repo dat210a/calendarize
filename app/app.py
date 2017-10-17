@@ -20,6 +20,7 @@ from classes.user import User
 from flask_login import *
 from flask_login import login_user, current_user
 from funcs.logIn import check_password, hash_password
+import json
 from funcs.logIn import login_func
 
 app = Flask(__name__)
@@ -124,18 +125,18 @@ def register():
     if _name and _email and _password:
         with db.ConnectionInstance(app) as q:
             added = q.add_user((_name, _email, hash_password(_password)))
-            if (added):
+            if added:
                 return json.dumps({"message": "User created successfully !"})
             else:
                 return json.dumps({"message":"Something went wrong"})
 
 
-@app.route("/login", methods=['POST'])
-def login():
-    print ('log')
-    username = request.form["inputUsername"]
-    password = request.form["inputPassword"]
-    return json.dumps({"message":"Trying to log in as " + username})
+#@app.route("/login", methods=['POST'])
+#def login():
+#    print ('log')
+#    username = request.form["inputUsername"]
+#    password = request.form["inputPassword"]
+#    return json.dumps({"message":"Trying to log in as " + username})
 
 
 @app.route('/view/<calendar_id>')
@@ -167,7 +168,7 @@ def view(template, calendar_id):
 def settings(template):
     log_basic()
     # TODO load user's settings, then render a template with the settings
-    return render_template(template)
+    return render_template("calendar.html")
 
 
 @app.route('/settings/save', methods=['POST'])  # <- could be done with AJAX?
@@ -222,17 +223,21 @@ def delete_cal():
 @app.route("/login", methods=['POST'])
 def login():
     print(request.form)
-    password = request.form["password"]
-    username = request.form["username"]
+    password = request.form["inputPassword"]
+    username = request.form["inputUsername"]
     user = load_user(username)
 
     if check_password(password, username, app):
-            with db.ConnectionInstance() as q:
-                login_user(user)
+            login_user(user)
 
     print(current_user)
     return redirect("/")
 
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect("/")
 
 ##################################################################
 
