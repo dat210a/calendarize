@@ -47,23 +47,23 @@ class ConnectionInstance:
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"
-        res = self.__cur(sql)
+        res = self.__cur.execute(sql)
         return [x for x in res.fetchall()]
 
     def get_calendar_members(self, cid):
         sql = "SELECT calendar_members FROM calendars WHERE calendar_id = %s"
-        res = self.__cur(sql, cid)
+        res = self.__cur.execute(sql, cid)
         return [x for x in res.fetchall()]
 
     def db_get_cal_admin(self, cid=None, eid=None):
         # Fetches a list of admins for a calendar
         if cid:
             sql = "SELECT calendar_admins FROM calendars WHERE calendar_id = %s"
-            res = self.__cur(sql, cid)
+            res = self.__cur.execute(sql, cid)
         elif eid and not cid:
             sql = "SELECT calendar_admins " \
                   "FROM calendars WHERE calendar_id = (SELECT event_belongs_to FROM events WHERE event_id = %s)"
-            res = self.__cur(sql, eid)
+            res = self.__cur.execute(sql, eid)
         else:
             return None
         payload = [x for x in res.fetchall()]
