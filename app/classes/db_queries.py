@@ -86,7 +86,7 @@ class ConnectionInstance:
     def add_user(self, username, email, hashedpass):
         query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?)'
         try:
-            self.__cur.execute(query, (username, email, hashedpass))
+            self.__cur.execute(query, [username, email, hashedpass])
             self.__con.commit()
             return True
         except:
