@@ -38,11 +38,11 @@ class ConnectionInstance:
 
     def db_generic_select(self, attr, table, val, cond):
         sql = "SELECT %s FROM %s WHERE %s = %s"
-        self.__cur.execute(sql, (attr, table, val, cond))
+        self.__cur.execute(sql, [attr, table, val, cond])
         return self.__cur.fetchall()
 
     def get_user_id(self, username):
-        self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", username)
+        self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", [username])
         return self.__cur.fetchall()
 
     def get_calendars(self):
@@ -52,18 +52,18 @@ class ConnectionInstance:
 
     def get_calendar_members(self, cid):
         sql = "SELECT calendar_members FROM calendars WHERE calendar_id = %s"
-        self.__cur.execute(sql, cid)
+        self.__cur.execute(sql, [cid])
         return self.__cur.fetchall()
 
     def db_get_cal_admin(self, cid=None, eid=None):
         # Fetches a list of admins for a calendar
         if cid:
             sql = "SELECT calendar_admins FROM calendars WHERE calendar_id = %s"
-            self.__cur.execute(sql, cid)
+            self.__cur.execute(sql, [cid])
         elif eid and not cid:
             sql = "SELECT calendar_admins " \
                   "FROM calendars WHERE calendar_id = (SELECT event_belongs_to FROM events WHERE event_id = %s)"
-            self.__cur.execute(sql, eid)
+            self.__cur.execute(sql, [eid])
         else:
             return None
         payload = self.__cur.fetchall()
@@ -71,11 +71,11 @@ class ConnectionInstance:
         return payload
 
     def db_del_user(self, uid):
-        self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", uid)
+        self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", [uid])
         self.__con.commit()
 
     def db_del_event(self, eid):
-        self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", eid)
+        self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", [eid])
 
     def db_del_cal(self, cid):
-        self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", cid)
+        self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", [cid])
