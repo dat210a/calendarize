@@ -37,6 +37,7 @@ class ConnectionInstance:
         logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
     def db_generic_select(self, attr, table, val, cond):
+        # This is just a test to see how generic a secure SQL function can be, it's not intended to be used anywhere.
         sql = "SELECT %s FROM %s WHERE %s = %s"
         self.__cur.execute(sql, [attr, table, val, cond])
         return self.__cur.fetchall()
