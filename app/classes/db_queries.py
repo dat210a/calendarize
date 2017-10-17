@@ -21,7 +21,7 @@ def secure_fn(fname):
     return sec.hexdigest()
 
 
-class ConnectionInstance:
+class ConnectionInstance():
     """
     PyCharm note: If you're getting linting errors, go to Settings/Preferences > Tools > Database > User Parameters,
     check the two checkboxes and add %\((\w+)\)s and %s for all languages.
@@ -34,15 +34,15 @@ class ConnectionInstance:
                                        database=DB_DB)
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
 
-        logging.INFO('Database connection with shard {} created.'.format(self.__shard))
+    #    logging.INFO('Database connection with shard {} created.'.format(self.__shard))
 
     def __enter__(self):
-        return self.__cur
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__app.config['shards'].remove(self)
         self.__con.close()
-        logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
+    #    logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
     def db_generic_select(self, attr, table, val, cond):
         # This is just a test to see how generic a secure SQL function can be, it's not intended to be used anywhere.
@@ -53,6 +53,12 @@ class ConnectionInstance:
     def get_user_id(self, username):
         self.__cur.execute("SELECT user_id FROM user WHERE ? = user_name", [username])
         return self.__cur.fetchall()
+
+    def get_pass_hash(self, username):
+        sql = "SELECT user_password FROM users WHERE user_name = ?"
+        self.__cur.execute(sql, [username])
+        res = self.__cur.fetchone()
+        return res[0].decode('utf-8')
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"

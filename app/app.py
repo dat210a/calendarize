@@ -18,7 +18,9 @@ from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
 from flask_login import *
-from funcs.logIn import hash_password
+from flask_login import login_user
+from funcs.logIn import check_password, hash_password
+from funcs.logIn import login_func
 
 app = Flask(__name__)
 Mobility(app)
@@ -30,13 +32,11 @@ app.secret_key = 'hella secret'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-hash_password("password")
-
+login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get_id(user_id)
+    return User.get(user_id)
 
 
 # TODO implement necessary loggers
@@ -79,6 +79,7 @@ def get_user_id():
     if 'user' in session:
         return session['user']['id']
     return None
+
 
 
 ##################################################################
@@ -179,6 +180,21 @@ def delete_cal():
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)
+
+
+@app.route("/login", methods=['POST'])
+def login():
+    user = User("1")
+    password = request.form["password"]
+    username = request.form["username"]
+
+    if check_password(password, username, app):
+            with db.ConnectionInstance(app, shard()) as q:
+                login_user(user)
+                print(user.is_authenticated)
+
+    return redirect("/")
+
 
 ##################################################################
 
