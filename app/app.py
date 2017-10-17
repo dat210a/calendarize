@@ -12,6 +12,7 @@ in the GitHub repository README.md
 
 """
 import logging
+import json
 from classes import db_queries as db
 from flask import Flask, render_template, g, session, request, url_for, redirect
 from flask_mobility import Mobility
@@ -119,7 +120,6 @@ def register():
     _name = request.form['inputUsername']
     _email = request.form['inputEmail']
     _password = request.form['inputPassword']
-    print ('here')
     # validate the received values
     if _name and _email and _password:
         with db.ConnectionInstance(app) as q:
@@ -129,13 +129,6 @@ def register():
             else:
                 return json.dumps({"message":"Something went wrong"})
 
-
-@app.route("/login", methods=['POST'])
-def login():
-    print ('log')
-    username = request.form["inputUsername"]
-    password = request.form["inputPassword"]
-    return json.dumps({"message":"Trying to log in as " + username})
 
 
 @app.route('/view/<calendar_id>')

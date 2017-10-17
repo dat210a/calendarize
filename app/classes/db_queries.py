@@ -93,13 +93,13 @@ class ConnectionInstance():
     def add_user(self, values=()):
         fields = ('user_name', 'user_email', 'user_password')
         query = 'INSERT INTO %s (%s) VALUES (%s)', (
-            'user',
-            ', '.join(fields),
-            ', '.join(['?'] * len(values))
-        )
+                    'user',
+                    ', '.join(fields),
+                    ', '.join(['?'] * len(values))
+                )
         self.__cur.execute(query, values)
-        data = self.__cur.fetchall()
-        if len(data) is 0:
+        dat = self.__cur.fetchall()
+        if len(dat) is 0:
             self.__con.commit()
             return True
         else:
