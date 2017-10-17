@@ -83,6 +83,8 @@ def get_user_id():
 
 
 
+
+
 ##################################################################
 # Some of the routes below might warrant moving out and
 # into separate files, but until the scope of the operations
@@ -109,7 +111,10 @@ def index(template):
 @mobile_template('{mobile/}calendar.html')
 def view(template, calendar_id):
     log_basic()
-    with db.ConnectionInstance() as q:
+
+   with db.ConnectionInstance() as q:
+
+
         cals = q.get_calendars()
         if calendar_id in cals:
             members = q.get_calendar_members(calendar_id)
