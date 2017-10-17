@@ -40,7 +40,6 @@ class ConnectionInstance():
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.__app.config['shards'].remove(self)
         self.__con.close()
     #    logging.INFO('Database connection closed, shard {}.'.format(self.__shard))
 
