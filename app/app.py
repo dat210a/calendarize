@@ -106,11 +106,12 @@ def index(template):
 
 #temorary
 @app.route('/calendar')
+@mobile_template('/{mobile/}calendar.html')
 @login_required
-def calendar():
+def calendar(template):
     log_basic()
     # TODO fetch user data
-    return render_template('/calendar.html', name=current_user.username)
+    return render_template(template, name=current_user.username)
 
 
 @app.route('/register', methods=['POST'])
@@ -122,7 +123,7 @@ def register():
     # validate the received values
     if _name and _email and _password:
         with db.ConnectionInstance() as q:
-            if len(q.get_username(_email)) == 0:
+            if q.get_username(_email) == None:
                 added = q.add_user(_name, _email, hash_password(_password))
                 if (added):
                     user = load_user(_email)
@@ -223,7 +224,6 @@ def login():
     if check_password(password, email):
                 login_user(user)
 
-    print(current_user)
     return redirect('/calendar')
 
 

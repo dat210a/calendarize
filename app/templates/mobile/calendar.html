@@ -1,0 +1,93 @@
+﻿{% extends 'nav_calendar.html' %}
+
+{% block title %}calendarize.calendar{% endblock %}
+
+{% block content %}
+    <link href="static/css/calendar.css" type="text/css" rel="stylesheet" media="screen,projection" />
+
+    <div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
+        <div class="calendarContainer">
+            <!-- main calendar -->
+            <svg class="calendarMain"></svg>
+            <!-- toolbar -->
+            <div class="calendarToolbox">
+                <!-- FAB -->
+                <div class="fixed-action-btn horizontal", style="position: absolute; display: inline-block; right: 50px; bottom: 15px;">
+                    <a class="btn-floating btn-large red">
+                        <i class="large material-icons">add</i>
+                    </a>
+                    <ul>
+                        <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue"><i class="material-icons">center_focus_strong</i></a></li>
+                        <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li>
+                        <li><a id="addCalendar" class="waves-effect waves-light btn-floating yellow darken-1"><i class="material-icons">insert_invitation</i></a></li>
+                        <li><a id='addEvent' class="waves-effect waves-light btn-floating red"><i class="material-icons">playlist_add</i></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- show/hide groups -->
+                <div class="center upDown">
+                    <a class="waves-effect waves-light btn toggleGroupVisibility", style="background-color: lightgrey; color: black;">
+                        <i class="large material-icons left toggleArrow">arrow_drop_down</i>
+                        groups
+                    </a>
+                </div>
+                <!-- zoom -->
+                <div class="zoomSlider" id="slidecontainer" style="position: absolute; display: inline-block; left: 50px; bottom: 10px; width: 25%">
+                    <p class="range-field">
+                        <input type="range" id="zoomSlider" min="1" max="12" step="0.01"/>
+                    </p>
+                </div>
+                <div class="tollbarPadding", style="position: absolute; bottom: 0px; width: 100%; height: 5px; background-color:rgba(0,0,0,0.2); border-top: 1px solid black">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- sidebar -->
+    <div class="eventDetails col m3 hide-on-med-and-down", style="margin: 0px; border: 5px solid #b0bec5; background-color: white;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+    
+            <tbody>
+                <tr>
+                    <td>Id</td>
+                    <td class='eventID'>NaN</td>
+                </tr>
+                <tr>
+                    <td>Start Date</td>
+                    <td class='eventDateStart'>NaN</td>
+                </tr>
+                <tr>
+                    <td>End Date</td>
+                    <td class='eventDateEnd'>NaN</td>
+                </tr>
+                <tr>
+                    <td>Group Name</td>
+                    <td class='eventGroup'>NaN</td>
+                </tr>
+                <tr>
+                    <td>Recurring</td>
+                    <td class='eventRecur'>NaN</td>
+                </tr>
+                <tr>
+                    <td>Files</td>
+                    <td class='eventFiles'>NaN</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- TODO make a bundle -->
+    <script src="/static/js/lib/d3.min.js"></script>
+    <script src="/static/js/DisplayCalendar.js"></script>
+    <script src="/static/js/SubbedGroups.js"></script>
+    <script src="/static/js/toolbar_options.js"></script>
+    <script src="/static/js/simulation.js"></script>
+    <script src="/static/js/DisplayData.js"></script>
+    <script src="/static/js/display_event_details.js"></script>
+    <script src="/static/js/zoom_and_scroll.js"></script>
+    <script src="/static/js/resize_timeline.js"></script>
+{% endblock %}

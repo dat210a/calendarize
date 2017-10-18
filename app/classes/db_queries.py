@@ -55,19 +55,28 @@ class ConnectionInstance:
         sql = "SELECT user_id FROM users WHERE ? = user_email"
         self.__cur.execute(sql, [email])
         res = self.__cur.fetchone()
-        return res[0].decode('utf-8')
+        try:
+            return res[0].decode('utf-8')
+        except:
+            return None
 
     def get_pass_hash(self, email):
         sql = "SELECT user_password FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
         res = self.__cur.fetchone()
-        return res[0].decode('utf-8')
+        try:
+            return res[0].decode('utf-8')
+        except:
+            return None
 
     def get_username(self, email):
         sql = "SELECT user_name FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
         res = self.__cur.fetchone()
-        return res[0].decode('utf-8')
+        try:
+            return res[0].decode('utf-8')
+        except:
+            return None
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"

@@ -28,35 +28,35 @@ login.onclick = function(){
     $('.collapsible').collapsible('open', 0);
 }
 
-$('#formLogin').on('submit', function(e){
-    e.preventDefault()
-    $.ajax({
-        url: '/login',
-        data: $(this).serialize(),
-        type: 'POST',
-        success: function(response) {
-            console.log(response);
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
-})
+// $('#formLogin').on('submit', function(e){
+//     e.preventDefault()
+//     $.ajax({
+//         url: '/login',
+//         data: $(this).serialize(),
+//         type: 'POST',
+//         success: function(response) {
+//             console.log(response)
+//         },
+//         error: function(error) {
+//             document.write(error);
+//         }
+//     });
+// })
 
-$('#formRegister').on('submit', function(e){
-    e.preventDefault()
-    $.ajax({
-        url: '/register',
-        data: $(this).serialize(),
-        type: 'POST',
-        success: function(response) {
-            console.log(response);
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
-})
+// $('#formRegister').on('submit', function(e){
+//     e.preventDefault()
+//     $.ajax({
+//         url: '/register',
+//         data: $(this).serialize(),
+//         type: 'POST',
+//         success: function(response) {
+//             document.write(response);
+//         },
+//         error: function(error) {
+//             document.write(error);
+//         }
+//     });
+// })
 
     //TESTS
     // var email = document.getElementById("inputEmail")
