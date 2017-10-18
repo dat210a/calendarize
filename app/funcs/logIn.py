@@ -14,7 +14,10 @@ def hash_password(password):
 
 def check_password(password, email):
     with ConnectionInstance() as queries:
-        return ph.verify(queries.get_pass_hash(email), password)
+        if (queries.get_username(email)):
+            return ph.verify(queries.get_pass_hash(email), password)
+        else:  
+            return False
 
 
 def get_user_id(email):

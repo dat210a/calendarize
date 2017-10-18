@@ -222,9 +222,10 @@ def login():
     email = request.form["inputEmail"]
     user = load_user(email)
     if check_password(password, email):
-                login_user(user)
-
-    return redirect('/calendar')
+        login_user(user)
+        return redirect('/calendar')
+    else:
+        return redirect('/')
 
 
 ##################################################################
