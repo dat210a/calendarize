@@ -1,5 +1,4 @@
 import logging
-import hashlib
 import json
 import pprint as pp
 from mysql import connector
@@ -15,12 +14,6 @@ with open(conf_file, 'r') as cf:
     DB_PW = data['password']
     DB_DB = data['database']
     DB_HOST = data['host']
-
-
-def secure_fn(fname):
-    conv = fname.encode('utf-8')
-    sec = hashlib.sha224(conv)
-    return sec.hexdigest()
 
 
 class ConnectionInstance:
@@ -182,6 +175,19 @@ class ConnectionInstance:
             for i in range(len(events)-1):
                 sql += " OR event_id = ?"
         # TODO complete with relevant values to fetch and return
+
+    def add_file(self, fname, eid):
+        if fname:
+            sql = "INSERT INTO event_files (event_id, file_name) VALUES (?, ?)"
+            self.__cur.execute(sql, eid, fname)
+            try:
+                self.__con.commit()
+            except Exception as e:
+                logging.debug(
+                    '{}\nWhile adding file with name:\n{}'.format(e, fname))
+                self.__con.rollback()
+        else:
+            pass
 
 #######################################################################################
             # Deletion

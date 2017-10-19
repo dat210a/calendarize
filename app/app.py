@@ -22,6 +22,7 @@ from flask_login import *
 from flask_login import login_user, current_user
 from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
+from funcs import file_tools
 
 app = Flask(__name__)
 Mobility(app)
@@ -104,7 +105,7 @@ def index(template):
     return render_template(template)
 
 
-#temorary
+# temporary
 @app.route('/calendar')
 @mobile_template('/{mobile/}calendar.html')
 @login_required
@@ -123,9 +124,9 @@ def register():
     # validate the received values
     if _name and _email and _password:
         with db.ConnectionInstance() as q:
-            if q.get_username(_email) == None:
+            if not q.get_username(_email):
                 added = q.add_user(_name, _email, hash_password(_password))
-                if (added):
+                if added:
                     user = load_user(_email)
                     login_user(user)
                     return redirect('/calendar')
@@ -133,7 +134,6 @@ def register():
                     return json.dumps({"message": "Something went wrong"})
             else:
                 return json.dumps({"message": "User alredy exists"})
-
 
 
 @app.route('/view/<calendar_id>')
@@ -172,6 +172,14 @@ def save_settings():
     # val = request.form.get(name_of_form_field, None) <- Syntax for getting form data
     # TODO extract settings from form and store in db
     return redirect(url_for(settings))  # reloads the settings page to show the new settings
+
+
+@app.route('/add_event', methods=['POST'])
+def add_event():
+    eid = 'blank'  # temporary to shut up linting until complete
+    with db.ConnectionInstance() as q:
+        # TODO get form information
+        q.add_file(file_tools.save_file(request, eid), eid)
 
 ##################################################################
 # DELETION FUNCTIONS - emphasized because these not working
