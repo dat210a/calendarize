@@ -55,28 +55,19 @@ class ConnectionInstance:
         sql = "SELECT user_id FROM users WHERE ? = user_email"
         self.__cur.execute(sql, [email])
         res = self.__cur.fetchone()
-        try:
-            return res[0].decode('utf-8')
-        except:
-            return None
+        return res[0]
 
     def get_pass_hash(self, email):
         sql = "SELECT user_password FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
         res = self.__cur.fetchone()
-        try:
-            return res[0].decode('utf-8')
-        except:
-            return None
+        return res[0].decode('utf-8')
 
     def get_username(self, email):
         sql = "SELECT user_name FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
         res = self.__cur.fetchone()
-        try:
-            return res[0].decode('utf-8')
-        except:
-            return None
+        return res[0].decode('utf-8')
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"
@@ -100,7 +91,7 @@ class ConnectionInstance:
         else:
             return None
         payload = self.__cur.fetchall()
-        logging.DEBUG('Result of calendar admin db request: {}'.format(payload))
+        logging.debug('Result of calendar admin db request: {}'.format(payload))
         return payload
 
 #######################################################################################
@@ -108,11 +99,13 @@ class ConnectionInstance:
 
     def add_user(self, username, email, hashedpass):
         query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?)'
+        user_data = [username, email, hashedpass]
         try:
-            self.__cur.execute(query, [username, email, hashedpass])
+            self.__cur.execute(query, user_data)
             self.__con.commit()
             return True
-        except:
+        except Exception as e:
+            logging.debug('{}\nOccurred while trying to insert new user with data:\n{}'.format(e, pp.pformat(user_data)))
             self.__con.rollback()
             return False
 

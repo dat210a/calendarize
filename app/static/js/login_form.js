@@ -28,17 +28,20 @@ login.onclick = function(){
     $('.collapsible').collapsible('open', 0);
 }
 
-// $('#formLogin').on('submit', function(e){
+// $('#formLogin').click(function(e){
 //     e.preventDefault()
 //     $.ajax({
 //         url: '/login',
 //         data: $(this).serialize(),
 //         type: 'POST',
 //         success: function(response) {
-//             console.log(response)
+//             console.log(response, this)
+//             r = JSON.parse(response)
+//             if (r['success'] == true)
+//                 $('#formLogin').submit()
 //         },
 //         error: function(error) {
-//             document.write(error);
+//             console.log(error)
 //         }
 //     });
 // })

@@ -27,16 +27,25 @@ app = Flask(__name__)
 Mobility(app)
 
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = False
+
+
 app.config['debug'] = True  # Testing only
 app.secret_key = 'hella secret'
+app.config['PERMANENT_SESSION_LIFETIME']
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = '/index'
+login_manager.login_view = '/'
 
 
 @login_manager.user_loader
 def load_user(email):
+    with db.ConnectionInstance() as q:
+        if q.get_username(email) is None:
+            return None
     return User(email)
 
 
@@ -93,6 +102,7 @@ def get_user_id():
 @mobile_template('/{mobile/}index.html')
 # @login_required
 def index(template):
+    print (session)
     log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
@@ -107,7 +117,7 @@ def index(template):
 #temorary
 @app.route('/calendar')
 @mobile_template('/{mobile/}calendar.html')
-@login_required
+@fresh_login_required
 def calendar(template):
     log_basic()
     # TODO fetch user data
@@ -126,14 +136,34 @@ def register():
             if q.get_username(_email) == None:
                 added = q.add_user(_name, _email, hash_password(_password))
                 if (added):
-                    user = load_user(_email)
+                    user = User(_email)
                     login_user(user)
-                    return redirect('/calendar')
+                    return json.dumps({'success':True})
                 else:
-                    return json.dumps({"message": "Something went wrong"})
+                    return json.dumps({"message": "Could not add a new user at this time, try again later."})
             else:
-                return json.dumps({"message": "User alredy exists"})
+                return json.dumps({"message": "User with this email address already exists"})
+    else:
+        return json.dumps({"message": "Missing or invalid data"})
 
+
+@app.route("/login", methods=['POST'])
+def login():
+    password = request.form["inputPassword"]
+    email = request.form["inputEmail"]
+    user = load_user(email)
+    if user is not None:
+        if check_password(password, email):
+            login_user(user)
+            return json.dumps({'success':True})
+    return json.dumps({'message':'Wrong email or password'})
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect('/')
+    
 
 
 @app.route('/view/<calendar_id>')
@@ -214,18 +244,7 @@ def delete_cal():
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)
-
-
-@app.route("/login", methods=['POST'])
-def login():
-    password = request.form["inputPassword"]
-    email = request.form["inputEmail"]
-    user = load_user(email)
-    if check_password(password, email):
-        login_user(user)
-        return redirect('/calendar')
-    else:
-        return redirect('/')
+    
 
 
 ##################################################################
