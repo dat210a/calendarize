@@ -104,7 +104,7 @@ def index(template):
     return render_template(template)
 
 
-#temorary
+# temporary
 @app.route('/calendar')
 @mobile_template('/{mobile/}calendar.html')
 @login_required
@@ -123,9 +123,9 @@ def register():
     # validate the received values
     if _name and _email and _password:
         with db.ConnectionInstance() as q:
-            if q.get_username(_email) == None:
+            if not q.get_username(_email):
                 added = q.add_user(_name, _email, hash_password(_password))
-                if (added):
+                if added:
                     user = load_user(_email)
                     login_user(user)
                     return redirect('/calendar')
@@ -133,7 +133,6 @@ def register():
                     return json.dumps({"message": "Something went wrong"})
             else:
                 return json.dumps({"message": "User alredy exists"})
-
 
 
 @app.route('/view/<calendar_id>')
