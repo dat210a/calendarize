@@ -28,7 +28,7 @@ Mobility(app)
 
 
 app.config['DEBUG'] = True  # Testing only
-app.secret_key = 'hella secreta'
+app.secret_key = 'hella secret'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -142,7 +142,7 @@ def user_availability():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method is 'POST':
+    if request.method == "POST":
         # read the posted values from the UI
         name = request.form['inputUsername']
         email = request.form['inputEmail']
