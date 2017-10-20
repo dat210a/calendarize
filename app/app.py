@@ -104,7 +104,7 @@ def index(template):
 #            print(app.config['shards'])
 #            st.work()
 #        print(app.config['shards'])
-    if (current_user.is_authenticated):
+    if current_user.is_authenticated:
         return redirect('/user_index')
     return render_template(template)
 
@@ -153,7 +153,7 @@ def register():
             with db.ConnectionInstance() as q:
                 if q.get_username(email) is None:
                     added = q.add_user(name, email, hash_password(password))
-                    if (added):
+                    if added:
                         user = User(email)
                         login_user(user)
                         return redirect('/calendar')

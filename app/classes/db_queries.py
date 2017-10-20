@@ -120,6 +120,34 @@ class ConnectionInstance:
                           'Input parameters: cid={} eid={}'.format(e, cid, eid))
             return None
 
+    def fetch_data_for_display(self, uid):
+        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = %s"
+        self.__cur.execute(sql, [uid])
+        try:
+            res = self.__cur.fetchall()
+            cals = [r[0] for r in res]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
+            return None
+
+        sql = "SELECT event_id FROM calendar_events WHERE calendar_id = ?"
+        if len(cals) > 1:
+            for i in range(len(cals) - 1):
+                sql += " OR calendar_id = ?"
+        self.__cur.execute(sql, cals)
+        try:
+            res = self.__cur.fetchall()
+            events = [r[0] for r in res]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
+            return None
+
+        sql = "SELECT * FROM events WHERE event_id = ?"
+        if len(events) > 1:
+            for i in range(len(events) - 1):
+                sql += " OR event_id = ?"
+                # TODO complete with relevant values to fetch and return
+
 #######################################################################################
         # Insertion
 
@@ -184,34 +212,6 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
             self.__con.rollback()
-
-    def fetch_data_for_display(self, uid):
-        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = %s"
-        self.__cur.execute(sql, [uid])
-        try:
-            res = self.__cur.fetchall()
-            cals = [r[0] for r in res]
-        except Exception as e:
-            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
-            return None
-
-        sql = "SELECT event_id FROM calendar_events WHERE calendar_id = ?"
-        if len(cals) > 1:
-            for i in range(len(cals) - 1):
-                sql += " OR calendar_id = ?"
-        self.__cur.execute(sql, cals)
-        try:
-            res = self.__cur.fetchall()
-            events = [r[0] for r in res]
-        except Exception as e:
-            logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
-            return None
-
-        sql = "SELECT * FROM events WHERE event_id = ?"
-        if len(events) > 1:
-            for i in range(len(events)-1):
-                sql += " OR event_id = ?"
-        # TODO complete with relevant values to fetch and return
 
     def add_file(self, fname, eid, rec=0):
         if fname:
