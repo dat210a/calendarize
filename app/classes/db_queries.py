@@ -54,6 +54,7 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
+        return res[0]
 
     def get_pass_hash(self, email):
         sql = "SELECT user_password FROM users WHERE user_email = ?"
@@ -64,16 +65,19 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
+        return res[0].decode('utf-8')
 
     def get_username(self, email):
         sql = "SELECT user_name FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
+
         try:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
             logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
             return None
+        return res[0].decode('utf-8')
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"
@@ -126,8 +130,9 @@ class ConnectionInstance:
 
     def add_user(self, username, email, hashedpass):
         query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?)'
+        user_data = [username, email, hashedpass]
         try:
-            self.__cur.execute(query, [username, email, hashedpass])
+            self.__cur.execute(query, user_data)
             self.__con.commit()
             return True
         except Exception as e:
