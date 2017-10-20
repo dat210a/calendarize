@@ -4,9 +4,7 @@ import pprint as pp
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
-# conf_file = 'cfg/db.json'
-conf_file = 'W:/GitHub/dat210_project/calendarize/app/cfg/db.json'
-
+conf_file = 'cfg/db.json'
 
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
@@ -256,10 +254,3 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile trying to delete calendar: {}'.format(e, cid))
             self.__con.rollback()
-
-
-if __name__ == '__main__':
-    import os
-    print(os.path.abspath(os.path.dirname(__file__)))
-    with ConnectionInstance() as q:
-        print(q.get_calendars())
