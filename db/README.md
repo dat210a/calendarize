@@ -2,7 +2,7 @@
 This contains the schema for the database, and once the database is complete, or mostly complete, 
 also tools to populate and test it.
 
-Current overview of the database:  
+Current overview of the database as found in the c_db_norm_0_2.sql file:  
 Note: The unique_id is an auto-incrementing primary key that allows for proper foreign keys.  
 Also note that foreign keys are not currently implemented.
 
@@ -58,6 +58,17 @@ calendarize_db
 │   ├── user_id [INT]
 │   └── unique_id [INT]
 │
+├── event_files
+│   ├── event_id [INT]
+│   ├── file_name [VARCHAR(160)]
+│   ├── recurring [TINYINT]
+│   └── unique_id [INT]
+│
+├── event_recurrences
+│   ├── event_id [INT]
+│   ├── event_recurrence_no [BIGINT]
+│   └── unique_id [INT]
+│
 └── events
     ├── event_id [INT(11)]
     ├── event_name [VARCHAR(45)]
@@ -68,6 +79,8 @@ calendarize_db
     ├── event_end [DATE]
     ├── event_time [VARCHAR(45)]
     ├── event_extra [VARCHAR(45)]
+    ├── recurring [INT]
+    ├── recurrences [BIGINT]
     └── deleted [TINYINT(1)]
 ```
 
