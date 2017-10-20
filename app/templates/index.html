@@ -11,11 +11,11 @@
                 </div>
                 <div class="collapsible-body" style="background-color: white">
                     <div>
-                        <form id="formLogin" class="formLogin" action="/calendar">
+                        <form id="formLogin" class="formLogin">
                             <div class="row">
                                 <div class="input-field col s6">
                                     <input id="loginEmail" name="inputEmail" type="email" required autofocus />
-                                    <label for="loginEmail">Email</label>
+                                    <label for="loginEmail" data-error="Wrong email or password">Email</label>
                                 </div>
                             </div>
                             <div class="row">
@@ -29,8 +29,8 @@
                             </div>
                             <div class="row valign-wrapper">
                                 <div class="col s6">
-                                    <input type="checkbox" id="test5" />
-                                    <label for="test5">Remember me</label>
+                                    <input type="checkbox" name="remember" id="remember" />
+                                    <label for="remember">Remember me</label>
                                 </div>
                                 <div class="col s6">
                                     <button id="btnLogin" class="right btn waves-effect waves-light" type="submit">Login
@@ -48,17 +48,17 @@
                 </div>
                 <div class="collapsible-body" style="background-color: white">
                     <div>
-                        <form id="formRegister" class="formRegister" action="/calendar">
+                        <form id="formRegister" class="formRegister" action='/register' method='POST'>
                             <div class="row">
                                 <div class="input-field col s6">
-                                    <input id="registerUsername" name="inputUsername" type="text" class="validate" required />
-                                    <label for="registerUsername" data-error="Cannot be blank">Username</label>
+                                    <input id="registerUsername" name="inputUsername" type="text" pattern=".{3,20}" class="validate" required />
+                                    <label for="registerUsername" data-error="Minimum 3 characters">Username</label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="input-field col s12">
                                     <input id="registerEmail" name="inputEmail" type="email" class="validate" required />
-                                    <label for="registerEmail" data-error="Not a valid email address">Email</label>
+                                    <label id="regEmailLabel" for="registerEmail" data-error="Not a valid email address.">Email</label>
                                 </div>
                             </div>
                             <!-- <div class="row">
@@ -69,8 +69,8 @@
                             </div> -->
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="registerPassword" name="inputPassword" type="password" pattern="(?=.*\d)(?=.*[a-z]).{6,20}" class="validate" required />
-                                    <label for="registerPassword" data-error="Not strong enough">Password</label>
+                                    <input id="registerPassword" name="inputPassword" type="password" pattern=".{6,20}" class="validate" required />
+                                    <label for="registerPassword" data-error="Minimum 6 characters">Password</label>
                                 </div>
                             </div>
                             <!-- <div class="row">

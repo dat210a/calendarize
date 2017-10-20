@@ -1,13 +1,11 @@
 from classes.db_queries import ConnectionInstance
-from uuid import uuid1
+
 
 
 class User:
 
     def __init__(self, email):
         self.email = email
-        self.remember = False
-        self.change_session_token()
         with ConnectionInstance() as con:
             self.id = con.get_user_id(self.email)
             self.username = con.get_username(self.email)
@@ -27,9 +25,4 @@ class User:
             return False
 
     def get_id(self):
-            if not self.remember:
-                self.change_session_token()
-            return unicode(self.session_token)
-
-    def change_session_token(self):
-            self.session_token = uuid1()
+            return str(self.email)

@@ -14,7 +14,7 @@ in the GitHub repository README.md
 import logging
 import json
 from classes import db_queries as db
-from flask import Flask, render_template, g, session, request, url_for, redirect
+from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
@@ -27,14 +27,8 @@ app = Flask(__name__)
 Mobility(app)
 
 
-@app.before_request
-def make_session_permanent():
-    session.permanent = False
-
-
-app.config['debug'] = True  # Testing only
-app.secret_key = 'hella secret'
-app.config['PERMANENT_SESSION_LIFETIME']
+app.config['DEBUG'] = True  # Testing only
+app.secret_key = 'hella secreta'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -46,6 +40,7 @@ def load_user(email):
     with db.ConnectionInstance() as q:
         if q.get_username(email) is None:
             return None
+    print (session)
     return User(email)
 
 
@@ -102,7 +97,6 @@ def get_user_id():
 @mobile_template('/{mobile/}index.html')
 # @login_required
 def index(template):
-    print (session)
     log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
@@ -110,60 +104,85 @@ def index(template):
 #            print(app.config['shards'])
 #            st.work()
 #        print(app.config['shards'])
-    # TODO fetch user data
+    if (current_user.is_authenticated):
+        return redirect('/user_index')
     return render_template(template)
 
 
-#temorary
+@app.route('/user_index')
+@mobile_template('/{mobile/}user_index.html')
+@login_required
+def user_index(template):
+    log_basic()
+#    from classes.dummy_classes import ShardTestingClass
+#    for i in range(0, 5):
+#        with ShardTestingClass(app) as st:
+#            print(app.config['shards'])
+#            st.work()
+#        print(app.config['shards'])
+    return render_template(template, name=current_user.username)
+
+
 @app.route('/calendar')
 @mobile_template('/{mobile/}calendar.html')
-@fresh_login_required
+@login_required
 def calendar(template):
     log_basic()
     # TODO fetch user data
     return render_template(template, name=current_user.username)
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/user_availability', methods=['POST'])
+def user_availability():
+    email = request.form['inputEmail']
+    with db.ConnectionInstance() as q:
+        if email and q.get_username(email) is None:
+            return 'true'
+    return 'false'
+
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    # read the posted values from the UI
-    _name = request.form['inputUsername']
-    _email = request.form['inputEmail']
-    _password = request.form['inputPassword']
-    # validate the received values
-    if _name and _email and _password:
-        with db.ConnectionInstance() as q:
-            if q.get_username(_email) == None:
-                added = q.add_user(_name, _email, hash_password(_password))
-                if (added):
-                    user = User(_email)
-                    login_user(user)
-                    return json.dumps({'success':True})
-                else:
-                    return json.dumps({"message": "Could not add a new user at this time, try again later."})
-            else:
-                return json.dumps({"message": "User with this email address already exists"})
-    else:
-        return json.dumps({"message": "Missing or invalid data"})
+    if request.method is 'POST':
+        # read the posted values from the UI
+        name = request.form['inputUsername']
+        email = request.form['inputEmail']
+        password = request.form['inputPassword']
+        # validate the received values
+        if name and email and password:
+            with db.ConnectionInstance() as q:
+                if q.get_username(email) is None:
+                    added = q.add_user(name, email, hash_password(password))
+                    if (added):
+                        user = User(email)
+                        login_user(user)
+                        return redirect('/calendar')
+    # if something not right reload
+    # TODO maybe some error messages
+    return redirect('/')
 
 
 @app.route("/login", methods=['POST'])
 def login():
+    print(current_user)
     password = request.form["inputPassword"]
     email = request.form["inputEmail"]
     user = load_user(email)
     if user is not None:
         if check_password(password, email):
-            login_user(user)
-            return json.dumps({'success':True})
-    return json.dumps({'message':'Wrong email or password'})
+            if 'remember' in request.form and request.form["remember"] == 'on':
+                remember_me = True
+            else: 
+                remember_me = False
+            login_user(user, remember=remember_me)
+            return '/calendar'
+    return 'false'
 
 
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect('/')
-    
 
 
 @app.route('/view/<calendar_id>')

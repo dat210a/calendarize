@@ -7,88 +7,76 @@ var signup = document.getElementById('signup_btn');
 window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
-        signup.style.display = "block"
-        login.style.display = "block"
+        signup.style.display = "block";
+        login.style.display = "block";
         $('.collapsible').collapsible('close', 0);
         $('.collapsible').collapsible('close', 1);
     }
 }
 
 signup.onclick = function(){
-    signup.style.display = "none"
-    login.style.display = "none"
-    modal.style.display = "flex"
+    signup.style.display = "none";
+    login.style.display = "none";
+    modal.style.display = "flex";
     $('.collapsible').collapsible('open', 1);
 }
 
 login.onclick = function(){
-    signup.style.display = "none"
-    login.style.display = "none"
-    modal.style.display = "flex"
+    signup.style.display = "none";
+    login.style.display = "none";
+    modal.style.display = "flex";
     $('.collapsible').collapsible('open', 0);
 }
 
-// $('#formLogin').click(function(e){
-//     e.preventDefault()
-//     $.ajax({
-//         url: '/login',
-//         data: $(this).serialize(),
-//         type: 'POST',
-//         success: function(response) {
-//             console.log(response, this)
-//             r = JSON.parse(response)
-//             if (r['success'] == true)
-//                 $('#formLogin').submit()
-//         },
-//         error: function(error) {
-//             console.log(error)
-//         }
-//     });
-// })
+$('#btnLogin').click(function(e){
+    $.ajax({
+        url: '/login',
+        data: $('#formLogin').serialize(),
+        type: 'POST',
+        success: function(response) {
+            if (response == "false"){
+                $('#loginEmail').addClass("validate invalid")
+                            .keyup(function(){
+                                $(this).removeClass('validate invalid');
+                                $('#loginPassword').removeClass('validate invalid');
+                            });
+                $('#loginPassword').addClass("validate invalid")
+                            .keyup(function(){
+                                $(this).removeClass('validate invalid');
+                                $('#loginEmail').removeClass('validate invalid');
+                            });
+            }
+            else
+                window.location = response;
 
-// $('#formRegister').on('submit', function(e){
-//     e.preventDefault()
-//     $.ajax({
-//         url: '/register',
-//         data: $(this).serialize(),
-//         type: 'POST',
-//         success: function(response) {
-//             document.write(response);
-//         },
-//         error: function(error) {
-//             document.write(error);
-//         }
-//     });
-// })
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+    return false;
+});
 
-    //TESTS
-    // var email = document.getElementById("inputEmail")
-    // email.classList.remove("valid")
-    // email.classList.add("invalid")
+$('#registerEmail').bind('blur keyup', function(e){
+    if (e.type == 'blur' || e.keyCode == '13'){
+        $.ajax({
+            url: '/user_availability',
+            data: {'inputEmail': $('#registerEmail')[0].value},
+            type: 'POST',
+            success: function(response) {
+                if (response == 'false'){
+                    $('#regEmailLabel').attr('data-error', 'User already exists, try logging in.');
+                    $('#registerEmail')
+                        .addClass('invalid')
+                        .keyup(function(){
+                            $(this).removeClass('invalid');
+                            $('#regEmailLabel').attr('data-error', 'Not a valid email address.');
+                        });
+                };
+            },  
+            error: function(error) {
+            }
+        });
+    };
+});
 
-    // var email = document.getElementById("inputEmail"), 
-    //     confirm_email = document.getElementById("confirm_email");
-    // var password = document.getElementById("inputPassword"), 
-    //     confirm_password = document.getElementById("confirm_password");
-
-    // if (PasswordStrength(password.value)){
-    //     console.log('match')
-    // }
-    // else{
-    //     password.setCustomValidity("not strong");
-    // }
-
-    // confirm_email.setCustomValidity("");
-    // confirm_password.setCustomValidity("");
-
-    // if(email.value != confirm_email.value) {
-    //     confirm_email.setCustomValidity("Emails Don't Match");
-    //     console.log('email')
-    //     return false
-    // } else if (password.value != confirm_password.value){
-    //     confirm_password.setCustomValidity("Passwords Don't Match");
-    //     console.log('pass')
-    //     return false
-    // } else{
-    //     console.log('send')
-    //     return false;
