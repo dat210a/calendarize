@@ -164,7 +164,6 @@ def register():
 
 @app.route("/login", methods=['POST'])
 def login():
-    print(current_user)
     password = request.form["inputPassword"]
     email = request.form["inputEmail"]
     user = load_user(email)
