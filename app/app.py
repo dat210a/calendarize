@@ -40,7 +40,6 @@ def load_user(email):
     with db.ConnectionInstance() as q:
         if q.get_username(email) is None:
             return None
-    print (session)
     return User(email)
 
 
