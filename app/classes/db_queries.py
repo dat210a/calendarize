@@ -4,7 +4,8 @@ import pprint as pp
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
-conf_file = 'cfg/db.json'
+# conf_file = 'cfg/db.json'
+conf_file = 'W:/GitHub/dat210_project/calendarize/app/cfg/db.json'
 
 
 with open(conf_file, 'r') as cf:
@@ -47,39 +48,58 @@ class ConnectionInstance:
     def get_user_id(self, email):
         sql = "SELECT user_id FROM users WHERE ? = user_email"
         self.__cur.execute(sql, [email])
-        res = self.__cur.fetchone()
         try:
+            res = self.__cur.fetchone()
             return res[0].decode('utf-8')
-        except:
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
     def get_pass_hash(self, email):
         sql = "SELECT user_password FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
-        res = self.__cur.fetchone()
         try:
+            res = self.__cur.fetchone()
             return res[0].decode('utf-8')
-        except:
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
 
     def get_username(self, email):
         sql = "SELECT user_name FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
-        res = self.__cur.fetchone()
         try:
+            res = self.__cur.fetchone()
             return res[0].decode('utf-8')
-        except:
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
             return None
 
     def get_calendars(self):
         sql = "SELECT calendar_id FROM calendars"
         self.__cur.execute(sql)
-        return self.__cur.fetchall()
+        try:
+            return [x[0] for x in self.__cur.fetchall()]
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retrieve calendar IDs'.format(e))
+            return None
 
     def get_calendar_members(self, cid):
         sql = "SELECT calendar_members FROM calendars WHERE calendar_id = %s"
         self.__cur.execute(sql, [cid])
-        return self.__cur.fetchall()
+        try:
+            return [x[0] for x in self.__cur.fetchall()]
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retrieve members from calendar: {}'.format(e, cid))
+            return None
+
+    def get_event_files(self, eid, rec):
+        sql = "SELECT file_name FROM event_files WHERE event_id = ? AND recurring = ?"
+        self.__cur.execute(sql, eid, rec)
+        try:
+            return [x[0] for x in self.__cur.fetchall()]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
 
     def db_get_cal_admin(self, cid=None, eid=None):
         # Fetches a list of admins for a calendar
@@ -92,9 +112,14 @@ class ConnectionInstance:
             self.__cur.execute(sql, [eid])
         else:
             return None
-        payload = self.__cur.fetchall()
-        logging.DEBUG('Result of calendar admin db request: {}'.format(payload))
-        return payload
+        try:
+            payload = ([x[0] for x in self.__cur.fetchall()])
+            logging.debug('Result of calendar admin db request: {}'.format(payload))
+            return payload
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retrieve admins for calendar.\n'
+                          'Input parameters: cid={} eid={}'.format(e, cid, eid))
+            return None
 
 #######################################################################################
         # Insertion
@@ -105,7 +130,11 @@ class ConnectionInstance:
             self.__cur.execute(query, [username, email, hashedpass])
             self.__con.commit()
             return True
-        except:
+        except Exception as e:
+            logging.debug('{}\nWhile trying to insert user with data:\n'
+                          '\tUsername: {}\n'
+                          '\tEmail: {}\n'
+                          '\tPW hash: {}'.format(e, username, email, hashedpass))
             self.__con.rollback()
             return False
 
@@ -159,16 +188,24 @@ class ConnectionInstance:
     def fetch_data_for_display(self, uid):
         sql = "SELECT calendar_id FROM user_calendars WHERE user_id = %s"
         self.__cur.execute(sql, [uid])
-        res = self.__cur.fetchall()
-        cals = [r[0] for r in res]
+        try:
+            res = self.__cur.fetchall()
+            cals = [r[0] for r in res]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
+            return None
 
         sql = "SELECT event_id FROM calendar_events WHERE calendar_id = ?"
         if len(cals) > 1:
             for i in range(len(cals) - 1):
                 sql += " OR calendar_id = ?"
         self.__cur.execute(sql, cals)
-        res = self.__cur.fetchall()
-        events = [r[0] for r in res]
+        try:
+            res = self.__cur.fetchall()
+            events = [r[0] for r in res]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
+            return None
 
         sql = "SELECT * FROM events WHERE event_id = ?"
         if len(events) > 1:
@@ -176,31 +213,48 @@ class ConnectionInstance:
                 sql += " OR event_id = ?"
         # TODO complete with relevant values to fetch and return
 
-    def add_file(self, fname, eid):
+    def add_file(self, fname, eid, rec=0):
         if fname:
-            sql = "INSERT INTO event_files (event_id, file_name) VALUES (?, ?)"
-            self.__cur.execute(sql, eid, fname)
+            sql = "INSERT INTO event_files (event_id, file_name, recurring) VALUES (?, ?, ?)"
+            self.__cur.execute(sql, eid, fname, rec)
             try:
                 self.__con.commit()
             except Exception as e:
-                logging.debug(
-                    '{}\nWhile adding file with name:\n{}'.format(e, fname))
+                logging.debug('{}\nWhile adding file with name:\n{}'.format(e, fname))
                 self.__con.rollback()
         else:
-            pass
+            pass  # Does nothing if there is no file
 
 #######################################################################################
             # Deletion
 
     def db_del_user(self, uid):
         self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", [uid])
-        self.__con.commit()
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile trying to delete user: {}'.format(e, uid))
+            self.__con.rollback()
 
     def db_del_event(self, eid):
         self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", [eid])
-        self.__con.commit()
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile trying to delete event: {}'.format(e, eid))
+            self.__con.rollback()
 
     def db_del_cal(self, cid):
         self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", [cid])
-        self.__con.commit()
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile trying to delete calendar: {}'.format(e, cid))
+            self.__con.rollback()
 
+
+if __name__ == '__main__':
+    import os
+    print(os.path.abspath(os.path.dirname(__file__)))
+    with ConnectionInstance() as q:
+        print(q.get_calendars())
