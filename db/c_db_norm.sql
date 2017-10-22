@@ -74,10 +74,10 @@ DROP TABLE IF EXISTS `calendars`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `calendars` (
-  `calendar_id` int(11) NOT NULL,
+  `calendar_id` int(11) NOT NULL AUTO_INCREMENT,
   `calendar_name` varchar(45) NOT NULL,
   `calendar_date_created` date NOT NULL,
-  `calendar_details` varchar(45) NOT NULL,
+  `calendar_details` varchar(45) DEFAULT NULL,
   `calendar_owner` varchar(45) NOT NULL,
   `calendar_members` varchar(45) DEFAULT NULL,
   `calendar_time` int(11) DEFAULT NULL,
@@ -107,16 +107,16 @@ DROP TABLE IF EXISTS `events`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `events` (
-  `event_id` int(11) NOT NULL,
+  `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `event_name` varchar(45) NOT NULL,
   `event_date_created` date NOT NULL,
-  `event_details` varchar(45) NOT NULL,
+  `event_details` varchar(45) DEFAULT NULL,
   `event_location` varchar(45) DEFAULT NULL,
-  `event_start` date DEFAULT NULL,
-  `event_end` date DEFAULT NULL,
+  `event_start` date NOT NULL,
+  `event_end` date NOT NULL,
   `event_time` varchar(45) DEFAULT NULL,
-  `event_members` varchar(45) NOT NULL,
-  `event_belongs_to` varchar(45) NOT NULL,
+  `event_members` varchar(45) DEFAULT NULL,
+  `event_belongs_to` varchar(45) DEFAULT NULL,
   `event_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`event_id`),

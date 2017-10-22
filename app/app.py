@@ -24,27 +24,38 @@ from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
 from funcs import file_tools
 
+
+# app initialization
 app = Flask(__name__)
 Mobility(app)
 
-
+# config setup
 app.config['DEBUG'] = True  # Testing only
+
+# needed for session cookies
 app.secret_key = 'hella secret'
 
+# initialization of login manager
+# it keeps the given user logged in via use of cookies
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = '/'
 
-
+# stores returned user into current session
 @login_manager.user_loader
 def load_user(email):
-    with db.ConnectionInstance() as q:
-        if q.get_username(email) is None:
-            return None
-    return User(email)
+    """Returns an object of class User based on provided unique identifier
+       if user in the database, otherwise None
+    """
+    if user_exists(email):
+        return User(email)
+    return None
+
 
 
 def setup_logging():
+    """
+    """
     try:
         lg = logging.getLogger(__name__)
         lg.setLevel(logging.INFO)
@@ -62,6 +73,8 @@ def setup_logging():
 
 
 def end_logging(log):
+    """
+    """
     handlers = log.handlers[:]
     for hdlr in handlers:
         hdlr.close()
@@ -69,20 +82,37 @@ def end_logging(log):
 
 
 def request_data(req):
+    """
+    """
     res = '{} requested by {}'.format(req.url, req.remote_addr)
     return res
 
 
 def log_basic():
+    """
+    """
     # This handles logging of basic data that should be logged for all requests
     if logger:
         logger.info(request_data(request))
 
 
 def get_user_id():
+    """
+    """
     if 'user' in session:
         return session['user']['id']
     return None
+
+# It should be moved out to a separate file if there 
+# ends up being more functions like this one
+def user_exists(email):
+    """Returnes True if user with provided identifier exists, 
+       otherwise False                     
+    """
+    with db.ConnectionInstance() as queries:
+        if queries.get_username(email) is None:
+            return False
+        return True
 
 
 ##################################################################
@@ -95,8 +125,9 @@ def get_user_id():
 
 @app.route('/')
 @mobile_template('/{mobile/}index.html')
-# @login_required
 def index(template):
+    """
+    """
     log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
@@ -113,6 +144,8 @@ def index(template):
 @mobile_template('/{mobile/}user_index.html')
 @login_required
 def user_index(template):
+    """
+    """
     log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
@@ -127,59 +160,74 @@ def user_index(template):
 @mobile_template('/{mobile/}calendar.html')
 @login_required
 def calendar(template):
+    """
+    """
     log_basic()
     # TODO fetch user data
     return render_template(template, name=current_user.username)
 
 
-@app.route('/user_availability', methods=['POST'])
+@app.route('/user_availability', methods=['GET', 'POST'])
 def user_availability():
-    email = request.form['inputEmail']
-    with db.ConnectionInstance() as q:
-        if email and q.get_username(email) is None:
-            return 'true'
-    return 'false'
+    """
+    """
+    if request.method == "POST":
+        email = request.form['inputEmail']
+        if email and user_exists(email):
+            return 'false'
+        return 'true'
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    """
     if request.method == "POST":
         # read the posted values from the UI
         name = request.form['inputUsername']
         email = request.form['inputEmail']
         password = request.form['inputPassword']
         # validate the received values
-        if name and email and password:
-            with db.ConnectionInstance() as q:
-                if q.get_username(email) is None:
-                    added = q.add_user(name, email, hash_password(password))
-                    if (added):
-                        user = User(email)
-                        login_user(user)
-                        return redirect('/calendar')
-    # if something not right reload
+        if name and email and password and not user_exists(email):
+            with db.ConnectionInstance() as queries:
+                added = queries.add_user(name, email, hash_password(password))
+                print ('out')
+                print(queries.get_last_ID())
+                if (added):
+                    user = User(email)
+                    login_user(user)
+                    return redirect('/calendar')
+    # reload if something not right
     # TODO maybe some error messages
     return redirect('/')
 
 
-@app.route("/login", methods=['POST'])
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    password = request.form["inputPassword"]
-    email = request.form["inputEmail"]
-    user = load_user(email)
-    if user is not None:
-        if check_password(password, email):
-            if 'remember' in request.form and request.form["remember"] == 'on':
-                remember_me = True
-            else: 
-                remember_me = False
-            login_user(user, remember=remember_me)
-            return '/calendar'
-    return 'false'
+    """
+    """
+    if request.method == "POST":
+        password = request.form["inputPassword"]
+        email = request.form["inputEmail"]
+        user = load_user(email)
+        if user is not None:
+            if check_password(password, email):
+                if 'remember' in request.form and request.form["remember"] == 'on':
+                    remember_me = True
+                else: 
+                    remember_me = False
+                login_user(user, remember=remember_me)
+                return '/calendar'
+        return 'false'
+    return redirect('/')
 
 
 @app.route("/logout")
+@login_required
 def logout():
+    """ Logs user out and redirects to main page
+    """
     logout_user()
     return redirect('/')
 
@@ -187,6 +235,7 @@ def logout():
 @app.route('/view/<calendar_id>')
 @mobile_template('{mobile/}calendar.html')
 def view(template, calendar_id):
+
     log_basic()
 
     with db.ConnectionInstance() as q:

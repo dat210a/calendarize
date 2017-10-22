@@ -20,7 +20,7 @@ function resize(){
     time.range([0, width]);
 
     //frames
-    $('.eventDetails').height(totalHeight-margin);
+    $('.side_tab').height(totalHeight-margin+2);
 
     //background elements
     svg

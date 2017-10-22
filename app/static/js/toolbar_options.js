@@ -5,11 +5,23 @@ $("#resetToToday" ).click(function() {
 
 var slider = document.getElementById("zoomSlider");
 
-
-
 slider.onchange = function (){
     d3.select('.scrollArea').call(zoom.scaleTo, this.value);
 }
+
+$("#addCalendarForm").click(function(){
+    $('.side_tab').css('border-color', 'lightgrey');
+    $("#calendarForm").show()
+    $("#eventForm").hide()
+    $("#eventDisplay").hide()
+})
+
+$("#addEventForm").click(function(){
+    $('.side_tab').css('border-color', 'lightgrey');
+    $("#calendarForm").hide()
+    $("#eventForm").show()
+    $("#eventDisplay").hide()
+})
 
 $("#addCalendar").click(function(){
     $.ajax({

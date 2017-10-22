@@ -13,16 +13,16 @@ class User:
 
     def __repr__(self):
         if not self.is_anonymous():
-            return '<User %r>' % self.username
+                return '<User %r>' % self.username
 
     def is_authenticated(self):
-            return True
+        return True
 
     def is_active(self):
-            return True
+        return True
 
     def is_anonymous(self):
-            return False
+        return False
 
     def get_id(self):
-            return str(self.email)
+        return str(self.email)

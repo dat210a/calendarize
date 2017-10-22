@@ -5,7 +5,7 @@ function display(data){
     if (+data.recurring == 1) var format = d3.timeFormat('%d / %m')
     else var format = d3.timeFormat('%d/%m/%Y')
 
-    d3.select('.eventDetails').style('border-color', data.color)
+    $('.side_tab').css('border-color', data.color);
 
     $('.eventID').text(data.id)
     $('.eventDateStart').text(format(parse(data.start_date)))
@@ -13,5 +13,9 @@ function display(data){
     $('.eventGroup').text(data.group)
     $('.eventRecur').text(function () {return +data.recurring == 1 ? 'YES' : 'NO'})
     //$('eventFiles').text(data.files)
+
+    $("#calendarForm").hide()
+    $("#eventForm").hide()
+    $("#eventDisplay").show()
 }
 

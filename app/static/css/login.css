@@ -6,7 +6,7 @@
 }
 
 .login_form{
-    display: none;
+    display: flex;
     position: fixed; 
     top: 0px; 
     left: 0px; 
@@ -14,4 +14,8 @@
     width: 100%; 
     z-index:1; 
     background-color: rgba(0,0,0,0.1);
+}
+
+.modal_container{
+    display: none;
 }

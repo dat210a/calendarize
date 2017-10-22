@@ -19,8 +19,8 @@
                     <ul>
                         <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue"><i class="material-icons">center_focus_strong</i></a></li>
                         <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li>
-                        <li><a id="addCalendar" class="waves-effect waves-light btn-floating yellow darken-1"><i class="material-icons">insert_invitation</i></a></li>
-                        <li><a id='addEvent' class="waves-effect waves-light btn-floating red"><i class="material-icons">playlist_add</i></a>
+                        <li><a id="addCalendarForm" class="waves-effect waves-light btn-floating yellow darken-1"><i class="material-icons">insert_invitation</i></a></li>
+                        <li><a id='addEventForm' class="waves-effect waves-light btn-floating red"><i class="material-icons">playlist_add</i></a>
                         </li>
                     </ul>
                 </div>
@@ -43,42 +43,113 @@
         </div>
     </div>
     <!-- sidebar -->
-    <div class="eventDetails col m3 hide-on-med-and-down", style="margin: 0px; border: 5px solid #b0bec5; background-color: white;">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-    
-            <tbody>
-                <tr>
-                    <td>Id</td>
-                    <td class='eventID'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Start Date</td>
-                    <td class='eventDateStart'>NaN</td>
-                </tr>
-                <tr>
-                    <td>End Date</td>
-                    <td class='eventDateEnd'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Group Name</td>
-                    <td class='eventGroup'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Recurring</td>
-                    <td class='eventRecur'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Files</td>
-                    <td class='eventFiles'>NaN</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="col m3 hide-on-med-and-down side_tab">
+        <div class="event_details_container" id="eventDisplay">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td class='eventID'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Start Date</td>
+                        <td class='eventDateStart'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>End Date</td>
+                        <td class='eventDateEnd'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Group Name</td>
+                        <td class='eventGroup'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Recurring</td>
+                        <td class='eventRecur'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Files</td>
+                        <td class='eventFiles'>NaN</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="add_calendar_container" id="calendarForm">
+            <div class="row center" style="border-bottom: 2px solid lightgrey">
+                <p>New Calendar</p>
+            </div>
+            <form class='col s12 addCalendar'>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="newCalendarName" type="text" class="validate">
+                        <label for="newCalendarName">Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6 offset-s6">
+                        <button id="btnNewCalendar" class="right btn waves-effect waves-light" type="submit">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="add_event_container" id="eventForm">
+            <div class="row center" style="border-bottom: 2px solid lightgrey">
+                <p>New Event</p>
+            </div>
+            <form class='col s12 addEvent'>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="newCalendarName" type="text" class="validate">
+                        <label for="newCalendarName">Event name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <select>
+                            <option value="" disabled selected>Choose calendar for this event</option>
+                            <option value="1">Option 1</option>
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                        </select>
+                        <label>Calendar</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="startDate" type="text" class="datepicker">
+                        <label for="startDate">Start date</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="endDate" type="text" class="datepicker">
+                        <label for="endDate">End date</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6">Recurring</div>
+                    <div class="col s6 switch">
+                        <label>
+                            No
+                            <input type="checkbox">
+                            <span class="lever"></span>
+                            Yes
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6 offset-s6">
+                        <button id="btnNewEvent" class="right btn waves-effect waves-light" type="submit">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
     <!-- TODO make a bundle -->
     <script src="/static/js/lib/d3.min.js"></script>
@@ -90,4 +161,5 @@
     <script src="/static/js/timeline/zoom_and_scroll.js"></script>
     <script src="/static/js/timeline/resize_timeline.js"></script>
     <script src="/static/js/toolbar_options.js"></script>
+    <script src="/static/js/init.js"></script>
 {% endblock %}

@@ -1,33 +1,27 @@
-var modal = document.getElementById('myModal');
-
-var login = document.getElementById('login_btn');
-var signup = document.getElementById('signup_btn');
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-        signup.style.display = "block";
-        login.style.display = "block";
+// toggle login/registration screen
+window.onclick = function(e){
+    if (e.target == $('#login_form')[0]){
+        toggle()
         $('.collapsible').collapsible('close', 0);
         $('.collapsible').collapsible('close', 1);
     }
-}
+ }
 
-signup.onclick = function(){
-    signup.style.display = "none";
-    login.style.display = "none";
-    modal.style.display = "flex";
+$('#signup_btn').click(function(){
+    toggle()
     $('.collapsible').collapsible('open', 1);
-}
+})
 
-login.onclick = function(){
-    signup.style.display = "none";
-    login.style.display = "none";
-    modal.style.display = "flex";
+$('#login_btn').click(function(){
+    toggle()
     $('.collapsible').collapsible('open', 0);
+})
+
+function toggle(){
+    $('#myModal, #login_btn, #signup_btn').toggle();
 }
 
+// check for credentials at login
 $('#btnLogin').click(function(e){
     $.ajax({
         url: '/login',
@@ -57,6 +51,8 @@ $('#btnLogin').click(function(e){
     return false;
 });
 
+
+// check for existing user based on email when registering
 $('#registerEmail').bind('blur keyup', function(e){
     if (e.type == 'blur' || e.keyCode == '13'){
         $.ajax({
