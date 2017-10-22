@@ -84,10 +84,10 @@
             <div class="row center" style="border-bottom: 2px solid lightgrey">
                 <p>New Calendar</p>
             </div>
-            <form class='col s12 addCalendar'>
+            <form class='col s12 addCalendar' id="addCalendar">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="newCalendarName" type="text" class="validate">
+                        <input id="newCalendarName" type="text" class="validate" required autofocus>
                         <label for="newCalendarName">Name</label>
                     </div>
                 </div>
@@ -102,17 +102,17 @@
             <div class="row center" style="border-bottom: 2px solid lightgrey">
                 <p>New Event</p>
             </div>
-            <form class='col s12 addEvent'>
+            <form class='col s12 addEvent' id="addEvent">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="newCalendarName" type="text" class="validate">
+                        <input id="newCalendarName" type="text" class="validate" required autofocus>
                         <label for="newCalendarName">Event name</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
                         <select>
-                            <option value="" disabled selected>Choose calendar for this event</option>
+                            <option value="0" selected>Main group</option>
                             <option value="1">Option 1</option>
                             <option value="2">Option 2</option>
                             <option value="3">Option 3</option>

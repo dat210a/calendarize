@@ -156,17 +156,6 @@ def user_index(template):
     return render_template(template, name=current_user.username)
 
 
-@app.route('/calendar')
-@mobile_template('/{mobile/}calendar.html')
-@login_required
-def calendar(template):
-    """
-    """
-    log_basic()
-    # TODO fetch user data
-    return render_template(template, name=current_user.username)
-
-
 @app.route('/user_availability', methods=['GET', 'POST'])
 def user_availability():
     """
@@ -218,7 +207,7 @@ def login():
                 else: 
                     remember_me = False
                 login_user(user, remember=remember_me)
-                return '/calendar'
+                return '/user_index'
         return 'false'
     return redirect('/')
 
@@ -230,6 +219,17 @@ def logout():
     """
     logout_user()
     return redirect('/')
+
+
+@app.route('/calendar')
+@mobile_template('/{mobile/}calendar.html')
+@login_required
+def calendar(template):
+    """
+    """
+    log_basic()
+    # TODO fetch user data
+    return render_template(template, name=current_user.username)
 
 
 @app.route('/view/<calendar_id>')
@@ -255,6 +255,23 @@ def view(template, calendar_id):
             pass
 
 
+@app.route('/add_calendar', methods=['POST'])
+def add_calendar():
+    eid = 'blank'  # temporary to shut up linting until complete
+    # with db.ConnectionInstance() as q:
+    #     # TODO get form information
+    #     q.add_file(file_tools.save_file(request, eid), eid)
+    return json.dumps({'success': 'true'}) 
+
+
+@app.route('/add_event', methods=['POST'])
+def add_event():
+    eid = 'blank'  # temporary to shut up linting until complete
+    # with db.ConnectionInstance() as q:
+    #     # TODO get form information
+    #     q.add_file(file_tools.save_file(request, eid), eid)
+    return json.dumps({'success': 'true'})
+
 @app.route('/settings')
 @mobile_template('{mobile/}template.html')
 @login_required
@@ -270,13 +287,6 @@ def save_settings():
     # TODO extract settings from form and store in db
     return redirect(url_for(settings))  # reloads the settings page to show the new settings
 
-
-@app.route('/add_event', methods=['POST'])
-def add_event():
-    eid = 'blank'  # temporary to shut up linting until complete
-    with db.ConnectionInstance() as q:
-        # TODO get form information
-        q.add_file(file_tools.save_file(request, eid), eid)
 
 ##################################################################
 # DELETION FUNCTIONS - emphasized because these not working

@@ -23,7 +23,8 @@ $("#addEventForm").click(function(){
     $("#eventDisplay").hide()
 })
 
-$("#addCalendar").click(function(){
+$("#addCalendar").submit(function(e){
+    e.preventDefault()
     $.ajax({
         url: '/add_calendar',
         data: $(this).serialize(), 
@@ -37,7 +38,8 @@ $("#addCalendar").click(function(){
     });
 });
 
-$("#addEvent").click(function(){
+$("#addEvent").submit(function(e){
+    e.preventDefault()
     $.ajax({
         url: '/add_event',
         data: $(this).serialize(), 
