@@ -87,7 +87,7 @@
             <form class='col s12 addCalendar' id="addCalendar">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="newCalendarName" type="text" class="validate" required autofocus>
+                        <input id="newCalendarName" Name="newCalendarName" type="text" class="validate" required autofocus>
                         <label for="newCalendarName">Name</label>
                     </div>
                 </div>
@@ -105,13 +105,13 @@
             <form class='col s12 addEvent' id="addEvent">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="newCalendarName" type="text" class="validate" required autofocus>
-                        <label for="newCalendarName">Event name</label>
+                        <input id="newEventName" Name="newEventName" type="text" class="validate" required autofocus>
+                        <label for="newEventName">Event name</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <select>
+                        <select Name="calendarID">
                             <option value="0" selected>Main group</option>
                             <option value="1">Option 1</option>
                             <option value="2">Option 2</option>
@@ -122,13 +122,13 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="startDate" type="text" class="datepicker">
+                        <input id="startDate" Name="startDate" type="text" class="datepicker">
                         <label for="startDate">Start date</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="endDate" type="text" class="datepicker">
+                        <input id="endDate" Name="endDate" type="text" class="datepicker">
                         <label for="endDate">End date</label>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                     <div class="col s6 switch">
                         <label>
                             No
-                            <input type="checkbox">
+                            <input Name="recurring" type="checkbox">
                             <span class="lever"></span>
                             Yes
                         </label>

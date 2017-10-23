@@ -13,6 +13,7 @@ in the GitHub repository README.md
 """
 import logging
 import json
+from datetime import datetime
 from classes import db_queries as db
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
@@ -103,7 +104,7 @@ def get_user_id():
         return session['user']['id']
     return None
 
-# It should be moved out to a separate file if there 
+# It should be moved to a separate file if there 
 # ends up being more functions like this one
 def user_exists(email):
     """Returnes True if user with provided identifier exists, 
@@ -181,12 +182,10 @@ def register():
         if name and email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
                 added = queries.add_user(name, email, hash_password(password))
-                print ('out')
-                print(queries.get_last_ID())
-                if (added):
-                    user = User(email)
-                    login_user(user)
-                    return redirect('/calendar')
+            if (added):
+                user = User(email)
+                login_user(user)
+                return redirect('/calendar')
     # reload if something not right
     # TODO maybe some error messages
     return redirect('/')
@@ -256,21 +255,24 @@ def view(template, calendar_id):
 
 
 @app.route('/add_calendar', methods=['POST'])
+@login_required
 def add_calendar():
-    eid = 'blank'  # temporary to shut up linting until complete
-    # with db.ConnectionInstance() as q:
-    #     # TODO get form information
-    #     q.add_file(file_tools.save_file(request, eid), eid)
-    return json.dumps({'success': 'true'}) 
+    with db.ConnectionInstance() as queries:
+        created = queries.add_calendar(request.form, datetime.utcnow(), current_user.user_id)
+        if created:
+            return json.dumps({'success': 'true'})
+    return json.dumps({'success': 'false'})
 
 
 @app.route('/add_event', methods=['POST'])
+@login_required
 def add_event():
-    eid = 'blank'  # temporary to shut up linting until complete
-    # with db.ConnectionInstance() as q:
-    #     # TODO get form information
-    #     q.add_file(file_tools.save_file(request, eid), eid)
-    return json.dumps({'success': 'true'})
+    with db.ConnectionInstance() as queries:
+        created = queries.add_event(request.form, datetime.utcnow(), current_user.user_id)
+        if created:
+            return json.dumps({'success': 'true'})
+    return json.dumps({'success': 'false'})
+
 
 @app.route('/settings')
 @mobile_template('{mobile/}template.html')

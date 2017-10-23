@@ -7,7 +7,7 @@ class User:
     def __init__(self, email):
         self.email = email
         with ConnectionInstance() as con:
-            self.id = con.get_user_id(self.email)
+            self.user_id = con.get_user_id(self.email)
             self.username = con.get_username(self.email)
             self.password = con.get_pass_hash(self.email)
 

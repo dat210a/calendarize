@@ -48,7 +48,7 @@ class ConnectionInstance:
         self.__cur.execute(sql, [email])
         try:
             res = self.__cur.fetchone()
-            return res[0].decode('utf-8')
+            return res[0]
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
@@ -66,7 +66,6 @@ class ConnectionInstance:
     def get_username(self, email):
         sql = "SELECT user_name FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
-
         try:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
@@ -175,52 +174,48 @@ class ConnectionInstance:
                           '\tPW hash: {}'.format(e, username, email, hashedpass))
             self.__con.rollback()
             return None
-
-    def add_event(self, event_data):
-        sql = "INSERT INTO events " \
-              "(event_id, event_name, event_date_created, event_details, " \
-              "event_location, event_start, event_end, event_time, event_extra)" \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        self.__cur.execute(
-            sql,
-            [
-                event_data['id'],
-                event_data['name'],
-                event_data['created'],
-                event_data['details'],
-                event_data['location'],
-                event_data['start'],
-                event_data['end'],
-                event_data['time'],
-                event_data['extra']
-            ]
-        )
-        sql = "INSERT INTO calendar_events (calendar_id, event_id) VALUES (?, ?)"
-        self.__cur.execute(sql, [event_data['parent'], event_data['id']])
-        try:
-            self.__con.commit()
-            return self.get_last_ID()
-        except Exception as e:
-            logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
-            self.__con.rollback()
-            return None
-
-    def add_calendar(self, cal_data):
+        
+    def add_calendar(self, cal_data, created, owner):
         sql = "INSERT INTO calendars " \
               "(calendar_name, calendar_date_created, calendar_owner) " \
               "VALUES (?, ?, ?)"
         self.__cur.execute(sql, [
-            cal_data['name'],
-            cal_data['created'],
-            cal_data['owner']
+            cal_data['newCalendarName'],
+            created,
+            owner
         ])
+        calendar_id = self.get_last_ID()
         sql = "INSERT INTO user_calendars (user_id, calendar_id) VALUES (?, ?)"
-        self.__cur.execute(sql, [cal_data['owner'], cal_data['id']])
+        self.__cur.execute(sql, [owner, calendar_id])
         try:
             self.__con.commit()
             return self.get_last_ID()
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
+            self.__con.rollback()
+            return None
+
+    def add_event(self, event_data, created, owner):
+        sql = "INSERT INTO events " \
+              "(event_name, event_date_created, event_owner, event_start)" \
+              "VALUES (?, ?, ?, ?)"
+        self.__cur.execute(
+            sql,
+            [
+                event_data['newEventName'],
+                created,
+                owner,
+                event_data['startDate'],
+            ]
+        )
+        event_id = self.get_last_ID()
+        sql = "INSERT INTO calendar_events (calendar_id, event_id) VALUES (?, ?)"
+        self.__cur.execute(sql, [event_data['calendarID'], event_id])
+        try:
+            self.__con.commit()
+            return self.get_last_ID()
+        except Exception as e:
+            logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
             return None
 
