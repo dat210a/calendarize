@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
     $('select').material_select();
 
@@ -9,7 +10,5 @@ $(document).ready(function() {
         close: 'Ok',
         closeOnSelect: false, // Close upon selecting a date,
         format: 'yyyy-mm-dd'
-      });
-
-      
-  });
+    });
+});

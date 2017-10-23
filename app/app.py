@@ -227,8 +227,23 @@ def calendar(template):
     """
     """
     log_basic()
-    # TODO fetch user data
     return render_template(template, name=current_user.username)
+
+
+@app.route('/get_data')
+@login_required
+def get_data():
+    """
+    """
+    log_basic()
+    with db.ConnectionInstance() as queries:
+        result = queries.fetch_data_for_display(current_user.user_id)
+    print(result)
+    with open('static/assets/test_data.json', 'r') as cf:
+        data = json.load(cf)
+    print(data)
+    print(json.dumps(data))
+    return json.dumps(data)
 
 
 @app.route('/view/<calendar_id>')

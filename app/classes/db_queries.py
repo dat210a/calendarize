@@ -125,6 +125,7 @@ class ConnectionInstance:
         try:
             res = self.__cur.fetchall()
             cals = [r[0] for r in res]
+            print(cals)
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
@@ -137,6 +138,7 @@ class ConnectionInstance:
         try:
             res = self.__cur.fetchall()
             events = [r[0] for r in res]
+            print(events)
         except Exception as e:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None

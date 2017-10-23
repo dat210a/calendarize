@@ -9,7 +9,8 @@ var detailHeight = 100,
 //load data async
 //TODO get data from SQL
 d3.queue()
-    .defer(d3.csv, "/static/assets/random_chart.csv")
+    .defer(d3.json, '/get_data')
+    // .defer(d3.csv, "/static/assets/random_chart.csv")
     .await(ready);
 
 function ready(error, datapoints){
@@ -17,6 +18,7 @@ function ready(error, datapoints){
         console.log("Can't load the data")
         return;
     }
+    console.log(datapoints)
 
     //populate groups on the bottom menu
     var setOfGroups = [... new Set(datapoints.map(function(d){return d.group;}))];
