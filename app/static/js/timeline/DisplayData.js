@@ -13,16 +13,17 @@ d3.queue()
     // .defer(d3.csv, "/static/assets/random_chart.csv")
     .await(ready);
 
-function ready(error, datapoints){
+function ready(error, allData){
     if (error){
         console.log("Can't load the data")
         return;
     }
-    console.log(datapoints)
-    datapoints.forEach(function(d, i){
+    console.log(allData)
+    allData.forEach(function(d, i){
         d.color = color(i)
     })
-    AddGroupButtons(datapoints)
+    AddGroupButtons(allData)
+
 
     //sort data so its displayed from right to left
     //due to overlap
