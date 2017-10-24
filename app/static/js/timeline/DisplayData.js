@@ -19,11 +19,11 @@ function ready(error, allData){
         console.log("Can't load the data")
         return;
     }
-    d3.selectAll('.data').empty()
+    d3.selectAll('.data').remove()
     datapoints = allData[1]
     groups = allData[0]
 
-    
+
     groups.forEach(function(d, i){d.color = color(i)})
     AddGroupButtons(groups)
 

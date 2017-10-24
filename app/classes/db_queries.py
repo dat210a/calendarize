@@ -206,8 +206,8 @@ class ConnectionInstance:
 
     def add_event(self, event_data, created, owner):
         sql = "INSERT INTO events " \
-              "(event_name, event_calendar_id, event_date_created, event_owner, event_start, event_end)" \
-              "VALUES (?, ?, ?, ?, ?, ?)"
+              "(event_name, event_calendar_id, event_date_created, event_owner, event_start, event_end, event_recurring)" \
+              "VALUES (?, ?, ?, ?, ?, ?, ?)"
         self.__cur.execute(
             sql,
             [
@@ -217,6 +217,7 @@ class ConnectionInstance:
                 owner,
                 event_data['startDate'],
                 event_data['endDate'],
+                1 if 'recurring' in event_data else 0,
             ]
         )
         try:

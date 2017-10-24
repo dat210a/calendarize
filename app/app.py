@@ -276,10 +276,11 @@ def view(template, calendar_id):
 @app.route('/add_calendar', methods=['POST'])
 @login_required
 def add_calendar():
-    with db.ConnectionInstance() as queries:
-        created = queries.add_calendar(request.form, datetime.datetime.utcnow(), current_user.user_id)
-        if created:
-            return 'true'
+    if request.form['newCalendarName']:
+        with db.ConnectionInstance() as queries:
+            created = queries.add_calendar(request.form, datetime.datetime.utcnow(), current_user.user_id)
+            if created:
+                return 'true'
     return 'false'
 
 

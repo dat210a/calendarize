@@ -40,6 +40,9 @@ $("#addCalendar").submit(function(e){
             if (response == 'true') {
                 load_data()
             }
+            else {
+                console.log ('could not create new calendar')
+            }
         },
         error: function(error) {
             console.log(error);
@@ -56,6 +59,9 @@ $("#addEvent").submit(function(e){
         success: function(response) {
             if (response == 'true') {
                 load_data()
+            }
+            else {
+                console.log ('could not create new event')
             }
         },
         error: function(error) {
