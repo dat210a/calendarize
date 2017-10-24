@@ -50,14 +50,11 @@ svg.select(".background_items")
             .attr("width", 150)
             .attr("height", 75)
             .attr("x", -75)
-            .attr("y", -55)
-            .attr("stroke", "darkgrey")
-            .style("fill", "darkgrey");
+            .attr("y", -55);
 
 var yearTag = svg.select(".background_items").select(".Year")
                 .append("text")
                     .attr("font-size", 50)
-                    .style('fill', 'white')
                     .style('text-anchor', 'middle')
                     .text(function(){
                         return d3.timeFormat('%Y')(time.invert(width/2));
