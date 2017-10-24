@@ -126,7 +126,8 @@ class ConnectionInstance:
         try:
             res = self.__cur.fetchall()
             cals = [r[0] for r in res]
-            print(cals)
+            # cals = [{'group':{'id':r[0]}} for r in res]
+            print (cals)
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
@@ -144,11 +145,11 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None
 
-        sql = "SELECT * FROM events WHERE event_id = ?"
-        if len(events) > 1:
-            for i in range(len(events)-1):
-                sql += " OR event_id = ?"
-        # TODO complete with relevant values to fetch and return
+        # sql = "SELECT * FROM events WHERE event_id = ?"
+        # if len(events) > 1:
+        #     for i in range(len(events)-1):
+        #         sql += " OR event_id = ?"
+        # # TODO complete with relevant values to fetch and return
 
     def get_last_ID(self):
         sql = 'SELECT LAST_INSERT_ID();'
@@ -201,7 +202,7 @@ class ConnectionInstance:
     def add_event(self, event_data, created, owner):
         sql = "INSERT INTO events " \
               "(event_name, event_calendar_id, event_date_created, event_owner, event_start)" \
-              "VALUES (?, ?, ?, ?)"
+              "VALUES (?, ?, ?, ?, ?)"
         self.__cur.execute(
             sql,
             [
@@ -245,6 +246,23 @@ class ConnectionInstance:
             self.__con.commit()
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
+
+
+    def update_user(self, user_data):
+        #TODO
+        pass
+
+    def update_calendar(self, calendar_data):
+        #TODO
+        pass
+    
+    def update_calendar(self, event_data):
+        #TODO
+        pass
+
+    def update_role(self, data):
+        #TODO
+        pass
 
 
 #######################################################################################
