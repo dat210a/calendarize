@@ -188,8 +188,8 @@ class ConnectionInstance:
             owner
         ])
         calendar_id = self.get_last_ID()
-        sql = "INSERT INTO user_calendars (user_id, calendar_id) VALUES (?, ?)"
-        self.__cur.execute(sql, [owner, calendar_id])
+        sql = "INSERT INTO user_calendars (user_id, calendar_id, role) VALUES (?, ?, ?)"
+        self.__cur.execute(sql, [owner, calendar_id, 0])
         try:
             self.__con.commit()
             return self.get_last_ID()
@@ -200,20 +200,18 @@ class ConnectionInstance:
 
     def add_event(self, event_data, created, owner):
         sql = "INSERT INTO events " \
-              "(event_name, event_date_created, event_owner, event_start)" \
+              "(event_name, event_calendar_id, event_date_created, event_owner, event_start)" \
               "VALUES (?, ?, ?, ?)"
         self.__cur.execute(
             sql,
             [
                 event_data['newEventName'],
+                event_data['calendarID'],
                 created,
                 owner,
                 event_data['startDate'],
             ]
         )
-        event_id = self.get_last_ID()
-        sql = "INSERT INTO calendar_events (calendar_id, event_id) VALUES (?, ?)"
-        self.__cur.execute(sql, [event_data['calendarID'], event_id])
         try:
             self.__con.commit()
             return self.get_last_ID()

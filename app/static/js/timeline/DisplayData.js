@@ -1,7 +1,7 @@
 var timer = 0;
 
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
-var color = d3.scaleOrdinal(d3.schemeCategory10);
+var color = d3.scaleOrdinal(['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38']);
 
 var detailHeight = 100,
     detailWidth = 200;
@@ -9,7 +9,7 @@ var detailHeight = 100,
 //load data async
 //TODO get data from SQL
 d3.queue()
-    .defer(d3.json, '/get_data')
+    .defer(d3.csv, '/static/assets/random_chart.csv')
     // .defer(d3.csv, "/static/assets/random_chart.csv")
     .await(ready);
 
