@@ -53,6 +53,16 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
+    def get_user_activity(self, email):
+        sql = "SELECT active FROM users WHERE ? = user_email"
+        self.__cur.execute(sql, [email])
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
+            return None
+
     def get_pass_hash(self, email):
         sql = "SELECT user_password FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
@@ -80,15 +90,6 @@ class ConnectionInstance:
             return [x[0] for x in self.__cur.fetchall()]
         except Exception as e:
             logging.debug('{}\nWhile trying to retrieve calendar IDs'.format(e))
-            return None
-
-    def get_calendar_members(self, cid):
-        sql = "SELECT calendar_members FROM calendars WHERE calendar_id = %s"
-        self.__cur.execute(sql, [cid])
-        try:
-            return [x[0] for x in self.__cur.fetchall()]
-        except Exception as e:
-            logging.debug('{}\nWhile trying to retrieve members from calendar: {}'.format(e, cid))
             return None
 
     def get_event_files(self, eid, rec):
@@ -234,6 +235,19 @@ class ConnectionInstance:
                 return None
         else:
             pass  # Does nothing if there is no file
+
+
+#######################################################################################
+            # Update
+
+    def activate_user(self, email):
+        sql = 'UPDATE users SET active = 1 WHERE ? = user_email;'
+        self.__cur.execute(sql, [email])
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
+
 
 #######################################################################################
             # Deletion

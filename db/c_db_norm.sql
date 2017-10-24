@@ -26,10 +26,10 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `user_id` BIGINT NOT NULL AUTO_INCREMENT,
-  `user_type` int(11) DEFAULT NULL,
   `user_name` varchar(45) NOT NULL,
   `user_email` varchar(45) NOT NULL,
   `user_password` varchar(80) NOT NULL,
+  `user_type` int(11) DEFAULT NULL,
   `user_phone` int(11) DEFAULT NULL,
   `user_record` varchar(45) DEFAULT NULL,
   `user_extra` varchar(45) DEFAULT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE `events` (
   `event_name` varchar(45) NOT NULL,
   `event_start` date NOT NULL,
   `event_end` date DEFAULT NULL,
-  `event_recurring` varchar(45) DEFAULT NULL,
+  `event_recurring` tinyint(1) NOT NULL DEFAULT '0',
   `event_location` varchar(45) DEFAULT NULL,
   `event_details` varchar(45) DEFAULT NULL,
   `event_extra` varchar(45) DEFAULT NULL,

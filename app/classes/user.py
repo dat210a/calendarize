@@ -9,7 +9,8 @@ class User:
         with ConnectionInstance() as con:
             self.user_id = con.get_user_id(self.email)
             self.username = con.get_username(self.email)
-            self.password = con.get_pass_hash(self.email)
+            self.active = con.get_user_activity(self.email)
+            con.activate_user(self.email)
 
     def __repr__(self):
         if not self.is_anonymous():
@@ -19,6 +20,8 @@ class User:
         return True
 
     def is_active(self):
+        # change this when verification complete:
+        # return self.active
         return True
 
     def is_anonymous(self):
