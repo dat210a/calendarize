@@ -1,6 +1,7 @@
 import logging
 import json
 import pprint as pp
+from app.funcs.log_manager import *
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
@@ -13,6 +14,10 @@ with open(conf_file, 'r') as cf:
     DB_PW = data['password']
     DB_DB = data['database']
     DB_HOST = data['host']
+
+ACTIVE_CONNECTIONS = []
+
+setup_logging('db_connection')
 
 
 class ConnectionInstance:
@@ -27,11 +32,14 @@ class ConnectionInstance:
                                        host=DB_HOST,
                                        database=DB_DB)
         self.__cur = self.__con.cursor(dictionary=True, cursor_class=MySQLCursorPrepared)
+        ACTIVE_CONNECTIONS.append(self)
+        self.id = len(ACTIVE_CONNECTIONS)
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        ACTIVE_CONNECTIONS.remove(self)
         self.__con.close()
 
     def db_generic_select(self, attr, table, val, cond):

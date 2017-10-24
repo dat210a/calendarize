@@ -12,12 +12,12 @@ in the GitHub repository README.md
 
 """
 import logging
-import json
 from classes import db_queries as db
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
+from classes.log_manager import LogHandler
 from flask_login import *
 from flask_login import login_user, current_user
 from funcs.logIn import check_password, hash_password
@@ -25,6 +25,11 @@ from funcs.logIn import login_func
 from funcs import file_tools
 
 app = Flask(__name__)
+
+lg_mng = LogHandler()
+syslog = logging.getLogger('system')
+userlog = logging.getLogger('user_activity')
+
 Mobility(app)
 
 
@@ -42,41 +47,6 @@ def load_user(email):
         if q.get_username(email) is None:
             return None
     return User(email)
-
-
-def setup_logging():
-    try:
-        lg = logging.getLogger(__name__)
-        lg.setLevel(logging.INFO)
-        handler = logging.FileHandler(filename='calendarize.log', encoding='utf-8', mode='a')
-        fmt = logging.Formatter('[%(asctime)s]:%(module)s:%(levelname)s: %(message)s', datefmt='%H:%M:%S')
-        handler.setFormatter(fmt)
-        lg.addHandler(handler)
-        return lg
-    except PermissionError as e:
-        print('{}\n'
-              'WARNING: Logging not enabled.\n'
-              'If you get this error, change your IDE working directory.\n'
-              'The application will still work, but nothing will be logged.'.format(e))
-        # In PyCharm, go to Run>Edit Configuration to set the working directory to the calendarize folder.
-
-
-def end_logging(log):
-    handlers = log.handlers[:]
-    for hdlr in handlers:
-        hdlr.close()
-        log.removeHandler(hdlr)
-
-
-def request_data(req):
-    res = '{} requested by {}'.format(req.url, req.remote_addr)
-    return res
-
-
-def log_basic():
-    # This handles logging of basic data that should be logged for all requests
-    if logger:
-        logger.info(request_data(request))
 
 
 def get_user_id():
@@ -97,13 +67,6 @@ def get_user_id():
 @mobile_template('/{mobile/}index.html')
 # @login_required
 def index(template):
-    log_basic()
-#    from classes.dummy_classes import ShardTestingClass
-#    for i in range(0, 5):
-#        with ShardTestingClass(app) as st:
-#            print(app.config['shards'])
-#            st.work()
-#        print(app.config['shards'])
     if current_user.is_authenticated:
         return redirect('/user_index')
     return render_template(template)
@@ -113,13 +76,6 @@ def index(template):
 @mobile_template('/{mobile/}user_index.html')
 @login_required
 def user_index(template):
-    log_basic()
-#    from classes.dummy_classes import ShardTestingClass
-#    for i in range(0, 5):
-#        with ShardTestingClass(app) as st:
-#            print(app.config['shards'])
-#            st.work()
-#        print(app.config['shards'])
     return render_template(template, name=current_user.username)
 
 
@@ -127,7 +83,6 @@ def user_index(template):
 @mobile_template('/{mobile/}calendar.html')
 @login_required
 def calendar(template):
-    log_basic()
     # TODO fetch user data
     return render_template(template, name=current_user.username)
 
@@ -187,7 +142,6 @@ def logout():
 @app.route('/view/<calendar_id>')
 @mobile_template('{mobile/}calendar.html')
 def view(template, calendar_id):
-    log_basic()
 
     with db.ConnectionInstance() as q:
 
@@ -210,7 +164,6 @@ def view(template, calendar_id):
 @mobile_template('{mobile/}template.html')
 @login_required
 def settings(template):
-    log_basic()
     # TODO load user's settings, then render a template with the settings
     return render_template(template)
 
@@ -272,14 +225,11 @@ def delete_cal():
                 q.db_del_cal(cal)
     
 
-
 ##################################################################
 
 
 if __name__ == '__main__':
-
-    logger = setup_logging()
-
+    lg_mng.setup_loggers()
     app.run()
+    lg_mng.teardown()
 
-    end_logging(logger)
