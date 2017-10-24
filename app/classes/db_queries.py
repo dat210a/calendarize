@@ -1,11 +1,10 @@
 import logging
 import json
 import pprint as pp
-from app.funcs.log_manager import *
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
-conf_file = 'cfg/db.json'
+conf_file = 'app/cfg/db.json'
 
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
@@ -17,7 +16,7 @@ with open(conf_file, 'r') as cf:
 
 ACTIVE_CONNECTIONS = []
 
-setup_logging('db_connection')
+d_log = logging.getLogger('db')
 
 
 class ConnectionInstance:
@@ -58,7 +57,7 @@ class ConnectionInstance:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
+            d_log.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
     def get_pass_hash(self, email):
@@ -68,7 +67,7 @@ class ConnectionInstance:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
+            d_log.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
 
     def get_username(self, email):
@@ -79,7 +78,7 @@ class ConnectionInstance:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+            d_log.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
             return None
 
     def get_calendars(self):
@@ -88,7 +87,7 @@ class ConnectionInstance:
         try:
             return [x[0] for x in self.__cur.fetchall()]
         except Exception as e:
-            logging.debug('{}\nWhile trying to retrieve calendar IDs'.format(e))
+            d_log.debug('{}\nWhile trying to retrieve calendar IDs'.format(e))
             return None
 
     def get_calendar_members(self, cid):
@@ -97,7 +96,7 @@ class ConnectionInstance:
         try:
             return [x[0] for x in self.__cur.fetchall()]
         except Exception as e:
-            logging.debug('{}\nWhile trying to retrieve members from calendar: {}'.format(e, cid))
+            d_log.debug('{}\nWhile trying to retrieve members from calendar: {}'.format(e, cid))
             return None
 
     def get_event_files(self, eid, rec):
@@ -106,7 +105,7 @@ class ConnectionInstance:
         try:
             return [x[0] for x in self.__cur.fetchall()]
         except Exception as e:
-            logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
+            d_log.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
 
     def db_get_cal_admin(self, cid=None, eid=None):
         # Fetches a list of admins for a calendar
@@ -121,10 +120,10 @@ class ConnectionInstance:
             return None
         try:
             payload = ([x[0] for x in self.__cur.fetchall()])
-            logging.debug('Result of calendar admin db request: {}'.format(payload))
+            d_log.debug('Result of calendar admin db request: {}'.format(payload))
             return payload
         except Exception as e:
-            logging.debug('{}\nWhile trying to retrieve admins for calendar.\n'
+            d_log.debug('{}\nWhile trying to retrieve admins for calendar.\n'
                           'Input parameters: cid={} eid={}'.format(e, cid, eid))
             return None
 
@@ -135,7 +134,7 @@ class ConnectionInstance:
             res = self.__cur.fetchall()
             cals = [r[0] for r in res]
         except Exception as e:
-            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
+            d_log.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
         sql = "SELECT event_id FROM calendar_events WHERE calendar_id = ?"
@@ -147,7 +146,7 @@ class ConnectionInstance:
             res = self.__cur.fetchall()
             events = [r[0] for r in res]
         except Exception as e:
-            logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
+            d_log.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None
 
         sql = "SELECT * FROM events WHERE event_id = ?"
@@ -167,7 +166,7 @@ class ConnectionInstance:
             self.__con.commit()
             return True
         except Exception as e:
-            logging.debug('{}\nWhile trying to insert user with data:\n'
+            d_log.debug('{}\nWhile trying to insert user with data:\n'
                           '\tUsername: {}\n'
                           '\tEmail: {}\n'
                           '\tPW hash: {}'.format(e, username, email, hashedpass))
@@ -198,7 +197,7 @@ class ConnectionInstance:
         try:
             self.__con.commit()
         except Exception as e:
-            logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
+            d_log.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
 
     def add_calendar(self, cal_data):
@@ -218,7 +217,7 @@ class ConnectionInstance:
         try:
             self.__con.commit()
         except Exception as e:
-            logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
+            d_log.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
             self.__con.rollback()
 
     def add_file(self, fname, eid, rec=0):
@@ -228,7 +227,7 @@ class ConnectionInstance:
             try:
                 self.__con.commit()
             except Exception as e:
-                logging.debug('{}\nWhile adding file with name:\n{}'.format(e, fname))
+                d_log.debug('{}\nWhile adding file with name:\n{}'.format(e, fname))
                 self.__con.rollback()
         else:
             pass  # Does nothing if there is no file
@@ -241,7 +240,7 @@ class ConnectionInstance:
         try:
             self.__con.commit()
         except Exception as e:
-            logging.debug('{}\nWhile trying to delete user: {}'.format(e, uid))
+            d_log.debug('{}\nWhile trying to delete user: {}'.format(e, uid))
             self.__con.rollback()
 
     def db_del_event(self, eid):
@@ -249,7 +248,7 @@ class ConnectionInstance:
         try:
             self.__con.commit()
         except Exception as e:
-            logging.debug('{}\nWhile trying to delete event: {}'.format(e, eid))
+            d_log.debug('{}\nWhile trying to delete event: {}'.format(e, eid))
             self.__con.rollback()
 
     def db_del_cal(self, cid):
@@ -257,5 +256,5 @@ class ConnectionInstance:
         try:
             self.__con.commit()
         except Exception as e:
-            logging.debug('{}\nWhile trying to delete calendar: {}'.format(e, cid))
+            d_log.debug('{}\nWhile trying to delete calendar: {}'.format(e, cid))
             self.__con.rollback()

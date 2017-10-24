@@ -12,23 +12,21 @@ in the GitHub repository README.md
 
 """
 import logging
+import pprint as pp
 from classes import db_queries as db
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
-from classes.log_manager import LogHandler
 from flask_login import *
 from flask_login import login_user, current_user
 from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
+from funcs.log_manager import setup_logger, teardown
 from funcs import file_tools
 
 app = Flask(__name__)
 
-lg_mng = LogHandler()
-syslog = logging.getLogger('system')
-userlog = logging.getLogger('user_activity')
 
 Mobility(app)
 
@@ -39,6 +37,11 @@ app.secret_key = 'hella secret'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = '/'
+
+
+@app.before_request
+def log_request():
+    syslog.info('{} requested by {}'.format(request.url, request.remote_addr))
 
 
 @login_manager.user_loader
@@ -229,7 +232,13 @@ def delete_cal():
 
 
 if __name__ == '__main__':
-    lg_mng.setup_loggers()
+
+    syslog = setup_logger('system')
+    userlog = setup_logger('user_activity')
+    syslog.info('Application started.')
+
     app.run()
-    lg_mng.teardown()
+
+    teardown(syslog)
+    teardown(userlog)
 
