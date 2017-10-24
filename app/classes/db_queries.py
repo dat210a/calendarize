@@ -1,6 +1,7 @@
 import logging
 import json
 import pprint as pp
+from funcs.file_tools import save_file
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
@@ -193,9 +194,11 @@ class ConnectionInstance:
             ]
         )
         sql = "INSERT INTO calendar_events (calendar_id, event_id) VALUES (?, ?)"
-        self.__cur.execute(sql, [event_data['parent'], event_data['id']])
+        # self.__cur.execute(sql, [event_data['parent'], event_data['id']])
         try:
             self.__con.commit()
+            if 'file' in event_data.keys():
+                self.add_file(event_data['file'], event_data['id'])
         except Exception as e:
             d_log.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
@@ -220,7 +223,8 @@ class ConnectionInstance:
             d_log.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
             self.__con.rollback()
 
-    def add_file(self, fname, eid, rec=0):
+    def add_file(self, rqdat, eid, rec=0):
+        fname = save_file(rqdat, eid)
         if fname:
             sql = "INSERT INTO event_files (event_id, file_name, recurring) VALUES (?, ?, ?)"
             self.__cur.execute(sql, eid, fname, rec)

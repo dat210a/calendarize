@@ -175,15 +175,27 @@ def settings(template):
 def save_settings():
     # val = request.form.get(name_of_form_field, None) <- Syntax for getting form data
     # TODO extract settings from form and store in db
-    return redirect(url_for(settings))  # reloads the settings page to show the new settings
+    return redirect(url_for('settings'))  # reloads the settings page to show the new settings
 
 
 @app.route('/add_event', methods=['POST'])
 def add_event():
-    eid = 'blank'  # temporary to shut up linting until complete
     with db.ConnectionInstance() as q:
-        # TODO get form information
-        q.add_file(file_tools.save_file(request, eid), eid)
+        e_data = {
+            'id': request.form.get('id'),
+            'name': request.form.get('name'),
+            'created': request.form.get('created'),
+            'details': request.form.get('details'),
+            'location': request.form.get('location'),
+            'start': request.form.get('start'),
+            'end': request.form.get('end'),
+            'time': request.form.get('time'),
+            'extra': request.form.get('extra'),
+        }
+        if 'file' in request.files:
+            e_data['file'] = request.files['file']
+        q.add_event(e_data)
+    return redirect(url_for('index'))
 
 ##################################################################
 # DELETION FUNCTIONS - emphasized because these not working
@@ -201,7 +213,7 @@ def delete_user():
     if del_user and req_user == del_user:  # ensures only the user can delete themselves
         with db.ConnectionInstance() as q:
             q.db_del_user(del_user)
-    return redirect(url_for(index))
+    return redirect(url_for('index'))
 
 
 @app.route('/delete_event', methods=['POST'])
@@ -214,6 +226,7 @@ def delete_event():
             admins = q.db_get_cal_admin(eid=event)
             if user in admins:
                 q.db_del_event(event)
+    return redirect(url_for('index'))
 
 
 @app.route('/delete_calendar', methods=['POST'])
@@ -226,7 +239,8 @@ def delete_cal():
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)
-    
+    return redirect(url_for('index'))
+
 
 ##################################################################
 
