@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = "any random string"
 # Application config
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "Yourdatabasepassword"
+app.config["DATABASE_PASSWORD"] = "ABsolve123"
 app.config["DATABASE_DB"] = "recovertest"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -20,7 +20,7 @@ app.config["MAIL_PORT"] = "465"
 app.config["MAIL_USE_SSL"] = True
 app.config['MAIL_USE_TLS'] = False
 app.config["MAIL_USERNAME"] = "dat210groupea@gmail.com"
-app.config["MAIL_PASSWORD"] = "youremailpassword"
+app.config["MAIL_PASSWORD"] = "48147640Aa"
 app.config["DEBUG"] = True  # only for development!
 mail = Mail(app)
 
@@ -52,7 +52,7 @@ def recover():
         db = get_db()
         cur = db.cursor()
         try:
-            qry = "select user_name from users where user_email=%s"
+            qry = "select user_id from users where user_email=%s"
             cur.execute(qry, (email,))
             try:
                 login_info = cur.fetchone()
@@ -61,14 +61,16 @@ def recover():
                 else:
                     # TODO: Generate random unique string for resetkey, store in database and send it along with the email.
                     x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+                    key = x  + str(login_info[0])
                     db = get_db()
                     cur = db.cursor()
                     try:
                         qry1 = "update users set resetkey =%s, expires = now()+ interval 24 hour where user_email=%s"
-                        cur.execute(qry1, (x,email,))
+                        cur.execute(qry1, (key,email,))
                         db.commit()
+                        print(key)
                         msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-                        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+x
+                        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
                         mail.send(msg)
                     except:
                         pass
@@ -98,6 +100,8 @@ def reset(resetkey):
                 flash("Empty password")
             elif new_password == info[1]:
                 flash("You cannot use the old password.")
+            elif len(new_password) < 6:
+                flash("Minimum 6 characters.")
             elif new_password == repeat_password:
                 db = get_db()
                 cur = db.cursor()
@@ -112,7 +116,7 @@ def reset(resetkey):
                 flash("Your password do not match")
         return render_template("reset.html")
     else:
-        return ("Invalid link")
+        return render_template("invalidlink.html")
 
 
 if __name__ == "__main__":
