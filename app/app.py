@@ -237,9 +237,8 @@ def get_data():
     """
     log_basic()
     with db.ConnectionInstance() as queries:
-        result = queries.fetch_data_for_display(current_user.user_id)
-    print(result)
-    return json.dumps(result, default=type_handler)
+        results = queries.fetch_data_for_display(current_user.user_id)
+    return json.dumps(results, default=type_handler)
 
 
 # should be moved to funcs/helper.py
