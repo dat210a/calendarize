@@ -17,6 +17,13 @@ $("#addCalendarForm").click(function(){
 })
 
 $("#addEventForm").click(function(){
+    selector = $('#calendarID');
+    selector.empty()
+    d3.selectAll('.group').each(function(d){
+        selector.append("<option value=" + d.name + ">" + d.name + "</option>");
+    })
+    selector.material_select();
+
     $('.side_tab').css('border-color', 'lightgrey');
     $("#calendarForm").hide()
     $("#eventForm").show()
@@ -25,7 +32,6 @@ $("#addEventForm").click(function(){
 
 $("#addCalendar").submit(function(e){
     e.preventDefault()
-    console.log($('#addCalendar').serialize())
     $.ajax({
         url: '/add_calendar',
         data: $(this).serialize(), 
@@ -46,7 +52,9 @@ $("#addEvent").submit(function(e){
         data: $(this).serialize(), 
         type: 'POST',
         success: function(response) {
-            console.log(response);
+            if (response == 'true') {
+                load_data()
+            }
         },
         error: function(error) {
             console.log(error);

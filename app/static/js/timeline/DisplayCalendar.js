@@ -15,7 +15,7 @@ var radius = 8;
 var tresholdNumPoints = 8;
 var k = 1;
 
-var parse = d3.timeParse('%_m/%_d/%Y');
+var parse = d3.timeParse('%Y-%m-%d');
 var time = d3.scaleTime()
                 .domain([new Date('1/1/2020'), new Date('12/31/2020')])
                 .range([0, width]);
@@ -88,7 +88,7 @@ d3.select('.timeline')
     .append('g')
     .attr('class', 'g-today')
     .append('text')
-        .attr('class', 'today')
+        .attr('class', 'todayMark')
         .attr('font-family', 'Material Icons')
         .attr('font-size', '20px')
         .text('account_circle')

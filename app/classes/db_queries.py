@@ -126,30 +126,22 @@ class ConnectionInstance:
         try:
             res = self.__cur.fetchall()
             cals = [r[0] for r in res]
-            # cals = [{'group':{'id':r[0]}} for r in res]
-            print (cals)
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-        sql = "SELECT event_id FROM calendar_events WHERE calendar_id = ?"
+        sql = "SELECT event_name, event_calendar_id, event_start, event_end, event_recurring FROM events WHERE event_calendar_id = ?"
         if len(cals) > 1:
             for i in range(len(cals) - 1):
-                sql += " OR calendar_id = ?"
+                sql += " OR event_calendar_id = ?"
         self.__cur.execute(sql, cals)
         try:
-            res = self.__cur.fetchall()
-            events = [r[0] for r in res]
-            print(events)
+            events = self.__cur.fetchall()
+            return [dict(zip(('id', 'group', 'start_date', 'end_date', 'recurring'), event)) for event in events]
         except Exception as e:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None
 
-        # sql = "SELECT * FROM events WHERE event_id = ?"
-        # if len(events) > 1:
-        #     for i in range(len(events)-1):
-        #         sql += " OR event_id = ?"
-        # # TODO complete with relevant values to fetch and return
 
     def get_last_ID(self):
         sql = 'SELECT LAST_INSERT_ID();'
@@ -201,8 +193,8 @@ class ConnectionInstance:
 
     def add_event(self, event_data, created, owner):
         sql = "INSERT INTO events " \
-              "(event_name, event_calendar_id, event_date_created, event_owner, event_start)" \
-              "VALUES (?, ?, ?, ?, ?)"
+              "(event_name, event_calendar_id, event_date_created, event_owner, event_start, event_end)" \
+              "VALUES (?, ?, ?, ?, ?, ?)"
         self.__cur.execute(
             sql,
             [
@@ -211,6 +203,7 @@ class ConnectionInstance:
                 created,
                 owner,
                 event_data['startDate'],
+                event_data['endDate'],
             ]
         )
         try:

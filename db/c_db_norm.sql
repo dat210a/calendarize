@@ -86,19 +86,18 @@ DROP TABLE IF EXISTS `events`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `events` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
-  `event_calendar_id` varchar(45) NOT NULL,  
+  `event_calendar_id` int(11) NOT NULL,  
   `event_date_created` date NOT NULL,
   `event_owner` varchar(45) NOT NULL,
   `event_name` varchar(45) NOT NULL,
   `event_start` date NOT NULL,
-  `event_end` date DEFAULT NULL,
+  `event_end` date NOT NULL,
   `event_recurring` tinyint(1) NOT NULL DEFAULT '0',
   `event_location` varchar(45) DEFAULT NULL,
   `event_details` varchar(45) DEFAULT NULL,
   `event_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`event_id`),
-  UNIQUE KEY `deleted_UNIQUE` (`deleted`)
+  PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

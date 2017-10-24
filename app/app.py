@@ -12,8 +12,7 @@ in the GitHub repository README.md
 
 """
 import logging
-import json
-from datetime import datetime
+import json, datetime
 from classes import db_queries as db
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
@@ -240,11 +239,16 @@ def get_data():
     with db.ConnectionInstance() as queries:
         result = queries.fetch_data_for_display(current_user.user_id)
     print(result)
-    with open('static/assets/test_data.json', 'r') as cf:
-        data = json.load(cf)
-    print(data)
-    print(json.dumps(data))
-    return json.dumps(data)
+    return json.dumps(result, default=type_handler)
+
+
+# should be moved to funcs/helper.py
+def type_handler(x):
+    if isinstance(x, datetime.date):
+        return x.isoformat()
+    elif isinstance(x, bytearray):
+        return x.decode('utf-8')
+    raise TypeError("Unknown type")
 
 
 @app.route('/view/<calendar_id>')
@@ -274,20 +278,22 @@ def view(template, calendar_id):
 @login_required
 def add_calendar():
     with db.ConnectionInstance() as queries:
-        created = queries.add_calendar(request.form, datetime.utcnow(), current_user.user_id)
+        created = queries.add_calendar(request.form, datetime.datetime.utcnow(), current_user.user_id)
         if created:
-            return json.dumps({'success': 'true'})
-    return json.dumps({'success': 'false'})
+            return 'true'
+    return 'false'
 
 
 @app.route('/add_event', methods=['POST'])
 @login_required
 def add_event():
-    with db.ConnectionInstance() as queries:
-        created = queries.add_event(request.form, datetime.utcnow(), current_user.user_id)
-        if created:
-            return json.dumps({'success': 'true'})
-    return json.dumps({'success': 'false'})
+    data = request.form
+    if data['newEventName'] and data['calendarID'] and data['startDate'] and data['endDate']:
+        with db.ConnectionInstance() as queries:
+            created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
+            if created:
+                return 'true'
+    return 'false'
 
 
 @app.route('/settings')

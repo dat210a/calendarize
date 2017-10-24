@@ -72,7 +72,7 @@ function rescale() {
         })
     
     //reposition today
-    d3.select('.today').attr('x', function(){return timeRescaled(new Date())})
+    d3.select('.todayMark').attr('x', function(){return timeRescaled(new Date())})
 
     //reposition datapoints
     if (!d3.selectAll('.data').empty()){  
