@@ -10,7 +10,6 @@ class User:
             self.user_id = con.get_user_id(self.email)
             self.username = con.get_username(self.email)
             self.active = con.get_user_activity(self.email)
-            con.activate_user(self.email)
 
     def __repr__(self):
         if not self.is_anonymous():
