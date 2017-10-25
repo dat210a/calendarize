@@ -1,7 +1,10 @@
 
 //id,date,duration,group,recurring
+var event_id = 0
+
 
 function display(data){
+    event_id = data.id;
     if (+data.recurring == 1) var format = d3.timeFormat('%d / %m')
     else var format = d3.timeFormat('%d/%m/%Y')
 

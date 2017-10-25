@@ -23,8 +23,9 @@ function toggle(){
 
 // check for credentials at login
 $('#btnLogin').click(function(e){
+    e.preventDefault()
     $.ajax({
-        url: '/login',
+        url: '/verify_credentials',
         data: $('#formLogin').serialize(),
         type: 'POST',
         success: function(response) {
@@ -41,14 +42,13 @@ $('#btnLogin').click(function(e){
                             });
             }
             else
-                window.location = response;
+                $('#formLogin').submit()
 
         },
         error: function(error) {
             console.log(error);
         }
     });
-    return false;
 });
 
 

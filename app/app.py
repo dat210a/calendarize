@@ -192,6 +192,19 @@ def register():
     return redirect('/')
 
 
+@app.route('/verify_credentials', methods=['GET', 'POST'])
+def verify_credentials():
+    """
+    """
+    if request.method == "POST":
+        email = request.form['inputEmail']
+        password = request.form["inputPassword"]
+        if email and user_exists(email) and check_password(password, email):
+            return 'true'
+        return 'false'
+    return redirect('/')
+
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     """
@@ -207,8 +220,7 @@ def login():
                 else: 
                     remember_me = False
                 login_user(user, remember=remember_me)
-                return '/user_index'
-        return 'false'
+                return redirect('/user_index')
     return redirect('/')
 
 
@@ -238,7 +250,7 @@ def get_data():
     """
     log_basic()
     with db.ConnectionInstance() as queries:
-        results = queries.fetch_data_for_display(current_user.user_id)
+        results = queries.fetch_data_for_display(current_user.user_id)       
     return json.dumps(results, default=type_handler)
 
 
@@ -290,12 +302,20 @@ def add_calendar():
 @login_required
 def add_event():
     data = request.form
-    if data['newEventName'] and data['calendarID'] and data['startDate'] and data['endDate']:
+    if data['newEventName'] and data['calendarID'] and data['startDate']:
         with db.ConnectionInstance() as queries:
             created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
             if created:
                 return 'true'
     return 'false'
+
+
+@app.route('/add_files', methods=['POST'])
+@login_required
+def add_files():
+    print (request.form)
+    print (request.files)
+    return 'true'
 
 
 @app.route('/settings')

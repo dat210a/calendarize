@@ -4,7 +4,7 @@ import pprint as pp
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
-conf_file = 'cfg/db.json'
+conf_file = "cfg/db.json"
 
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
@@ -216,7 +216,7 @@ class ConnectionInstance:
                 created,
                 owner,
                 event_data['startDate'],
-                event_data['endDate'],
+                event_data['endDate'] if 'endDate' in event_data else event_data['startDate'],
                 1 if 'recurring' in event_data else 0,
             ]
         )

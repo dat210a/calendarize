@@ -75,7 +75,22 @@
                     </tr>
                     <tr>
                         <td>Files</td>
-                        <td class='eventFiles'>NaN</td>
+                        <td class='eventFiles'>
+                            <form id="formFiles" action="#">
+                                <div class="file-field input-field row">
+                                    <div class="btn">
+                                        <span>File</span>
+                                        <input type="file" name="file" multiple>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                                    </div>
+                                </div>
+                                <div class="row right">
+                                    <a id="addFiles" class="waves-effect waves-light btn">upload</a>
+                                </div>
+                            </form>
+                        </td>
                     </tr>
                 </tbody>
             </table>

@@ -10,7 +10,6 @@ var detailHeight = 100,
 function load_data(){
     d3.queue()
         .defer(d3.json, '/get_data')
-        // .defer(d3.csv, "/static/assets/random_chart.csv")
         .await(ready);
 }
 
