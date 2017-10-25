@@ -11,6 +11,4 @@ $(document).ready(function() {
         closeOnSelect: false, // Close upon selecting a date,
         format: 'yyyy-mm-dd'
     });
-
-    $(".dropdown-button").dropdown();
 });
