@@ -1,36 +1,44 @@
 [
     {
-        "id": 1,
-        "name": "cal_1",
-        "events":
-            [
-                {
-                    "name": "ev_1",
-                    "startDate": 1
-                },
-                {
-                    "name": "ev_2",
-                    "startDate": 2
-                }
-            ]
+        "calendar": {
+            "id": 1,
+            "name": "cal_1",
+            "events":
+                [
+                    {
+                        "event": {
+                            "name": "ev_1",
+                            "startDate": 1
+                        }
+                    },
+                    {
+                        "event": {
+                            "name": "ev_2",
+                            "startDate": 2
+                        }
+                    }
+                ]
+        }
     },
     {
-        "id": 2,
-        "name": "cal_2",
-        "events":
-            [
-                {
-                    "event": {
-                        "name": "ev_1",
-                        "startDate": 6
+        "calendar": {
+            "id": 2,
+            "name": "cal_2",
+            "events":
+                [
+                    {
+                        "event": {
+                            "name": "ev_1",
+                            "startDate": 6
+                        }
+                    },
+                    {
+                        "event": {
+                            "name": "ev_2",
+                            "startDate": 7
+                        }
                     }
-                },
-                {
-                    "event": {
-                        "name": "ev_2",
-                        "startDate": 7
-                    }
-                }
-            ]
+                ]
+        }
     }
 ]
