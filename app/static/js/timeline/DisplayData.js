@@ -9,22 +9,21 @@ var detailHeight = 100,
 //load data async
 //TODO get data from SQL
 d3.queue()
-    .defer(d3.csv, '/static/assets/random_chart.csv')
+    .defer(d3.json, '/get_data')
     // .defer(d3.csv, "/static/assets/random_chart.csv")
     .await(ready);
 
-function ready(error, datapoints){
+function ready(error, allData){
     if (error){
         console.log("Can't load the data")
         return;
     }
-    console.log(datapoints)
+    console.log(allData)
+    allData.forEach(function(d, i){
+        d.color = color(i)
+    })
+    AddGroupButtons(allData)
 
-    //populate groups on the bottom menu
-    var setOfGroups = [... new Set(datapoints.map(function(d){return d.group;}))];
-    var groups = new Array(setOfGroups.length)
-    setOfGroups.forEach(function(d, i){groups[i] = {name: setOfGroups[i], color: color(i)}})
-    AddGroupButtons(groups)
 
     //sort data so its displayed from right to left
     //due to overlap
@@ -62,7 +61,6 @@ function ready(error, datapoints){
                             .attr('class', 'points')
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
-                                d.color = groups.filter(function(gr){return gr.name == d.group})[0].color
                                 return d.color
                             })
                             .attr("height", radius*2)

@@ -11,8 +11,6 @@ d3.selectAll('svg')
             .attr('up', true)
             .append('rect')
                 .attr('class', 'bottomBase')
-                .style('fill', 'black')
-                .style('opacity', 0.2)
                 .attr('width', totalWidth)
                 .attr('height', bottomBarHeight);
 
