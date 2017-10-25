@@ -216,7 +216,7 @@ class ConnectionInstance:
                 created,
                 owner,
                 event_data['startDate'],
-                event_data['endDate'] if 'endDate' in event_data else event_data['startDate'],
+                event_data['startDate'] if event_data['endDate'] == '' else event_data['endDate'],
                 1 if 'recurring' in event_data else 0,
             ]
         )
@@ -263,7 +263,7 @@ class ConnectionInstance:
         #TODO
         pass
     
-    def update_calendar(self, event_data):
+    def update_event(self, event_data):
         #TODO
         pass
 
