@@ -41,9 +41,9 @@ $('#btnLogin').click(function(e){
                                 $('#loginEmail').removeClass('validate invalid');
                             });
             }
-            else
+            else {
                 $('#formLogin').submit()
-
+            }
         },
         error: function(error) {
             console.log(error);

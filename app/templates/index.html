@@ -21,7 +21,7 @@
                     </div>
                     <div class="collapsible-body" style="background-color: white">
                         <div>
-                            <form id="formLogin" class="formLogin">
+                            <form id="formLogin" class="formLogin" method='POST', action="/login">
                                 <div class="row">
                                     <div class="input-field col s6">
                                         <input id="loginEmail" name="inputEmail" type="email" required autofocus />
@@ -43,7 +43,7 @@
                                         <label for="remember">Remember me</label>
                                     </div>
                                     <div class="col s6">
-                                        <button id="btnLogin" class="right btn waves-effect waves-light" type="submit" method="POST" action="/login">Login
+                                        <button id="btnLogin" class="right btn waves-effect waves-light" type="submit">Login
                                             <i class="material-icons right">send</i>
                                         </button>
                                     </div>
