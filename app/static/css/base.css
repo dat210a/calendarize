@@ -3,6 +3,7 @@ body{
     min-height: 100vh; 
     flex-direction: column;
 }
+<<<<<<< HEAD
 
 nav ul a {
     color: #F1F0F0;
@@ -19,7 +20,10 @@ nav ul a {
 .btn:hover,
 .btn-large:hover,
 .btn:active,
-.btn-large:active {
+.btn-large:active,
+.btn:focus, 
+.btn-large:focus, 
+.btn-floating:focus {
     background-color: #268DAF;
 }
 
@@ -31,4 +35,5 @@ a {
     height: 90%;
     margin-left: 10px;
 }
-
+=======
+>>>>>>> 41294e2de9637528bb6bbe07f4e1cc989fe31a4a

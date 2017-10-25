@@ -17,13 +17,8 @@ $('#login_btn').click(function(){
     $('.collapsible').collapsible('open', 0);
 })
 
-$('#register_btn').click(function(){
-    toggle()
-    $('.collapsible').collapsible('open', 1);
-})
-
 function toggle(){
-    $('#myModal').toggle();
+    $('#myModal, #login_btn, #signup_btn').toggle();
 }
 
 // check for credentials at login
