@@ -23,9 +23,10 @@ function ready(error, allData){
     datapoints = allData[1]
     groups = allData[0]
 
-
     groups.forEach(function(d, i){d.color = color(i)})
     AddGroupButtons(groups)
+
+    if (datapoints.length == 0) return
 
     //sort data so its displayed from right to left
     //due to overlap
@@ -194,53 +195,55 @@ function ticked() {
 
 function showDetails(){
     //how many points are displayed
-    var pointsOnScreen = d3.selectAll('.data').selectAll('.datapoints')
-        .filter(function(d){
-            return ((d.x > 0) && (d.x < width) && d3.select(this).style("display") == 'inline');
-        }).data().length
+    if (!d3.selectAll('.data').empty()){
+        var pointsOnScreen = d3.selectAll('.data').selectAll('.datapoints')
+            .filter(function(d){
+                return ((d.x > 0) && (d.x < width) && d3.select(this).style("display") == 'inline');
+            }).data().length
 
-    if (k < 3.3 && tresholdNumPoints < pointsOnScreen){
-        if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'inline'){
-            d3.selectAll('.data').selectAll('.detailContainer')
-                    .transition()
-                    .duration(500)
-                    .attr('transform', function(d){
-                        return 'translate(' + d.x + ',' + 0 + ')scale(0)';
-                    })
-                    .on("start", function(){
-                        d3.selectAll('.data').selectAll('path').style('display', 'none');
-                    })
-                    .on("end", function(){d3.select(this).style('display', 'none')});
-        };
-    }
-    else {
-        if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'none'){
-            d3.selectAll('.data').selectAll('.detailContainer')
+        if (k < 3.3 && tresholdNumPoints < pointsOnScreen){
+            if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'inline'){
+                d3.selectAll('.data').selectAll('.detailContainer')
                         .transition()
                         .duration(500)
                         .attr('transform', function(d){
-                            var parent = this.parentNode.__data__;
-                            d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
-                            return 'translate(' + d.x + ',' + (d.y-50) + ')scale(1)';
+                            return 'translate(' + d.x + ',' + 0 + ')scale(0)';
                         })
                         .on("start", function(){
-                            d3.select(this).style('display', 'inline')
-                                .attr('transform', function(d){
-                                    return 'translate(' + d.x + ',' + 0 + ')scale(0)';
-                                })
+                            d3.selectAll('.data').selectAll('path').style('display', 'none');
                         })
-                        .on("end", function(){ 
-                            d3.selectAll('.miniID')
-                                .attr('x', 15)
-                                .attr('y', 30)
-                            d3.selectAll('.miniDate')
-                                .attr('x', 15)
-                                .attr('y', detailHeight/2 + 30)                              
-                            d3.selectAll('.data').selectAll('path').style('display', 'inline');
-                        })
-        } 
+                        .on("end", function(){d3.select(this).style('display', 'none')});
+            };
+        }
+        else {
+            if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'none'){
+                d3.selectAll('.data').selectAll('.detailContainer')
+                            .transition()
+                            .duration(500)
+                            .attr('transform', function(d){
+                                var parent = this.parentNode.__data__;
+                                d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
+                                return 'translate(' + d.x + ',' + (d.y-50) + ')scale(1)';
+                            })
+                            .on("start", function(){
+                                d3.select(this).style('display', 'inline')
+                                    .attr('transform', function(d){
+                                        return 'translate(' + d.x + ',' + 0 + ')scale(0)';
+                                    })
+                            })
+                            .on("end", function(){ 
+                                d3.selectAll('.miniID')
+                                    .attr('x', 15)
+                                    .attr('y', 30)
+                                d3.selectAll('.miniDate')
+                                    .attr('x', 15)
+                                    .attr('y', detailHeight/2 + 30)                              
+                                d3.selectAll('.data').selectAll('path').style('display', 'inline');
+                            })
+            } 
+        }
+        simUpdate();
     }
-    simUpdate();
 }
 
 //draw lines data-details

@@ -184,14 +184,14 @@ class ConnectionInstance:
             self.__con.rollback()
             return None
         
-    def add_calendar(self, cal_data, created, owner):
+    def add_calendar(self, created, owner, cal_name="Default"):
         sql = "INSERT INTO calendars " \
               "(calendar_name, calendar_date_created, calendar_owner) " \
               "VALUES (?, ?, ?)"
         self.__cur.execute(sql, [
-            cal_data['newCalendarName'],
+            cal_name,
             created,
-            owner
+            owner,
         ])
         calendar_id = self.get_last_ID()
         sql = "INSERT INTO user_calendars (user_id, calendar_id, role) VALUES (?, ?, ?)"
@@ -200,7 +200,7 @@ class ConnectionInstance:
             self.__con.commit()
             return self.get_last_ID()
         except Exception as e:
-            logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
+            logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_name)))
             self.__con.rollback()
             return None
 

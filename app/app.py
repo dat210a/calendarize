@@ -182,10 +182,11 @@ def register():
         if name and email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
                 added = queries.add_user(name, email, hash_password(password))
-            if (added):
-                user = User(email)
-                login_user(user)
-                return redirect('/calendar')
+                if (added):
+                    user = User(email)
+                    login_user(user)
+                    queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
+                    return redirect('/calendar')
     # reload if something not right
     # TODO maybe some error messages
     return redirect('/')
@@ -276,9 +277,10 @@ def view(template, calendar_id):
 @app.route('/add_calendar', methods=['POST'])
 @login_required
 def add_calendar():
-    if request.form['newCalendarName']:
+    cal_name = request.form['newCalendarName']
+    if cal_name:
         with db.ConnectionInstance() as queries:
-            created = queries.add_calendar(request.form, datetime.datetime.utcnow(), current_user.user_id)
+            created = queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id, cal_name)
             if created:
                 return 'true'
     return 'false'
