@@ -155,7 +155,7 @@ function ready(error, allData){
                 .style('fill', function(){return data.color;});
         });
     
-    // d3.select('.scrollArea').call(zoom.translateBy, 0)
+    d3.select('.scrollArea').call(zoom.translateBy, 0)
 };
 
 //update data position after forces have taken effect
