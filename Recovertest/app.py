@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = "any random string"
 # Application config
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "ABsolve123"
+app.config["DATABASE_PASSWORD"] = "-------"
 app.config["DATABASE_DB"] = "recovertest"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -20,7 +20,7 @@ app.config["MAIL_PORT"] = "465"
 app.config["MAIL_USE_SSL"] = True
 app.config['MAIL_USE_TLS'] = False
 app.config["MAIL_USERNAME"] = "dat210groupea@gmail.com"
-app.config["MAIL_PASSWORD"] = "48147640Aa"
+app.config["MAIL_PASSWORD"] = "-----"
 app.config["DEBUG"] = True  # only for development!
 mail = Mail(app)
 
