@@ -35,14 +35,14 @@ function resize(){
         .attr('transform', 'translate(' 
             + (xPadding + width) + ',' 
             + midScreen + ')')
-        .select('rect')
+        .selectAll('rect')
             .attr('height', totalHeight)
             .attr('y', -midScreen)
 
     leftSideBar
         .attr('transform', 'translate(' 
             + xPadding + ',' + midScreen + ')')
-        .select('rect')
+        .selectAll('rect')
             .attr('height', totalHeight)
             .attr('y', -midScreen)
 

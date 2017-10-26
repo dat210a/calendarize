@@ -32,6 +32,7 @@ $("#addEventForm").click(function(){
 
 $("#addCalendar").submit(function(e){
     e.preventDefault()
+    console.log($('#endDate'))
     $.ajax({
         url: '/add_calendar',
         data: $(this).serialize(), 

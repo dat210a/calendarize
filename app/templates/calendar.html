@@ -7,12 +7,13 @@
 
     <div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
         <div class="calendarContainer">
-            <!-- main calendar -->
-            <div class="fixed-action-btn horizontal", style="position: absolute; display: inline-block; right: 15px; top: 15px;">
+            <!-- options button -->
+            <div class="fixed-action-btn horizontal", style="position: absolute; height: 0; display: inline-block; right: 15px; top: 15px;">
                 <a class="waves-effect waves-light btn-floating btn-large grey" onclick="Materialize.toast('Not yet implemented', 4000)">
                     <i class="large material-icons">menu</i>
                 </a>
             </div>
+            <!-- main calendar -->
             <svg class="calendarMain"></svg>
             <!-- toolbar -->
             <div class="calendarToolbox">
@@ -170,6 +171,7 @@
     <!-- TODO make a bundle -->
     <script src="/static/js/lib/d3.min.js"></script>
     <script src="/static/js/timeline/DisplayCalendar.js"></script>
+    <script src="/static/js/timeline/navigation_buttons.js"></script>    
     <script src="/static/js/timeline/SubbedGroups.js"></script>
     <script src="/static/js/timeline/simulation.js"></script>
     <script src="/static/js/timeline/DisplayData.js"></script>
