@@ -120,6 +120,7 @@ function ready(error, allData){
         .on('click', function (d, i) {
             display(this.parentNode.__data__);
         });
+
     
     detailContainer
         .append('text')

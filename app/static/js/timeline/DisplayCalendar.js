@@ -32,17 +32,10 @@ var svg = d3.select('svg')
                     .attr('height', height)
                     .attr("transform", "translate(" + 0 + "," + 0 + ")")
 
+//year display
 svg.append('g')
         .attr("class", "background_items")
         .attr("transform", "translate(" + xPadding + ", 0)")
-        .append('rect')
-            .attr('class', 'scrollArea')
-            .attr("height", height - bottomOffset)
-            .attr("width", width)
-            .style('fill', "transparent")
-
-//year display
-svg.select(".background_items")
         .append("g")
             .attr("class", "Year")
             .attr('transform', 'translate('+ width/2 +',' + 75 +')')
@@ -94,6 +87,23 @@ d3.select('.timeline')
         .text('account_circle')
         .attr('y', 10)
 
+svg.append('g')
+        .attr("class", "foreground_items")
+        .attr("transform", "translate(" + xPadding + ", 0)")
+        .append('rect')
+            .attr('class', 'scrollArea')
+            .attr("height", height - bottomOffset)
+            .attr("width", width)
+            .style('fill', "transparent")
+            .on('click', function(){
+                d3.select(this).attr('display', 'none');
+                var element = document.elementFromPoint(event.clientX,event.clientY)
+                d3.select($(element).parent()[0]).dispatch('click')
+                d3.select(this).attr('display', 'inline');
+            })
+
+
+
 //left side padding
 var leftSideBar = svg.append('g')
                         .attr("class", "leftSideBar")
@@ -141,3 +151,5 @@ rightSideBar.append('line')
             .attr("y1", -40)
             .attr("y2", +40);
 
+
+            
