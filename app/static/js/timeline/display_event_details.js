@@ -10,10 +10,18 @@ function display(data){
 
     $('.side_tab').css('border-color', data.color);
 
-    $('.eventID').text(data.name)
+    $('.eventName').text(data.name)
     $('.eventDateStart').text(format(parse(data.start_date)))
     $('.eventDateEnd').text(format(parse(data.end_date)))
-    $('.eventGroup').text(data.group)
+    $('.eventGroup').text(function(){
+        groupName = d3.selectAll('.group')
+                            .filter(function(d){
+                                return d.id == data.group
+                            })
+                            .data()[0]
+                                .name
+        return groupName;
+    })
     $('.eventRecur').text(function () {return +data.recurring == 1 ? 'YES' : 'NO'})
     //$('eventFiles').text(data.files)
 

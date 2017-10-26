@@ -8,19 +8,24 @@
     <div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
         <div class="calendarContainer">
             <!-- main calendar -->
+            <div class="fixed-action-btn horizontal", style="position: absolute; display: inline-block; right: 15px; top: 15px;">
+                <a class="waves-effect waves-light btn-floating btn-large grey" onclick="Materialize.toast('Not yet implemented', 4000)">
+                    <i class="large material-icons">menu</i>
+                </a>
+            </div>
             <svg class="calendarMain"></svg>
             <!-- toolbar -->
             <div class="calendarToolbox">
                 <!-- FAB -->
-                <div class="fixed-action-btn horizontal", style="position: absolute; display: inline-block; right: 50px; bottom: 15px;">
-                    <a class="btn-floating btn-large red">
+                <div class="fixed-action-btn horizontal", style="position: absolute; display: inline-block; right: 15px; bottom: 15px;">
+                    <a class="btn-floating btn-large grey">
                         <i class="large material-icons">add</i>
                     </a>
                     <ul>
-                        <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue"><i class="material-icons">center_focus_strong</i></a></li>
-                        <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li>
-                        <li><a id="addCalendarForm" class="waves-effect waves-light btn-floating yellow darken-1"><i class="material-icons">insert_invitation</i></a></li>
-                        <li><a id='addEventForm' class="waves-effect waves-light btn-floating red"><i class="material-icons">playlist_add</i></a>
+                        <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue tooltipped" data-position="top" data-delay="50" data-tooltip="Today"><i class="material-icons">center_focus_strong</i></a></li>
+                        <!-- <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li> -->
+                        <li><a id="addCalendarForm" class="waves-effect waves-light btn-floating yellow darken-1 tooltipped" data-position="top" data-delay="50" data-tooltip="New calendar"><i class="material-icons">insert_invitation</i></a></li>
+                        <li><a id='addEventForm' class="waves-effect waves-light btn-floating red tooltipped" data-position="top" data-delay="50" data-tooltip="New event"><i class="material-icons">playlist_add</i></a>
                         </li>
                     </ul>
                 </div>
@@ -55,7 +60,7 @@
                 <tbody>
                     <tr>
                         <td>Name</td>
-                        <td class='eventID'>NaN</td>
+                        <td class='eventName'>NaN</td>
                     </tr>
                     <tr>
                         <td>Start Date</td>

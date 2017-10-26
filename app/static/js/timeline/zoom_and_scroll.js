@@ -18,7 +18,7 @@ function resetView() {
     //set next event
     d3.selectAll('.datapoints')
         .filter(function(d){
-            return d.x > +d3.select('.today').attr('x');
+            return d.x > +d3.select('.todayMark').attr('x');
         })
         .filter(function(d, i, j){
             return i == j.length-1;
