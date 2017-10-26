@@ -178,13 +178,15 @@ def register():
         name = request.form['inputUsername']
         email = request.form['inputEmail']
         password = request.form['inputPassword']
-        # validate the received values
+        # validate received values
         if name and email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
+                #adds new user to the database
                 added = queries.add_user(name, email, hash_password(password))
                 if (added):
                     user = User(email)
                     login_user(user)
+                    #adds default calendar to that user
                     queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
                     return redirect('/calendar')
     # reload if something not right
@@ -257,6 +259,7 @@ def get_data():
 # should be moved to funcs/helper.py
 def type_handler(x):
     if isinstance(x, datetime.date):
+        # TODO change date into clients time zone
         return x.isoformat()
     elif isinstance(x, bytearray):
         return x.decode('utf-8')
@@ -303,8 +306,11 @@ def add_calendar():
 def add_event():
     data = request.form
     if data['newEventName'] and data['calendarID'] and data['startDate']:
+        # TODO conversion of dates into right format if they are not and into utc
+        # TODO check that startDate <= endDate
         with db.ConnectionInstance() as queries:
             created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
+            print (created)
             if created:
                 return 'true'
     return 'false'

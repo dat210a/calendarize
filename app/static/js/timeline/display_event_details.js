@@ -10,7 +10,7 @@ function display(data){
 
     $('.side_tab').css('border-color', data.color);
 
-    $('.eventID').text(data.id)
+    $('.eventID').text(data.name)
     $('.eventDateStart').text(format(parse(data.start_date)))
     $('.eventDateEnd').text(format(parse(data.end_date)))
     $('.eventGroup').text(data.group)

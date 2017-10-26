@@ -36,7 +36,7 @@ function ready(error, allData){
     //objects whith coordinates for detail boxes
     var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
-        detailsPoints[i] = {'id': myData[i].id, 'date': myData[i].start_date};
+        detailsPoints[i] = {'name': myData[i].name, 'date': myData[i].start_date};
     }
 
     //setup simulation based on data
@@ -64,7 +64,8 @@ function ready(error, allData){
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
                                 d.color = groups.filter(function(gr){
-                                    return gr.id == d.group})[0].color
+                                    return gr.id == d.group
+                                })[0].color
                                 return d.color
                             })
                             .attr("height", radius*2)
@@ -127,7 +128,7 @@ function ready(error, allData){
             .attr('y', 30)
             .style("font-size", 20)
             .text(function(){
-                return this.parentNode.__data__.id;
+                return this.parentNode.__data__.name;
             });
 
     detailContainer

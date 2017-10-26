@@ -142,14 +142,14 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-        sql = "SELECT event_name, event_calendar_id, event_start, event_end, event_recurring FROM events WHERE event_calendar_id = ?"
+        sql = "SELECT event_id, event_name, event_calendar_id, event_start, event_end, event_recurring FROM events WHERE event_calendar_id = ?"
         if len(cals) > 1:
             for i in range(len(cals) - 1):
                 sql += " OR event_calendar_id = ?"
         self.__cur.execute(sql, cals)
         try:
             events = self.__cur.fetchall()
-            events2 = [dict(zip(('id', 'group', 'start_date', 'end_date', 'recurring'), event)) for event in events]
+            events2 = [dict(zip(('id', 'name', 'group', 'start_date', 'end_date', 'recurring'), event)) for event in events]
             return [calendars2, events2]
         except Exception as e:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
