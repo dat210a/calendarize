@@ -304,9 +304,9 @@ def add_calendar():
 @login_required
 def add_event():
     data = request.form
-    if data['newEventName'] and data['calendarID'] and data['startDate']:
+    if data['newEventName'] and data['calendarID'] and data['startDate'] \
+                            and (data['endDate'] == '' or data['endDate'] >= data['startDate']):
         # TODO conversion of dates into right format if they are not and into utc
-        # TODO check that startDate <= endDate
         with db.ConnectionInstance() as queries:
             created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
             if created:

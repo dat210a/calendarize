@@ -1,4 +1,10 @@
 
+.dropdown-content.active{
+    min-width: 200px;
+    max-width: 200px;
+
+}
+
 .dropdown-content li>a, span{
     color: black  
 }

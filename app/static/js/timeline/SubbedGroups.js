@@ -4,17 +4,21 @@ var groupBoxDim = 150;
 var padding = 20;
 
 //create bottom bar 
-d3.selectAll('svg')
-        .append('g')
-            .attr("class", "bottomMenu")
-            .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
-            .attr('up', true)
-            .append('rect')
-                .attr('class', 'bottomBase')
-                .attr('width', totalWidth)
-                .attr('height', bottomBarHeight);
+var bottomMenu = d3.selectAll('svg')
+                        .append('g')
+                            .attr("class", "bottomMenu")
+                            .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
+                            .attr('up', true)
 
-d3.selectAll('.bottomMenu').append('g').attr('class', 'agendas')
+bottomMenu.append('rect')
+    .attr('class', 'bottomBase')
+    .attr('width', totalWidth)
+    .attr('height', bottomBarHeight);
+
+bottomMenu.append('g')
+            .attr('class', 'agendas')
+
+
 
 d3.select('.toggleGroupVisibility')
                 .on('click', function(){
