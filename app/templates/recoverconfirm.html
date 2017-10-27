@@ -1,11 +1,7 @@
 {% extends "layout.html" %}
 {% block main %}
-<header>
-  <div><h1>Recover Password</h1></div>
-</header>
-<div>
-<label>Reset password link has been sent to:</label>
-<label>{{ email }}</label><br/></br>
+<label>Reset password link has been sent to:</label><br/>
+<label>{{ email }}</label><br/>
 <button><a href="{{ url_for('index') }}">Return to homepage</a></button>
-</div>
+
 {% endblock %}
