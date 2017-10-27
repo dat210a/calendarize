@@ -1,10 +1,11 @@
 import logging
 import json
 import pprint as pp
+from funcs.file_tools import save_file
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
-conf_file = "cfg/db.json"
+conf_file = "app/cfg/db.json"
 
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
@@ -225,23 +226,24 @@ class ConnectionInstance:
         )
         try:
             self.__con.commit()
+            if 'file' in event_data.keys():
+                self.add_file(event_data['file'], event_data['id'])
             return self.get_last_ID()
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
             return None
 
-    def add_file(self, fname, eid, rec=0):
+    def add_file(self, rqdat, eid, rec=0):
+        fname = save_file(rqdat, eid)
         if fname:
             sql = "INSERT INTO event_files (event_id, file_name, recurring) VALUES (?, ?, ?)"
             self.__cur.execute(sql, eid, fname, rec)
             try:
                 self.__con.commit()
-                return self.get_last_ID()
             except Exception as e:
                 logging.debug('{}\nWhile adding file with name:\n{}'.format(e, fname))
                 self.__con.rollback()
-                return None
         else:
             pass  # Does nothing if there is no file
 
