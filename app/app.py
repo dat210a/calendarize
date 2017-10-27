@@ -310,7 +310,6 @@ def add_event():
         # TODO check that startDate <= endDate
         with db.ConnectionInstance() as queries:
             created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
-            print (created)
             if created:
                 return 'true'
     return 'false'
