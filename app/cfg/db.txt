@@ -1,6 +1,0 @@
-{
-	"username":"root",
-	"password": "ABsolve123",
-	"host": "10.0.1.98",
-	"database": "calendarize_db"
-}
