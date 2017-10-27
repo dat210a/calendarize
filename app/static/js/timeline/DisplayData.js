@@ -1,3 +1,4 @@
+
 var timer = 0;
 
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);

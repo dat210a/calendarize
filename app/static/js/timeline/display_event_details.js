@@ -30,3 +30,4 @@ function display(data){
     $("#eventDisplay").show()
 }
 
+
