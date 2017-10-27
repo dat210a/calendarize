@@ -289,29 +289,33 @@ def view(template, calendar_id):
             pass
 
 
-@app.route('/add_calendar', methods=['POST'])
+@app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
 def add_calendar():
-    cal_name = request.form['newCalendarName']
-    if cal_name:
-        with db.ConnectionInstance() as queries:
-            created = queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id, cal_name)
-            if created:
-                return 'true'
+    if request.method == "POST":
+        cal_name = request.form['newCalendarName']
+        if cal_name:
+            with db.ConnectionInstance() as queries:
+                created = queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id, cal_name)
+                if created:
+                    return 'true'
     return 'false'
 
 
-@app.route('/add_event', methods=['POST'])
+@app.route('/add_event', methods=['POST', 'GET'])
 @login_required
 def add_event():
-    data = request.form
-    if data['newEventName'] and data['calendarID'] and data['startDate']:
-        # TODO conversion of dates into right format if they are not and into utc
-        # TODO check that startDate <= endDate
-        with db.ConnectionInstance() as queries:
-            created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
-            if created:
-                return 'true'
+    if request.method == "POST":
+        data = request.form
+        if data['newEventName'] and data['calendarID'] and data['startDate']:
+            # TODO conversion of dates into right format if they are not and into utc
+            # TODO check that startDate <= endDate
+            with db.ConnectionInstance() as queries:
+                created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
+                if created:
+                    if request.files['file']:
+                        add_files()
+                    return 'true'
     return 'false'
 
 

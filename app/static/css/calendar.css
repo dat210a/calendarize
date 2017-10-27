@@ -16,6 +16,10 @@ line {
     pointer-events: none;
 }
 
+.bottomBase{
+    fill: transparent
+}
+
 .calendarToolbox{
     position: absolute; 
     width:100%; 
