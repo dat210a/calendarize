@@ -319,8 +319,9 @@ def add_event():
 @app.route('/add_files', methods=['POST'])
 @login_required
 def add_files():
-    print (request.form)
-    print (request.files)
+    with db.ConnectionInstance() as q:
+        for file in request.files:
+            q.add_file(request.files[file], request.form['event_id'])
     return 'true'
 
 
