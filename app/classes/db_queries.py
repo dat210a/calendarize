@@ -186,7 +186,7 @@ class ConnectionInstance:
                           '\tPW hash: {}'.format(e, username, email, hashedpass))
             self.__con.rollback()
             return None
-        
+
     def add_calendar(self, created, owner, cal_name="Default"):
         sql = "INSERT INTO calendars " \
               "(calendar_name, calendar_date_created, calendar_owner) " \
@@ -245,9 +245,14 @@ class ConnectionInstance:
         else:
             pass  # Does nothing if there is no file
 
-    def make_resetkey(self, uid, resetkey):
-        # INSERT INTO forgot (resetkey, expires) VALUES (whatever, NOW() + INTERVAL 48 HOUR)
-        pass
+    def make_resetkey(self, email, resetkey):
+        sql ="UPDATE users SET resetkey=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_email=?"
+        self.__cur.execute(sql, (resetkey,email))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting resetkey for email:\n{}'.format(e, email))
+
 
 
 #######################################################################################
@@ -269,7 +274,7 @@ class ConnectionInstance:
     def update_calendar(self, calendar_data):
         #TODO
         pass
-    
+
     def update_event(self, event_data):
         #TODO
         pass

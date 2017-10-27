@@ -42,7 +42,7 @@ app.config["MAIL_PORT"] = "465"
 app.config["MAIL_USE_SSL"] = True
 app.config['MAIL_USE_TLS'] = False
 app.config["MAIL_USERNAME"] = "dat210groupea@gmail.com"
-app.config["MAIL_PASSWORD"] = "48147640Aa"
+app.config["MAIL_PASSWORD"] = "xxxxx"
 app.config["DEBUG"] = True  # only for development!
 mail = Mail(app)
 # initialization of login manager
@@ -399,37 +399,20 @@ def recover():
         if not email:
             flash("You need to fill out an email!")
             return redirect(url_for('recover'))
-
-        db = get_db()
-        cur = db.cursor()
-        try:
-            qry = "select user_id from users where user_email=%s"
-            cur.execute(qry, (email,))
-            try:
-                login_info = cur.fetchone()
-                if not login_info:
+        if not user_exists(email):
                     flash("Unregistered Email")
-                else:
-                    # TODO: Generate random unique string for resetkey, store in database and send it along with the email.
-                    x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-                    key = x  + str(login_info[0])
-                    db = get_db()
-                    cur = db.cursor()
-                    try:
-                        qry1 = "update users set resetkey =%s, expires = now()+ interval 24 hour where user_email=%s"
-                        cur.execute(qry1, (key,email,))
-                        db.commit()
-                        print(key)
-                        msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-                        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
-                        mail.send(msg)
-                    except:
-                        pass
-                    return render_template("recoverconfirm.html",email=email)
-            except:
-                pass
-        finally:
-            cur.close()
+        else:
+                #Generate random unique string for resetkey, store in database and send it along with the email.
+                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+
+                with db.ConnectionInstance() as queries:
+                    key = x + str(queries.get_user_id(email))
+                    queries.make_resetkey(email,key)
+                msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
+                msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+                mail.send(msg)
+                return render_template("recoverconfirm.html",email=email)
+
 
     return render_template("recover.html")
 
