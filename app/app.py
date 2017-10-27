@@ -23,7 +23,8 @@ from flask_login import login_user, current_user
 from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
 from funcs import file_tools
-
+import string, random
+from flask_mail import Mail, Message
 
 # app initialization
 app = Flask(__name__)
@@ -35,6 +36,15 @@ app.config['DEBUG'] = True  # Testing only
 # needed for session cookies
 app.secret_key = 'hella secret'
 
+#Mail setup
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = "465"
+app.config["MAIL_USE_SSL"] = True
+app.config['MAIL_USE_TLS'] = False
+app.config["MAIL_USERNAME"] = "dat210groupea@gmail.com"
+app.config["MAIL_PASSWORD"] = "48147640Aa"
+app.config["DEBUG"] = True  # only for development!
+mail = Mail(app)
 # initialization of login manager
 # it keeps the given user logged in via use of cookies
 login_manager = LoginManager()
@@ -104,11 +114,11 @@ def get_user_id():
         return session['user']['id']
     return None
 
-# It should be moved to a separate file if there 
+# It should be moved to a separate file if there
 # ends up being more functions like this one
 def user_exists(email):
-    """Returnes True if user with provided identifier exists, 
-       otherwise False                     
+    """Returnes True if user with provided identifier exists,
+       otherwise False
     """
     with db.ConnectionInstance() as queries:
         if queries.get_username(email) is None:
@@ -219,7 +229,7 @@ def login():
             if check_password(password, email):
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
-                else: 
+                else:
                     remember_me = False
                 login_user(user, remember=remember_me)
                 return redirect('/user_index')
@@ -252,7 +262,7 @@ def get_data():
     """
     log_basic()
     with db.ConnectionInstance() as queries:
-        results = queries.fetch_data_for_display(current_user.user_id)       
+        results = queries.fetch_data_for_display(current_user.user_id)
     return json.dumps(results, default=type_handler)
 
 
@@ -381,8 +391,83 @@ def delete_cal():
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)
-    
 
+@app.route("/recover/", methods=["GET", "POST"])
+def recover():
+    if request.method=="POST":
+        email = request.form.get("email", None)
+        if not email:
+            flash("You need to fill out an email!")
+            return redirect(url_for('recover'))
+
+        db = get_db()
+        cur = db.cursor()
+        try:
+            qry = "select user_id from users where user_email=%s"
+            cur.execute(qry, (email,))
+            try:
+                login_info = cur.fetchone()
+                if not login_info:
+                    flash("Unregistered Email")
+                else:
+                    # TODO: Generate random unique string for resetkey, store in database and send it along with the email.
+                    x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+                    key = x  + str(login_info[0])
+                    db = get_db()
+                    cur = db.cursor()
+                    try:
+                        qry1 = "update users set resetkey =%s, expires = now()+ interval 24 hour where user_email=%s"
+                        cur.execute(qry1, (key,email,))
+                        db.commit()
+                        print(key)
+                        msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
+                        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+                        mail.send(msg)
+                    except:
+                        pass
+                    return render_template("recoverconfirm.html",email=email)
+            except:
+                pass
+        finally:
+            cur.close()
+
+    return render_template("recover.html")
+
+@app.route("/reset/<resetkey>", methods=["GET", "POST"])
+def reset(resetkey):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        qry1 = "select user_email, user_password from users where resetkey=%s and expires > now()"
+        cur.execute(qry1, (resetkey,))
+        info = cur.fetchone()
+    finally:
+        cur.close()
+    if info:
+        if request.method=="POST":
+            new_password = request.form.get("new_password", None)
+            repeat_password = request.form.get("repeat_password", None)
+            if not new_password or not repeat_password:
+                flash("Empty password")
+            elif new_password == info[1]:
+                flash("You cannot use the old password.")
+            elif len(new_password) < 6:
+                flash("Minimum 6 characters.")
+            elif new_password == repeat_password:
+                db = get_db()
+                cur = db.cursor()
+                try:
+                    qry = "update users set user_password =%s, resetkey='' where user_email = '" + info[0] +"'"
+                    cur.execute(qry, (new_password,))
+                    db.commit()
+                finally:
+                    cur.close()
+                    return render_template("resetsuccess.html")
+            else:
+                flash("Your password do not match")
+        return render_template("reset.html")
+    else:
+        return render_template("invalidlink.html")
 
 ##################################################################
 
