@@ -212,7 +212,6 @@ class ConnectionInstance:
         sql = "INSERT INTO events " \
               "(event_name, event_calendar_id, event_date_created, event_owner, event_start, event_end, event_recurring)" \
               "VALUES (?, ?, ?, ?, ?, ?, ?)"
-        rec = 1 if 'recurring' in event_data else 0  # early definition for re-use
         self.__cur.execute(
             sql,
             [
@@ -222,25 +221,22 @@ class ConnectionInstance:
                 owner,
                 event_data['startDate'],
                 event_data['startDate'] if event_data['endDate'] == '' else event_data['endDate'],
-                rec,
+                1 if 'recurring' in event_data else 0,
             ]
         )
         try:
             self.__con.commit()
-            if 'formFiles' in event_data.keys():
-                for file in event_data['formFiles']:
-                    self.add_file(event_data['formFiles'][file], event_data['event_id'], rec=rec)
             return self.get_last_ID()
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
             return None
 
-    def add_file(self, rqdat, eid, rec=0):
+    def add_file(self, rqdat, eid):
         fname = save_file(rqdat, eid)
         if fname:
-            sql = "INSERT INTO event_files (event_id, file_name, recurring) VALUES (?, ?, ?)"
-            self.__cur.execute(sql, eid, fname, rec)
+            sql = "INSERT INTO event_files (event_id, file_name) VALUES (?, ?)"
+            self.__cur.execute(sql, eid, fname)
             try:
                 self.__con.commit()
             except Exception as e:
