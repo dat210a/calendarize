@@ -136,14 +136,14 @@ def index(template):
 #            st.work()
 #        print(app.config['shards'])
     if (current_user.is_authenticated):
-        return redirect('/user_index')
+        return redirect('/index_user')
     return render_template(template)
 
 
-@app.route('/user_index')
-@mobile_template('/{mobile/}user_index.html')
+@app.route('/index_user')
+@mobile_template('/{mobile/}index_user.html')
 @login_required
-def user_index(template):
+def index_user(template):
     """
     """
     log_basic()
@@ -221,7 +221,7 @@ def login():
                 else: 
                     remember_me = False
                 login_user(user, remember=remember_me)
-                return redirect('/user_index')
+                return redirect('/index_user')
     return redirect('/')
 
 
