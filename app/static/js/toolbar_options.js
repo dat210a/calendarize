@@ -71,28 +71,28 @@ $("#addEvent").submit(function(e){
     });
 });
 
-// $('#addFiles').click(function(e){
-//     e.preventDefault()
-//     var form = $('#formFiles');
-//     oData = new FormData(form[0]);
-//     oData.append("event_id", event_id)
-//     $.ajax({
-//         url: '/add_files',
-//         type: 'POST',
-//         dataType: 'multipart/form-data',
-//         data: oData, 
-//         processData: false,
-//         contentType: false,
-//         success: function(response) {
-//             if (response == 'true') {
-//                 console.log ('success')
-//             }
-//             else {
-//                 console.log ('could not upload files')
-//             }
-//         },
-//         error: function(error) {
-//             console.log('error: ', error);
-//         }
-//     });
-// })
+$('#addFiles').click(function(e){
+    e.preventDefault()
+    var form = $('#formFiles');
+    oData = new FormData(form[0]);
+    oData.append("event_id", event_id)
+    $.ajax({
+        url: '/add_files',
+        type: 'POST',
+        dataType: 'multipart/form-data',
+        data: oData, 
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response == 'true') {
+                console.log ('success')
+            }
+            else {
+                console.log ('could not upload files')
+            }
+        },
+        error: function(error) {
+            console.log('error: ', error);
+        }
+    });
+})
