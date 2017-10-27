@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>{% block title %}{% endblock %}</title>
-		{% block scripts %}
-		{% endblock %}
-	</head>
-	<body>
-		<header>
+{% extends 'base.html' %}
+{% block title %}calendarize.recover{% endblock %}
+{% block content %}
+	<div>
+		<div>
 			<div><h1>Recover Password</h1></div>
-		</header>
+		</div>
+		<div>
 		{% with messages = get_flashed_messages() %}
 			{% if messages %}
 				<ul class="notifications">
@@ -21,7 +18,6 @@
 
 		{% block main %}
 		{% endblock %}
-		<footer>
-		</footer>
-	</body>
-	</html>
+		</div>
+	</div>
+	{% endblock  %}
