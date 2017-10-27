@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block main %}
+<header>
+  <div><h1>Page not found</h1></div>
+</header>
+<div>
+<label>Your link is invalid or expired</label>
+</br></br>
+<button><a href="{{ url_for('index') }}">Return to homepage</a></button>
+</div>
+{% endblock %}

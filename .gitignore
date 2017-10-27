@@ -101,4 +101,8 @@ ENV/
 .mypy_cache/
 .idea/
 
+<<<<<<< HEAD
 app/cfg/db.json
+=======
+cfg/db.json
+>>>>>>> 8db209ecf512b2af03a69240506f57b0306b9d04
