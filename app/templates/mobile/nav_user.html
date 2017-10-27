@@ -1,4 +1,6 @@
-<!-- 
+<!-- {% extends 'base.html' %}
+{% block title %}{% endblock %}
+{% block nav %}
   <link href="static/css/nav_loggedin.css" type="text/css" rel="stylesheet" media="screen,projection" />
 
   <div class="right">
@@ -26,11 +28,13 @@
       </li>
     </ul>
   </div>
--->
+{% endblock %}
+{% block content %}
+{% endblock %} -->
 {% extends 'base.html' %} 
 {% block title %}calendarize.user{% endblock %}
 {% block nav %}
-<link href="static/css/nav_user.css" type="text/css" rel="stylesheet" media="screen,projection" />
+<link href="static/css/nav_loggedin.css" type="text/css" rel="stylesheet" media="screen,projection" />
 <ul id='settings_dropdown' class='dropdown-content'>
     <li><a href="#!">stuff</a></li>
     <li><a href="#!">stuff</a></li>
