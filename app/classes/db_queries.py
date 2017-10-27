@@ -254,7 +254,21 @@ class ConnectionInstance:
             logging.debug('{}\nWhile setting resetkey for email:\n{}'.format(e, email))
 
 
-
+    def get_reset_info(self, resetkey):
+        sql ="SELECT user_email, user_password FROM users WHERE resetkey=? and expires > now()"
+        self.__cur.execute(sql, [resetkey])
+        try:
+            res = self.__cur.fetchone()
+            return res
+        except Exception as e:
+            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, email))
+    def set_new_password(self, email, new_password):
+        sql = "UPDATE users SET user_password =?, resetkey='' WHERE user_email = ?"
+        self.__cur.execute(sql, (new_password,email))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting user new password:\n{}'.format(e, email))
 #######################################################################################
             # Update
 

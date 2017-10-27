@@ -42,7 +42,7 @@ app.config["MAIL_PORT"] = "465"
 app.config["MAIL_USE_SSL"] = True
 app.config['MAIL_USE_TLS'] = False
 app.config["MAIL_USERNAME"] = "dat210groupea@gmail.com"
-app.config["MAIL_PASSWORD"] = "xxxxx"
+app.config["MAIL_PASSWORD"] = "-----"
 app.config["DEBUG"] = True  # only for development!
 mail = Mail(app)
 # initialization of login manager
@@ -418,34 +418,23 @@ def recover():
 
 @app.route("/reset/<resetkey>", methods=["GET", "POST"])
 def reset(resetkey):
-    db = get_db()
-    cur = db.cursor()
-    try:
-        qry1 = "select user_email, user_password from users where resetkey=%s and expires > now()"
-        cur.execute(qry1, (resetkey,))
-        info = cur.fetchone()
-    finally:
-        cur.close()
+    with db.ConnectionInstance() as queries:
+        info = queries.get_reset_info(resetkey)
     if info:
         if request.method=="POST":
             new_password = request.form.get("new_password", None)
             repeat_password = request.form.get("repeat_password", None)
             if not new_password or not repeat_password:
                 flash("Empty password")
-            elif new_password == info[1]:
-                flash("You cannot use the old password.")
             elif len(new_password) < 6:
                 flash("Minimum 6 characters.")
             elif new_password == repeat_password:
-                db = get_db()
-                cur = db.cursor()
-                try:
-                    qry = "update users set user_password =%s, resetkey='' where user_email = '" + info[0] +"'"
-                    cur.execute(qry, (new_password,))
-                    db.commit()
-                finally:
-                    cur.close()
-                    return render_template("resetsuccess.html")
+                if check_password(new_password, info[0].decode("utf-8")):
+                    flash("You cannot use the old password.")
+                else:
+                    with db.ConnectionInstance() as queries:
+                        queries.set_new_password(info[0].decode("utf-8"),hash_password(new_password))
+                        return render_template("resetsuccess.html")
             else:
                 flash("Your password do not match")
         return render_template("reset.html")
