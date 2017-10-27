@@ -1,6 +1,7 @@
 import logging
 import json
 import pprint as pp
+from funcs.file_tools import save_file
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
@@ -163,6 +164,8 @@ class ConnectionInstance:
         self.__cur.execute(sql, [event_data['parent'], event_data['id']])
         try:
             self.__con.commit()
+            if 'file' in event_data.keys():
+                self.add_file(event_data['file'], event_data['id'])
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
@@ -215,7 +218,8 @@ class ConnectionInstance:
                 sql += " OR event_id = ?"
         # TODO complete with relevant values to fetch and return
 
-    def add_file(self, fname, eid, rec=0):
+    def add_file(self, rqdat, eid, rec=0):
+        fname = save_file(rqdat, eid)
         if fname:
             sql = "INSERT INTO event_files (event_id, file_name, recurring) VALUES (?, ?, ?)"
             self.__cur.execute(sql, eid, fname, rec)

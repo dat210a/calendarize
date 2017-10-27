@@ -224,10 +224,22 @@ def save_settings():
 
 @app.route('/add_event', methods=['POST'])
 def add_event():
-    eid = 'blank'  # temporary to shut up linting until complete
     with db.ConnectionInstance() as q:
-        # TODO get form information
-        q.add_file(file_tools.save_file(request, eid), eid)
+        e_data = {
+            'id': request.form.get('id'),
+            'name': request.form.get('name'),
+            'created': request.form.get('created'),
+            'details': request.form.get('details'),
+            'location': request.form.get('location'),
+            'start': request.form.get('start'),
+            'end': request.form.get('end'),
+            'time': request.form.get('time'),
+            'extra': request.form.get('extra'),
+        }
+        if 'file' in request.files:
+            e_data['file'] = request.files['file']
+        q.add_event(e_data)
+    return redirect(url_for('index'))
 
 ##################################################################
 # DELETION FUNCTIONS - emphasized because these not working
