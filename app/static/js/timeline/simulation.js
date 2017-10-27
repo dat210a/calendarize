@@ -3,7 +3,7 @@
 //force pull towards the middle line
 var dataGravity = d3.forceY(0).strength(0.1);
 var detailsGravity = d3.forceY(function(d){
-                                return d.y > 10 ? 100 : -150
+                                return d.y > 10 ? 100 : -140
                             }).strength(0.5);
 
 //instantiate simulation
