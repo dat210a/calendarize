@@ -226,8 +226,9 @@ class ConnectionInstance:
         )
         try:
             self.__con.commit()
-            if 'file' in event_data.keys():
-                self.add_file(event_data['file'], event_data['id'])
+            if 'formFiles' in event_data.keys():
+                for file in event_data['formFiles']:
+                    self.add_file(event_data['formFiles'][file], event_data['event_id'])
             return self.get_last_ID()
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
