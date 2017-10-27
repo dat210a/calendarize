@@ -91,10 +91,9 @@ def request_data(req):
 def log_basic():
     """
     """
-    pass
-    # # This handles logging of basic data that should be logged for all requests
-    # if logger:
-    #     logger.info(request_data(request))
+    # This handles logging of basic data that should be logged for all requests
+    if logger:
+        logger.info(request_data(request))
 
 
 def get_user_id():
@@ -137,14 +136,14 @@ def index(template):
 #            st.work()
 #        print(app.config['shards'])
     if (current_user.is_authenticated):
-        return redirect('/user_index')
+        return redirect('/index_user')
     return render_template(template)
 
 
-@app.route('/user_index')
-@mobile_template('/{mobile/}user_index.html')
+@app.route('/index_user')
+@mobile_template('/{mobile/}index_user.html')
 @login_required
-def user_index(template):
+def index_user(template):
     """
     """
     log_basic()
@@ -222,7 +221,7 @@ def login():
                 else: 
                     remember_me = False
                 login_user(user, remember=remember_me)
-                return redirect('/user_index')
+                return redirect('/index_user')
     return redirect('/')
 
 
@@ -305,16 +304,14 @@ def add_calendar():
 @app.route('/add_event', methods=['POST', 'GET'])
 @login_required
 def add_event():
+    data = request.form
     if request.method == "POST":
-        data = request.form
-        if data['newEventName'] and data['calendarID'] and data['startDate']:
+        if data['newEventName'] and data['calendarID'] and data['startDate'] \
+                                and (data['endDate'] == '' or data['endDate'] >= data['startDate']):
             # TODO conversion of dates into right format if they are not and into utc
-            # TODO check that startDate <= endDate
             with db.ConnectionInstance() as queries:
                 created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
                 if created:
-                    if request.files['file']:
-                        add_files()
                     return 'true'
     return 'false'
 

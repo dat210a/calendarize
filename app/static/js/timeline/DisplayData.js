@@ -22,7 +22,7 @@ function ready(error, allData){
     d3.selectAll('.data').remove()
     datapoints = allData[1]
     groups = allData[0]
-
+    
     groups.forEach(function(d, i){d.color = color(i)})
     AddGroupButtons(groups)
 

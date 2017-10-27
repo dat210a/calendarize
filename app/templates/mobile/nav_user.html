@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+<!-- {% extends 'base.html' %}
 {% block title %}{% endblock %}
 {% block nav %}
   <link href="static/css/nav_loggedin.css" type="text/css" rel="stylesheet" media="screen,projection" />
@@ -30,4 +30,30 @@
   </div>
 {% endblock %}
 {% block content %}
+{% endblock %} -->
+{% extends 'base.html' %} 
+{% block title %}calendarize.user{% endblock %}
+{% block nav %}
+<link href="static/css/nav_loggedin.css" type="text/css" rel="stylesheet" media="screen,projection" />
+<ul id='settings_dropdown' class='dropdown-content'>
+    <li><a href="#!">stuff</a></li>
+    <li><a href="#!">stuff</a></li>
+    <li class="divider"></li>
+    <li><a href="#!"><!-- <i class="material-icons">settings</i> -->settings</a></li>
+    <li>
+        <a href="/logout">
+            <!-- <i class="material-icons">power_settings_new</i> -->logout</a>
+    </li>
+</ul>
+<nav class="accentgrey-dark z-depth-3">
+    <div class="nav-wrapper  hide-on-med-and-down">
+        <a href="#"><img src="static/images/logo_nav.png" class="placeholderimg"></a>
+        <ul class="right">
+            <li><a href="#" class="notifier"><i class="material-icons">notifications</i></a>
+            </li>
+            <li><a href="#" class="slideNav"><i class="material-icons">menu</i></a></li>
+            <li><a class="dropdown-button" href="#!" data-activates="settings_dropdown">{{name}}<i class="material-icons right">arrow_drop_down</i></a></li>
+        </ul>
+    </div>
+</nav>
 {% endblock %}

@@ -122,7 +122,7 @@ class ConnectionInstance:
             return None
 
     def fetch_data_for_display(self, uid):
-        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = %s"
+        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
         self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchall()
@@ -131,7 +131,7 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-        sql = "SELECT calendar_id, calendar_name FROM calendars WHERE calendar_id = %s"
+        sql = "SELECT calendar_id, calendar_name FROM calendars WHERE calendar_id = ?"
         if len(cals) > 1:
             for i in range(len(cals) - 1):
                 sql += " OR calendar_id = ?"
@@ -156,9 +156,6 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None
 
-    def get_resetkey(self, uid):
-        # DELETE FROM forgot WHERE expires < NOW()
-        pass
 
     def get_last_ID(self):
         sql = 'SELECT LAST_INSERT_ID();'

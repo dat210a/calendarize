@@ -109,3 +109,6 @@ timeline/.vscode/launch.json
 
 # sensitive information
 app/cfg/
+
+# files
+app/files/

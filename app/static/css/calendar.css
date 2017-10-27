@@ -29,7 +29,19 @@ line {
 
 .side_tab{
     border: 5px solid #b0bec5; 
-    background-color: white;
+}
+
+.yearBox{
+    fill: #3D4148;
+}
+
+.yearText{
+    stroke: #F1F0F0;
+    fill: #F1F0F0;
+}
+
+.bottomBase{
+    fill: #F1F0F0;
 }
 
 .add_calendar_container, 
@@ -42,6 +54,14 @@ line {
 .backdrop{
     background-color: transparent;
 }
+
 .material-tooltip{
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+.mainAddButtonContainer{
+    position: absolute; 
+    display: inline-block; 
+    right: 15px; 
+    bottom: 15px;
 }
