@@ -13,7 +13,7 @@ function load_data(){
         .await(ready);
 }
 
-function ready(error, allData){
+function ready(error, datapoints){
     if (error){
         console.log("Can't load the data")
         return;

@@ -91,10 +91,9 @@ def request_data(req):
 def log_basic():
     """
     """
-    pass
-    # # This handles logging of basic data that should be logged for all requests
-    # if logger:
-    #     logger.info(request_data(request))
+    # This handles logging of basic data that should be logged for all requests
+    if logger:
+        logger.info(request_data(request))
 
 
 def get_user_id():

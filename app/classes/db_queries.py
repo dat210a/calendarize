@@ -155,9 +155,6 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None
 
-    def get_resetkey(self, uid):
-        # DELETE FROM forgot WHERE expires < NOW()
-        pass
 
     def get_last_ID(self):
         sql = 'SELECT LAST_INSERT_ID();'

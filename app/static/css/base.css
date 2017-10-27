@@ -4,3 +4,31 @@ body{
     flex-direction: column;
 }
 
+nav ul a {
+    color: #F1F0F0;
+    display: block;
+
+}
+
+.btn,
+.btn-large {
+    background-color: #15A5C6;
+    color: #F1F0F0;
+}
+
+.btn:hover,
+.btn-large:hover,
+.btn:active,
+.btn-large:active {
+    background-color: #268DAF;
+}
+
+a {
+    color: #15A5C6;
+}
+
+.placeholderimg {
+    height: 90%;
+    margin-left: 10px;
+}
+
