@@ -101,6 +101,7 @@ ENV/
 .mypy_cache/
 .idea/
 
+<<<<<<< HEAD
 # vscode localhost settings
 .vscode/iisexpress.json
 .vscode/launch.json
@@ -109,3 +110,10 @@ timeline/.vscode/launch.json
 
 # sensitive information
 app/cfg/
+=======
+<<<<<<< HEAD
+app/cfg/db.json
+=======
+cfg/db.json
+>>>>>>> 8db209ecf512b2af03a69240506f57b0306b9d04
+>>>>>>> recover
