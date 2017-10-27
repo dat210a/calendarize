@@ -8,7 +8,6 @@ var width = totalWidth - 2*xPadding,
     height = totalHeight;
 
 var midScreen = height / 2;
-var bottomOffset = 200;
 
 var radius = 8;
 
@@ -92,7 +91,7 @@ svg.append('g')
         .attr("transform", "translate(" + xPadding + ", 0)")
         .append('rect')
             .attr('class', 'scrollArea')
-            .attr("height", height - bottomOffset)
+            .attr("height", height)
             .attr("width", width)
             .style('fill', "transparent")
             .on('click', function(){

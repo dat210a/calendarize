@@ -39,6 +39,7 @@ function ready(error, allData){
         detailsPoints[i] = {'name': myData[i].name, 'date': myData[i].start_date};
     }
 
+
     //setup simulation based on data
     nodes = myData.concat(detailsPoints);
     simulation.nodes(nodes)
@@ -99,6 +100,7 @@ function ready(error, allData){
                             .append('g')
                                 .attr('class', 'detailContainer')
                                 .style('display', 'none')
+                                
 
     detailContainer      
         .append("rect")
@@ -224,7 +226,7 @@ function showDetails(){
                             .attr('transform', function(d){
                                 var parent = this.parentNode.__data__;
                                 d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
-                                return 'translate(' + d.x + ',' + (d.y-50) + ')scale(1)';
+                                return 'translate(' + d.x + ',' + (d.y-detailHeight/2) + ')scale(1)';
                             })
                             .on("start", function(){
                                 d3.select(this).style('display', 'inline')
