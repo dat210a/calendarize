@@ -161,6 +161,15 @@ LOCK TABLES `user_friends` WRITE;
 /*!40000 ALTER TABLE `user_friends` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+CREATE TABLE `event_files` (
+  `event_id` int(11) NOT NULL,
+  `file_name` varchar(160) NOT NULL,
+  `unique_id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`unique_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 --
 -- Table structure for table `userconfig`
 --
