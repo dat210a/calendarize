@@ -5,7 +5,7 @@ from funcs.file_tools import save_file
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
-conf_file = "app/cfg/db.json"
+conf_file = "cfg/db.json"
 
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
