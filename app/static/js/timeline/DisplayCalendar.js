@@ -1,5 +1,4 @@
 ﻿
-
 var totalWidth = 900;
 var totalHeight = 670;
 var xPadding = 75;

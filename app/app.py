@@ -309,7 +309,6 @@ def add_event():
         # TODO check that startDate <= endDate
         with db.ConnectionInstance() as queries:
             created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
-            print (created)
             if created:
                 return 'true'
     return 'false'
@@ -318,8 +317,9 @@ def add_event():
 @app.route('/add_files', methods=['POST'])
 @login_required
 def add_files():
-    print (request.form)
-    print (request.files)
+    with db.ConnectionInstance() as q:
+        for file in request.files:
+            q.add_file(request.files[file], request.form['event_id'])
     return 'true'
 
 
