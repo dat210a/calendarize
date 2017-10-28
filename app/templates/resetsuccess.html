@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block main %}
-<h1>Your password has been successfully update</h1>
-<button><a href="{{ url_for('index') }}">Return to login</a></button>
+{% block inner %}
+<h1>Your password has been successfully updated</h1>
+<button class="btn waves-effect waves-light accentgrey-dark"><a href="{{ url_for('index') }}">Return to login</a></button>
 {% endblock %}

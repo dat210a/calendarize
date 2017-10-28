@@ -5,9 +5,9 @@
 
     <div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
         <div class="calendarContainer">
-            <!-- options button -->
-            <div class="fixed-action-btn horizontal", style="position: absolute; height: 0; display: inline-block; right: 15px; top: 15px;">
-                <a class="waves-effect waves-light btn-floating btn-large grey" onclick="Materialize.toast('Not yet implemented', 4000)">
+            <!-- options button for small screens-->
+            <div class="fixed-action-btn horizontal hide-on-large-only", style="position: absolute; height: 0; display: inline-block; right: 15px; top: 15px;">
+                <a class="waves-effect waves-light btn-floating btn-large accentgrey-dark" onclick="Materialize.toast('Not yet implemented', 4000)">
                     <i class="large material-icons">menu</i>
                 </a>
             </div>
@@ -16,8 +16,8 @@
             <!-- toolbar -->
             <div class="calendarToolbox">
                 <!-- FAB -->
-                <div class="fixed-action-btn horizontal", style="position: absolute; display: inline-block; right: 15px; bottom: 15px;">
-                    <a class="btn-floating btn-large grey">
+                <div class="fixed-action-btn horizontal mainAddButtonContainer">
+                    <a class="btn-floating btn-large accentgrey-dark">
                         <i class="large material-icons">add</i>
                     </a>
                     <ul>
@@ -30,7 +30,7 @@
                 </div>
                 <!-- show/hide groups -->
                 <div class="center upDown">
-                    <a class="waves-effect waves-light btn toggleGroupVisibility", style="background-color: lightgrey; color: black;">
+                    <a class="waves-effect waves-light btn accentgrey-dark toggleGroupVisibility">
                         <i class="large material-icons left toggleArrow">arrow_drop_down</i>
                         groups
                     </a>
@@ -47,7 +47,7 @@
         </div>
     </div>
     <!-- sidebar -->
-    <div class="col m3 hide-on-med-and-down side_tab">
+    <div class="col m3 hide-on-med-and-down side_tab accentgrey-light">
         <div class="event_details_container" id="eventDisplay">
             <table>
                 <thead>

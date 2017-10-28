@@ -398,8 +398,9 @@ def delete_cal():
                 q.db_del_cal(cal)
 
 
-@app.route("/recover/", methods=["GET", "POST"])
-def recover():
+@app.route("/recover", methods=["GET", "POST"])
+@mobile_template('{mobile/}recover.html')
+def recover(template):
     if request.method=="POST":
         email = request.form.get("email", None)
         if not email:
@@ -418,11 +419,12 @@ def recover():
                 msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
                 mail.send(msg)
                 return render_template("recoverconfirm.html",email=email)
-    return render_template("recover.html")
+    return render_template(template)
 
 
 @app.route("/reset/<resetkey>", methods=["GET", "POST"])
-def reset(resetkey):
+@mobile_template('{mobile/}reset.html')
+def reset(template, resetkey):
     with db.ConnectionInstance() as queries:
         info = queries.get_reset_info(resetkey)
     if info:
@@ -442,7 +444,7 @@ def reset(resetkey):
                         return render_template("resetsuccess.html")
             else:
                 flash("Your password do not match")
-        return render_template("reset.html")
+        return render_template(template)
     else:
         return render_template("invalidlink.html")
 

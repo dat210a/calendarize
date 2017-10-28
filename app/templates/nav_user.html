@@ -3,12 +3,12 @@
 {% block nav %}
 <link href="static/css/nav_user.css" type="text/css" rel="stylesheet" media="screen,projection" />
 <ul id='settings_dropdown' class='dropdown-content'>
-    <li><a href="#!" onclick="Materialize.toast('Not yet implemented', 4000)">stuff</a></li>
-    <li><a href="#!" onclick="Materialize.toast('Not yet implemented', 4000)">stuff</a></li>
+    <li><a href="{{ url_for('index') }}">Homepage</a></li>
+    <li><a href="#!" onclick="Materialize.toast('Not yet implemented', 4000)">Friends</a></li>
     <li class="divider"></li>
-    <li><a href="#!" onclick="Materialize.toast('Not yet implemented', 4000)">settings<i class="material-icons right">settings</i></a></li>
+    <li><a href="#!" onclick="Materialize.toast('Not yet implemented', 4000)">Settings<i class="material-icons right">settings</i></a></li>
     <li>
-        <a href="/logout">logout<i class="material-icons right">power_settings_new</i></a>
+        <a href="/logout">Logout<i class="material-icons right">power_settings_new</i></a>
     </li>
 </ul>
 <nav class="accentgrey-dark z-depth-3">

@@ -1,9 +1,18 @@
 {% extends "layout.html" %}
-{% block main %}
-<form action="" method="POST">
-	<label>Please insert your registered email:</label><br/>
-	<input type="text" id="email" name="email" size="35"><br/><br/>
-	<input type="submit">
-</form>
-
+{% block inner %}
+<div class="col s4 offset-s4">
+	<form action="" method="POST">
+		<div class="row">
+			<div class="input-field">
+				<input type="text" id="email" name="email" size="35">
+				<label>Email address</label>
+			</div>
+		</div>
+		<div class="row">
+			<button class="btn waves-effect waves-light right accentgrey-dark" type="submit" name="action">send
+				<i class="material-icons right">send</i>
+			</button>
+		</div>
+	</form>
+</div>
 {% endblock %}

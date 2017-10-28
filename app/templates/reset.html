@@ -1,17 +1,25 @@
 {% extends "layout.html" %}
-{% block main %}
+{% block inner %}
 <h2>Set New Password</h2>
-<form action="" method="POST">
-	<label for="new_password">New Password:</label>
-	<input type="new_password" id="new_password" name="new_password">
-	<br/>
-	<br/>
-	<label for="repeat_password">Repeat Password:</label>
-	<input type="repeat_password" id="repeat_password" name="repeat_password">
-	<br/>
-	<br/>
-	<input type="submit">
-	<button><a href="{{ url_for('index') }}">Cancel</a></button>
-</form>
+<div class="col s4 offset-s4"></div>
+	<form action="" method="POST">
+		<div class="row">
+			<div class="input-field col s12">
+				<input id="new_password" type="password" name="new_password" class="validate">
+				<label for="new_password">Password</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s12">
+				<input id="repeat_password" type="password" name="repeat_password" class="validate">
+				<label for="repeat_password">Repeat password</label>
+			</div>
+		</div>
+		<div class="row">
+			<button class="btn waves-effect waves-light accentgrey-dark"><a href="{{ url_for('index') }}">Cancel</a></button>
+			<button class="btn waves-effect waves-light accentgrey-dark" type="submit" name="action">Submit</button>
+		</div>
+	</form>
+</div>
 
 {% endblock %}
