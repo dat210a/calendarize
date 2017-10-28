@@ -2,13 +2,6 @@ var left_timeline_button = leftSideBar.append('g')
                                         .attr('class', 'left_timeline_button')
                                         .attr('opacity', 0)
 
-left_timeline_button.append("rect")
-                        .attr('width', xPadding)
-                        .attr('height', height)
-                        .attr('x', -xPadding)
-                        .attr('y', -midScreen)
-                        .style("fill", "url(#left_linear_gradient)")
-
 left_timeline_button.append('text')
         .attr('font-family', 'Material Icons')
         .attr('font-size', '50px')
@@ -17,15 +10,16 @@ left_timeline_button.append('text')
         .attr('x', -70)
         .attr('y', 25)
 
+left_timeline_button.append("rect")
+        .attr('width', xPadding)
+        .attr('height', height)
+        .attr('x', -xPadding)
+        .attr('y', -midScreen)
+        .style("fill", "url(#left_linear_gradient)")
+
 var right_timeline_button = rightSideBar.append('g')
                                         .attr('class', 'right_timeline_button')
                                         .attr('opacity', 0)
-
-right_timeline_button.append("rect")
-    .attr('width', xPadding)
-    .attr('height', height)
-    .attr('y', -midScreen)
-    .style("fill", "url(#right_linear_gradient)")
 
 right_timeline_button.append('text')
     .attr('font-family', 'Material Icons')
@@ -34,6 +28,12 @@ right_timeline_button.append('text')
     .text('chevron_right')
     .attr('x', 20)
     .attr('y', 25)
+
+right_timeline_button.append("rect")
+    .attr('width', xPadding)
+    .attr('height', height)
+    .attr('y', -midScreen)
+    .style("fill", "url(#right_linear_gradient)")
 
 
 var defsLeft = left_timeline_button.append("defs");
