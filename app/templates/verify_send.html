@@ -1,0 +1,6 @@
+
+{% block main %}
+<label>The account verification link has been send to: {{ email }}. Please verify your account</label><br/>
+<button><a href="{{ url_for('index') }}">Return to homepage</a></button>
+
+{% endblock %}

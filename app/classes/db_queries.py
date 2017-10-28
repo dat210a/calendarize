@@ -170,9 +170,9 @@ class ConnectionInstance:
 #######################################################################################
         # Insertion
 
-    def add_user(self, username, email, hashedpass):
-        query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?);'
-        user_data = [username, email, hashedpass]
+    def add_user(self, username, email, hashedpass,verify_key):
+        query = 'INSERT INTO users (user_name, user_email, user_password,verify_key,expires, active) VALUES (?,?,?,?, now()+ INTERVAL 24 HOUR,0);'
+        user_data = [username, email, hashedpass, verify_key]
         try:
             self.__cur.execute(query, user_data)
             self.__con.commit()
@@ -276,7 +276,14 @@ class ConnectionInstance:
             self.__con.commit()
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
-
+    def verfify_check(self,email):
+        sql ="SELECT active FROM users WHERE email=?"
+        self.__cur.execute(sql, [email])
+        try:
+            res = self.__cur.fetchone()
+            return res
+        except Exception as e:
+            logging.debug('{}\nWhile checking if account is verified:\n{}'.format(e, email))
 
     def update_user(self, user_data):
         #TODO

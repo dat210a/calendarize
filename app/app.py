@@ -195,13 +195,15 @@ def register():
         if name and email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
                 #adds new user to the database
-                added = queries.add_user(name, email, hash_password(password))
+                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
+                key = x + email
+                added = queries.add_user(name, email, hash_password(password),key)
                 if (added):
-                    user = User(email)
-                    login_user(user)
+                    #user = User(email)
+                    #login_user(user)
                     #adds default calendar to that user
-                    queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
-                    return redirect('/calendar')
+                    #queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
+                    return render_template("verify_send.html", email=email)
     # reload if something not right
     # TODO maybe some error messages
     return redirect('/')
@@ -229,7 +231,9 @@ def login():
         email = request.form["inputEmail"]
         user = load_user(email)
         if user is not None:
-            if check_password(password, email):
+            with db.ConnectionInstance() as queries:
+                verified = queries.verfify_check(email)
+            if check_password(password, email) and verified > 0:
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
                 else:
