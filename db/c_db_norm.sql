@@ -161,14 +161,29 @@ LOCK TABLES `user_friends` WRITE;
 /*!40000 ALTER TABLE `user_friends` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Table structure for table `event_files`
+--
 
+DROP TABLE IF EXISTS `event_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `event_files` (
   `event_id` int(11) NOT NULL,
   `file_name` varchar(160) NOT NULL,
   `unique_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`unique_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `event_files`
+--
+
+LOCK TABLES `event_files` WRITE;
+/*!40000 ALTER TABLE `event_files` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_files` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `userconfig`
