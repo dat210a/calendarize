@@ -20,7 +20,7 @@ app.config["MAIL_PORT"] = "465"
 app.config["MAIL_USE_SSL"] = True
 app.config['MAIL_USE_TLS'] = False
 app.config["MAIL_USERNAME"] = "dat210groupea@gmail.com"
-app.config["MAIL_PASSWORD"] = "48147640Aa"
+app.config["MAIL_PASSWORD"] = "------"
 app.config["DEBUG"] = True  # only for development!
 mail = Mail(app)
 
