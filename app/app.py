@@ -37,14 +37,19 @@ app.config['DEBUG'] = True  # Testing only
 app.secret_key = 'hella secret'
 
 #Mail setup
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = "465"
-app.config["MAIL_USE_SSL"] = True
-app.config['MAIL_USE_TLS'] = False
-app.config["MAIL_USERNAME"] = "dat210groupea@gmail.com"
-app.config["MAIL_PASSWORD"] = "-----"
-app.config["DEBUG"] = True  # only for development!
+conf_file = "cfg/mail.json"
+
+with open(conf_file, 'r') as cf:
+    # Loads mail configuration from file for security
+    data = json.load(cf)
+    app.config["MAIL_SERVER"] = data['server']
+    app.config["MAIL_PORT"] = data['PORT']
+    app.config["MAIL_USE_SSL"] = data['ssl']
+    app.config['MAIL_USE_TLS'] = data['tls']
+    app.config["MAIL_USERNAME"] = data['username']
+    app.config["MAIL_PASSWORD"] = data['password']
 mail = Mail(app)
+
 # initialization of login manager
 # it keeps the given user logged in via use of cookies
 login_manager = LoginManager()
@@ -60,7 +65,6 @@ def load_user(email):
     if user_exists(email):
         return User(email)
     return None
-
 
 
 def setup_logging():
@@ -393,6 +397,7 @@ def delete_cal():
             if user in admins:
                 q.db_del_cal(cal)
 
+
 @app.route("/recover/", methods=["GET", "POST"])
 def recover():
     if request.method=="POST":
@@ -413,9 +418,8 @@ def recover():
                 msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
                 mail.send(msg)
                 return render_template("recoverconfirm.html",email=email)
-
-
     return render_template("recover.html")
+
 
 @app.route("/reset/<resetkey>", methods=["GET", "POST"])
 def reset(resetkey):
