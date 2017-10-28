@@ -18,7 +18,7 @@ function resetView() {
     //set next event
     d3.selectAll('.datapoints')
         .filter(function(d){
-            return d.x > +d3.select('.today').attr('x');
+            return d.x > +d3.select('.todayMark').attr('x');
         })
         .filter(function(d, i, j){
             return i == j.length-1;
@@ -72,7 +72,7 @@ function rescale() {
         })
     
     //reposition today
-    d3.select('.today').attr('x', function(){return timeRescaled(new Date())})
+    d3.select('.todayMark').attr('x', function(){return timeRescaled(new Date())})
 
     //reposition datapoints
     if (!d3.selectAll('.data').empty()){  

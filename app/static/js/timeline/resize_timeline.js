@@ -20,14 +20,14 @@ function resize(){
     time.range([0, width]);
 
     //frames
-    $('.eventDetails').height(totalHeight-margin);
+    $('.side_tab').height(totalHeight-margin+2);
 
     //background elements
     svg
         .attr('width', totalWidth)
         .attr('height', totalHeight)
     d3.select('.scrollArea').attr("width", width)
-                            .attr('height', (height-bottomBarHeight))
+                            .attr('height', (height))
     d3.select('.Year').attr('transform', 'translate('+ width/2 +',' + 75 +')')
 
     //sides
@@ -35,14 +35,14 @@ function resize(){
         .attr('transform', 'translate(' 
             + (xPadding + width) + ',' 
             + midScreen + ')')
-        .select('rect')
+        .selectAll('rect')
             .attr('height', totalHeight)
             .attr('y', -midScreen)
 
     leftSideBar
         .attr('transform', 'translate(' 
             + xPadding + ',' + midScreen + ')')
-        .select('rect')
+        .selectAll('rect')
             .attr('height', totalHeight)
             .attr('y', -midScreen)
 

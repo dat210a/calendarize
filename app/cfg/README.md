@@ -7,6 +7,7 @@ Current cfg folder structure should look like this:
 
     cfg
     └── db.json
+    └── mail.json
     
   
 #### File structures
@@ -20,5 +21,18 @@ Should you need to re-create one, the data structures will be listed below.
         "password": <password>,
         "host": <host ip>,
         "database": <db name>
+    }
+    ```
+
+* mail.json
+
+    ```
+    {
+        "server": <mail server>,
+        "PORT": <mail port>,
+        "ssl": true,
+        "tls": false,
+        "username": <username>,
+        "password": <password>,
     }
     ```

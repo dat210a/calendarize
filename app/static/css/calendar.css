@@ -16,9 +16,52 @@ line {
     pointer-events: none;
 }
 
+.bottomBase{
+    fill: transparent
+}
+
 .calendarToolbox{
     position: absolute; 
     width:100%; 
     bottom: 181px; 
     height: 45px;
+}
+
+.side_tab{
+    border: 5px solid #b0bec5; 
+}
+
+.yearBox{
+    fill: #3D4148;
+}
+
+.yearText{
+    stroke: #F1F0F0;
+    fill: #F1F0F0;
+}
+
+.bottomBase{
+    fill: #F1F0F0;
+}
+
+.add_calendar_container, 
+.add_event_container,
+.event_details_container{
+    margin: 20px;
+    display: none;
+}
+
+.backdrop{
+    background-color: transparent;
+}
+
+.material-tooltip{
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.mainAddButtonContainer{
+    position: absolute; 
+    display: inline-block; 
+    right: 15px; 
+    bottom: 15px;
 }

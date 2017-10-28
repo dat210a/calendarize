@@ -1,36 +1,36 @@
-var modal = document.getElementById('myModal');
-
-var login = document.getElementById('login_btn');
-var signup = document.getElementById('signup_btn');
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-        signup.style.display = "block";
-        login.style.display = "block";
+// toggle login/registration screen
+window.onclick = function(e){
+    if (e.target == $('#login_form')[0]){
+        toggle()
         $('.collapsible').collapsible('close', 0);
         $('.collapsible').collapsible('close', 1);
     }
-}
+ }
 
-signup.onclick = function(){
-    signup.style.display = "none";
-    login.style.display = "none";
-    modal.style.display = "flex";
+$('#signup_btn').click(function(){
+    toggle()
     $('.collapsible').collapsible('open', 1);
-}
+})
 
-login.onclick = function(){
-    signup.style.display = "none";
-    login.style.display = "none";
-    modal.style.display = "flex";
+$('#login_btn').click(function(){
+    toggle()
     $('.collapsible').collapsible('open', 0);
+})
+
+$('#register_btn').click(function(){
+    toggle()
+    $('.collapsible').collapsible('open', 1);
+})
+
+function toggle(){
+    $('#myModal').toggle();
 }
 
+// check for credentials at login
 $('#btnLogin').click(function(e){
+    e.preventDefault()
     $.ajax({
-        url: '/login',
+        url: '/verify_credentials',
         data: $('#formLogin').serialize(),
         type: 'POST',
         success: function(response) {
@@ -46,17 +46,18 @@ $('#btnLogin').click(function(e){
                                 $('#loginEmail').removeClass('validate invalid');
                             });
             }
-            else
-                window.location = response;
-
+            else {
+                $('#formLogin').submit()
+            }
         },
         error: function(error) {
             console.log(error);
         }
     });
-    return false;
 });
 
+
+// check for existing user based on email when registering
 $('#registerEmail').bind('blur keyup', function(e){
     if (e.type == 'blur' || e.keyCode == '13'){
         $.ajax({

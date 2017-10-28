@@ -1,32 +1,36 @@
-﻿{% extends 'nav_calendar.html' %}
-
-{% block title %}calendarize.calendar{% endblock %}
+﻿{% extends 'nav_user.html' %}
 
 {% block content %}
     <link href="static/css/calendar.css" type="text/css" rel="stylesheet" media="screen,projection" />
 
     <div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
         <div class="calendarContainer">
+            <!-- options button -->
+            <div class="fixed-action-btn horizontal", style="position: absolute; height: 0; display: inline-block; right: 15px; top: 15px;">
+                <a class="waves-effect waves-light btn-floating btn-large accentgrey-dark" onclick="Materialize.toast('Not yet implemented', 4000)">
+                    <i class="large material-icons">menu</i>
+                </a>
+            </div>
             <!-- main calendar -->
             <svg class="calendarMain"></svg>
             <!-- toolbar -->
             <div class="calendarToolbox">
                 <!-- FAB -->
-                <div class="fixed-action-btn horizontal", style="position: absolute; display: inline-block; right: 50px; bottom: 15px;">
-                    <a class="btn-floating btn-large red">
+                <div class="fixed-action-btn horizontal mainAddButtonContainer">
+                    <a class="btn-floating btn-large accentgrey-dark">
                         <i class="large material-icons">add</i>
                     </a>
                     <ul>
-                        <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue"><i class="material-icons">center_focus_strong</i></a></li>
-                        <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li>
-                        <li><a id="addCalendar" class="waves-effect waves-light btn-floating yellow darken-1"><i class="material-icons">insert_invitation</i></a></li>
-                        <li><a id='addEvent' class="waves-effect waves-light btn-floating red"><i class="material-icons">playlist_add</i></a>
+                        <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue tooltipped" data-position="top" data-delay="50" data-tooltip="Today"><i class="material-icons">center_focus_strong</i></a></li>
+                        <!-- <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li> -->
+                        <li><a id="addCalendarForm" class="waves-effect waves-light btn-floating yellow darken-1 tooltipped" data-position="top" data-delay="50" data-tooltip="New calendar"><i class="material-icons">insert_invitation</i></a></li>
+                        <li><a id='addEventForm' class="waves-effect waves-light btn-floating red tooltipped" data-position="top" data-delay="50" data-tooltip="New event"><i class="material-icons">playlist_add</i></a>
                         </li>
                     </ul>
                 </div>
                 <!-- show/hide groups -->
                 <div class="center upDown">
-                    <a class="waves-effect waves-light btn toggleGroupVisibility", style="background-color: lightgrey; color: black;">
+                    <a class="waves-effect waves-light btn accentgrey-dark toggleGroupVisibility">
                         <i class="large material-icons left toggleArrow">arrow_drop_down</i>
                         groups
                     </a>
@@ -43,51 +47,135 @@
         </div>
     </div>
     <!-- sidebar -->
-    <div class="eventDetails col m3 hide-on-med-and-down", style="margin: 0px; border: 5px solid #b0bec5; background-color: white;">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-    
-            <tbody>
-                <tr>
-                    <td>Id</td>
-                    <td class='eventID'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Start Date</td>
-                    <td class='eventDateStart'>NaN</td>
-                </tr>
-                <tr>
-                    <td>End Date</td>
-                    <td class='eventDateEnd'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Group Name</td>
-                    <td class='eventGroup'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Recurring</td>
-                    <td class='eventRecur'>NaN</td>
-                </tr>
-                <tr>
-                    <td>Files</td>
-                    <td class='eventFiles'>NaN</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="col m3 hide-on-med-and-down side_tab accentgrey-light">
+        <div class="event_details_container" id="eventDisplay">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td class='eventName'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Start Date</td>
+                        <td class='eventDateStart'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>End Date</td>
+                        <td class='eventDateEnd'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Group Name</td>
+                        <td class='eventGroup'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Recurring</td>
+                        <td class='eventRecur'>NaN</td>
+                    </tr>
+                    <tr>
+                        <td>Files</td>
+                        <td class='eventFiles'>
+                            <form id="formFiles" action="#">
+                                <div class="file-field input-field row">
+                                    <div class="btn">
+                                        <span>File</span>
+                                        <input type="file" name="file" multiple>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                                    </div>
+                                </div>
+                                <div class="row right">
+                                    <a id="addFiles" class="waves-effect waves-light btn" onclick="Materialize.toast('Not yet implemented', 4000)">upload</a>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="add_calendar_container" id="calendarForm">
+            <div class="row center" style="border-bottom: 2px solid lightgrey">
+                <p>New Calendar</p>
+            </div>
+            <form class='col s12 addCalendar' id="addCalendar">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="newCalendarName" Name="newCalendarName" type="text" class="validate" required autofocus>
+                        <label for="newCalendarName">Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6 offset-s6">
+                        <button id="btnNewCalendar" class="right btn waves-effect waves-light" type="submit">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="add_event_container" id="eventForm">
+            <div class="row center" style="border-bottom: 2px solid lightgrey">
+                <p>New Event</p>
+            </div>
+            <form class='col s12 addEvent' id="addEvent">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="newEventName" Name="newEventName" type="text" class="validate" required autofocus>
+                        <label for="newEventName">Event name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <select id="calendarID" Name="calendarID">
+                        </select>
+                        <label>Calendar</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="startDate" Name="startDate" type="text" class="datepicker">
+                        <label for="startDate">Start date</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="endDate" Name="endDate" type="text" class="datepicker">
+                        <label for="endDate">End date</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6">Recurring</div>
+                    <div class="col s6 switch">
+                        <label>
+                            No
+                            <input id="repeatEvent" name="recurring" type="checkbox" value='1'>
+                            <span class="lever"></span>
+                            Yes
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6 offset-s6">
+                        <button id="btnNewEvent" class="right btn waves-effect waves-light" type="submit">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
     <!-- TODO make a bundle -->
     <script src="/static/js/lib/d3.min.js"></script>
     <script src="/static/js/timeline/DisplayCalendar.js"></script>
+    <script src="/static/js/timeline/navigation_buttons.js"></script>    
     <script src="/static/js/timeline/SubbedGroups.js"></script>
     <script src="/static/js/timeline/simulation.js"></script>
-    <script src="/static/js/timeline/DisplayData.js"></script>
     <script src="/static/js/timeline/display_event_details.js"></script>
+    <script src="/static/js/timeline/DisplayData.js"></script>
     <script src="/static/js/timeline/zoom_and_scroll.js"></script>
     <script src="/static/js/timeline/resize_timeline.js"></script>
     <script src="/static/js/toolbar_options.js"></script>
+    <script src="/static/js/init.js"></script>
 {% endblock %}

@@ -1,10 +1,11 @@
 import logging
 import json
 import pprint as pp
+from funcs.file_tools import save_file
 from mysql import connector
 from mysql.connector.cursor import MySQLCursorPrepared
 
-conf_file = 'cfg/db.json'
+conf_file = "cfg/db.json"
 
 with open(conf_file, 'r') as cf:
     # Loads login information from file for security
@@ -48,7 +49,17 @@ class ConnectionInstance:
         self.__cur.execute(sql, [email])
         try:
             res = self.__cur.fetchone()
-            return res[0].decode('utf-8')
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
+            return None
+
+    def get_user_activity(self, email):
+        sql = "SELECT active FROM users WHERE ? = user_email"
+        self.__cur.execute(sql, [email])
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
@@ -66,7 +77,6 @@ class ConnectionInstance:
     def get_username(self, email):
         sql = "SELECT user_name FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
-
         try:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
@@ -81,15 +91,6 @@ class ConnectionInstance:
             return [x[0] for x in self.__cur.fetchall()]
         except Exception as e:
             logging.debug('{}\nWhile trying to retrieve calendar IDs'.format(e))
-            return None
-
-    def get_calendar_members(self, cid):
-        sql = "SELECT calendar_members FROM calendars WHERE calendar_id = %s"
-        self.__cur.execute(sql, [cid])
-        try:
-            return [x[0] for x in self.__cur.fetchall()]
-        except Exception as e:
-            logging.debug('{}\nWhile trying to retrieve members from calendar: {}'.format(e, cid))
             return None
 
     def get_event_files(self, eid, rec):
@@ -121,7 +122,7 @@ class ConnectionInstance:
             return None
 
     def fetch_data_for_display(self, uid):
-        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = %s"
+        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
         self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchall()
@@ -130,93 +131,109 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-        sql = "SELECT event_id FROM calendar_events WHERE calendar_id = ?"
+        sql = "SELECT calendar_id, calendar_name FROM calendars WHERE calendar_id = ?"
         if len(cals) > 1:
             for i in range(len(cals) - 1):
                 sql += " OR calendar_id = ?"
         self.__cur.execute(sql, cals)
         try:
-            res = self.__cur.fetchall()
-            events = [r[0] for r in res]
+            calendars = self.__cur.fetchall()
+            calendars2 = [dict(zip(('id', 'name'), calendar)) for calendar in calendars]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
+            return None
+
+        sql = "SELECT event_id, event_name, event_calendar_id, event_start, event_end, event_recurring FROM events WHERE event_calendar_id = ?"
+        if len(cals) > 1:
+            for i in range(len(cals) - 1):
+                sql += " OR event_calendar_id = ?"
+        self.__cur.execute(sql, cals)
+        try:
+            events = self.__cur.fetchall()
+            events2 = [dict(zip(('id', 'name', 'group', 'start_date', 'end_date', 'recurring'), event)) for event in events]
+            return [calendars2, events2]
         except Exception as e:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None
 
-        sql = "SELECT * FROM events WHERE event_id = ?"
-        if len(events) > 1:
-            for i in range(len(events) - 1):
-                sql += " OR event_id = ?"
-                # TODO complete with relevant values to fetch and return
+
+    def get_last_ID(self):
+        sql = 'SELECT LAST_INSERT_ID();'
+        self.__cur.execute(sql)
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving ID for the last INSERT'.format(e))
+            return None
 
 #######################################################################################
         # Insertion
 
     def add_user(self, username, email, hashedpass):
-        query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?)'
+        query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?);'
         user_data = [username, email, hashedpass]
         try:
             self.__cur.execute(query, user_data)
             self.__con.commit()
-            return True
+            return self.get_last_ID()
         except Exception as e:
             logging.debug('{}\nWhile trying to insert user with data:\n'
                           '\tUsername: {}\n'
                           '\tEmail: {}\n'
                           '\tPW hash: {}'.format(e, username, email, hashedpass))
             self.__con.rollback()
-            return False
+            return None
 
-    def add_event(self, event_data):
+    def add_calendar(self, created, owner, cal_name="Default"):
+        sql = "INSERT INTO calendars " \
+              "(calendar_name, calendar_date_created, calendar_owner) " \
+              "VALUES (?, ?, ?)"
+        self.__cur.execute(sql, [
+            cal_name,
+            created,
+            owner,
+        ])
+        calendar_id = self.get_last_ID()
+        sql = "INSERT INTO user_calendars (user_id, calendar_id, role) VALUES (?, ?, ?)"
+        self.__cur.execute(sql, [owner, calendar_id, 0])
+        try:
+            self.__con.commit()
+            return self.get_last_ID()
+        except Exception as e:
+            logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_name)))
+            self.__con.rollback()
+            return None
+
+    def add_event(self, event_data, created, owner):
         sql = "INSERT INTO events " \
-              "(event_id, event_name, event_date_created, event_details, " \
-              "event_location, event_start, event_end, event_time, event_extra)" \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+              "(event_name, event_calendar_id, event_date_created, event_owner, event_start, event_end, event_recurring)" \
+              "VALUES (?, ?, ?, ?, ?, ?, ?)"
         self.__cur.execute(
             sql,
             [
-                event_data['id'],
-                event_data['name'],
-                event_data['created'],
-                event_data['details'],
-                event_data['location'],
-                event_data['start'],
-                event_data['end'],
-                event_data['time'],
-                event_data['extra']
+                event_data['newEventName'],
+                event_data['calendarID'],
+                created,
+                owner,
+                event_data['startDate'],
+                event_data['startDate'] if event_data['endDate'] == '' else event_data['endDate'],
+                1 if 'recurring' in event_data else 0,
             ]
         )
-        sql = "INSERT INTO calendar_events (calendar_id, event_id) VALUES (?, ?)"
-        self.__cur.execute(sql, [event_data['parent'], event_data['id']])
         try:
             self.__con.commit()
+            return self.get_last_ID()
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
+            return None
 
-    def add_calendar(self, cal_data):
-        sql = "INSERT INTO calendars " \
-              "(calendar_id, calendar_name, calendar_date_created, calendar_details, calendar_owner, calendar_extra) " \
-              "VALUES (?, ?, ?, ?, ?, ?)"
-        self.__cur.execute(sql, [
-            cal_data['id'],
-            cal_data['name'],
-            cal_data['created'],
-            cal_data['details'],
-            cal_data['owner'],
-            cal_data['extra']
-        ])
-        sql = "INSERT INTO user_calendars (user_id, calendar_id) VALUES (?, ?)"
-        self.__cur.execute(sql, [cal_data['owner'], cal_data['id']])
-        try:
-            self.__con.commit()
-        except Exception as e:
-            logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_data)))
-            self.__con.rollback()
-
-    def add_file(self, fname, eid, rec=0):
+    def add_file(self, rqdat, eid):
+        fname = save_file(rqdat, eid)
         if fname:
-            sql = "INSERT INTO event_files (event_id, file_name, recurring) VALUES (?, ?, ?)"
-            self.__cur.execute(sql, eid, fname, rec)
+            sql = "INSERT INTO event_files (event_id, file_name) VALUES (?, ?)"
+            self.__cur.execute(sql, eid, fname)
             try:
                 self.__con.commit()
             except Exception as e:
@@ -224,6 +241,59 @@ class ConnectionInstance:
                 self.__con.rollback()
         else:
             pass  # Does nothing if there is no file
+
+    def make_resetkey(self, email, resetkey):
+        sql ="UPDATE users SET resetkey=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_email=?"
+        self.__cur.execute(sql, (resetkey,email))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting resetkey for email:\n{}'.format(e, email))
+
+
+    def get_reset_info(self, resetkey):
+        sql ="SELECT user_email, user_password FROM users WHERE resetkey=? and expires > now()"
+        self.__cur.execute(sql, [resetkey])
+        try:
+            res = self.__cur.fetchone()
+            return res
+        except Exception as e:
+            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, email))
+    def set_new_password(self, email, new_password):
+        sql = "UPDATE users SET user_password =?, resetkey='' WHERE user_email = ?"
+        self.__cur.execute(sql, (new_password,email))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting user new password:\n{}'.format(e, email))
+#######################################################################################
+            # Update
+
+    def activate_user(self, email):
+        sql = 'UPDATE users SET active = 1 WHERE ? = user_email;'
+        self.__cur.execute(sql, [email])
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
+
+
+    def update_user(self, user_data):
+        #TODO
+        pass
+
+    def update_calendar(self, calendar_data):
+        #TODO
+        pass
+
+    def update_event(self, event_data):
+        #TODO
+        pass
+
+    def update_role(self, data):
+        #TODO
+        pass
+
 
 #######################################################################################
             # Deletion

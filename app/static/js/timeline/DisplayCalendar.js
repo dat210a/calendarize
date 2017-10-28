@@ -1,5 +1,4 @@
 ﻿
-
 var totalWidth = 900;
 var totalHeight = 670;
 var xPadding = 75;
@@ -8,14 +7,13 @@ var width = totalWidth - 2*xPadding,
     height = totalHeight;
 
 var midScreen = height / 2;
-var bottomOffset = 200;
 
 var radius = 8;
 
 var tresholdNumPoints = 8;
 var k = 1;
 
-var parse = d3.timeParse('%_m/%_d/%Y');
+var parse = d3.timeParse('%Y-%m-%d');
 var time = d3.scaleTime()
                 .domain([new Date('1/1/2020'), new Date('12/31/2020')])
                 .range([0, width]);
@@ -30,34 +28,26 @@ var axis = d3.axisBottom(time)
 var svg = d3.select('svg')
                     .attr('width', totalWidth)
                     .attr('height', height)
-                    .attr("transform", "translate(" + 0 + "," + 5 + ")")
+                    .attr("transform", "translate(" + 0 + "," + 0 + ")")
 
+//year display
 svg.append('g')
         .attr("class", "background_items")
         .attr("transform", "translate(" + xPadding + ", 0)")
-        .append('rect')
-            .attr('class', 'scrollArea')
-            .attr("height", height - bottomOffset)
-            .attr("width", width)
-            .style('fill', "transparent")
-
-//year display
-svg.select(".background_items")
         .append("g")
             .attr("class", "Year")
             .attr('transform', 'translate('+ width/2 +',' + 75 +')')
         .append('rect')
+            .attr('class', "yearBox")
             .attr("width", 150)
             .attr("height", 75)
             .attr("x", -75)
             .attr("y", -55)
-            .attr("stroke", "darkgrey")
-            .style("fill", "darkgrey");
 
 var yearTag = svg.select(".background_items").select(".Year")
                 .append("text")
+                    .attr('class', 'yearText')
                     .attr("font-size", 50)
-                    .style('fill', 'white')
                     .style('text-anchor', 'middle')
                     .text(function(){
                         return d3.timeFormat('%Y')(time.invert(width/2));
@@ -91,11 +81,28 @@ d3.select('.timeline')
     .append('g')
     .attr('class', 'g-today')
     .append('text')
-        .attr('class', 'today')
+        .attr('class', 'todayMark')
         .attr('font-family', 'Material Icons')
         .attr('font-size', '20px')
         .text('account_circle')
         .attr('y', 10)
+
+svg.append('g')
+        .attr("class", "foreground_items")
+        .attr("transform", "translate(" + xPadding + ", 0)")
+        .append('rect')
+            .attr('class', 'scrollArea')
+            .attr("height", height)
+            .attr("width", width)
+            .style('fill', "transparent")
+            .on('click', function(){
+                d3.select(this).attr('display', 'none');
+                var element = document.elementFromPoint(event.clientX,event.clientY)
+                d3.select($(element).parent()[0]).dispatch('click')
+                d3.select(this).attr('display', 'inline');
+            })
+
+
 
 //left side padding
 var leftSideBar = svg.append('g')
@@ -104,16 +111,16 @@ var leftSideBar = svg.append('g')
                             + xPadding + ',' + midScreen + ')')
 
 leftSideBar.append("rect")
-            .attr('width', xPadding)
-            .attr('height', height)
-            .attr('x', -xPadding)
-            .attr('y', -midScreen)
+                .attr('width', xPadding)
+                .attr('height', height)
+                .attr('x', -xPadding)
+                .attr('y', -midScreen)
 
 leftSideBar.append('line')
             .attr("stroke", "black")
             .attr("stroke-width", 3)
-            .attr("x1", -3)
-            .attr("x2", -3)
+            .attr("x1", -2)
+            .attr("x2", -2)
             .attr("y1", -60)
             .attr("y2", 60);
 
@@ -144,3 +151,5 @@ rightSideBar.append('line')
             .attr("y1", -40)
             .attr("y2", +40);
 
+
+            

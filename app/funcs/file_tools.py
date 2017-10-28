@@ -17,10 +17,7 @@ def secure_fn(fname):
     return sec.hexdigest()
 
 
-def save_file(rq, eid):
-    if "file" not in rq.files:
-        return None
-    file = rq.files["file"]
+def save_file(file, eid):
     if file.filename == "":
         return None
     if file and allowed_file(file.filename):
@@ -36,3 +33,4 @@ def save_file(rq, eid):
         return filename
     else:
         return None
+
