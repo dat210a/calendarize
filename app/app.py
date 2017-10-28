@@ -398,7 +398,7 @@ def delete_cal():
                 q.db_del_cal(cal)
 
 
-@app.route("/recover", methods=["GET", "POST"])
+@app.route("/recover/", methods=["GET", "POST"])
 @mobile_template('{mobile/}recover.html')
 def recover(template):
     if request.method=="POST":
@@ -407,18 +407,17 @@ def recover(template):
             flash("You need to fill out an email!")
             return redirect(url_for('recover'))
         if not user_exists(email):
-                    flash("Unregistered Email")
+            flash("Unregistered Email")
         else:
-                #Generate random unique string for resetkey, store in database and send it along with the email.
-                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-
-                with db.ConnectionInstance() as queries:
-                    key = x + str(queries.get_user_id(email))
-                    queries.make_resetkey(email,key)
-                msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-                msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
-                mail.send(msg)
-                return render_template("recoverconfirm.html",email=email)
+            #Generate random unique string for resetkey, store in database and send it along with the email.
+            x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+            with db.ConnectionInstance() as queries:
+                key = x + str(queries.get_user_id(email))
+                queries.make_resetkey(email,key)
+            msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
+            msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+            mail.send(msg)
+            return render_template("recoverconfirm.html",email=email)
     return render_template(template)
 
 
