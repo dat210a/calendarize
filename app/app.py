@@ -399,8 +399,7 @@ def delete_cal():
 
 
 @app.route("/recover/", methods=["GET", "POST"])
-@mobile_template('{mobile/}recover.html')
-def recover(template):
+def recover():
     if request.method=="POST":
         email = request.form.get("email", None)
         if not email:
@@ -418,32 +417,31 @@ def recover(template):
             msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
             mail.send(msg)
             return render_template("recoverconfirm.html",email=email)
-    return render_template(template)
+    return render_template("recover.html")
 
 
 @app.route("/reset/<resetkey>", methods=["GET", "POST"])
-@mobile_template('{mobile/}reset.html')
-def reset(template, resetkey):
+def reset(resetkey):
     with db.ConnectionInstance() as queries:
-        info = queries.get_reset_info(resetkey)
-    if info:
+        email = queries.get_reset_info(resetkey)
+    if email:
         if request.method=="POST":
             new_password = request.form.get("new_password", None)
             repeat_password = request.form.get("repeat_password", None)
             if not new_password or not repeat_password:
-                flash("Empty password")
+                flash("Please fill in both fields")
             elif len(new_password) < 6:
                 flash("Minimum 6 characters.")
             elif new_password == repeat_password:
-                if check_password(new_password, info[0].decode("utf-8")):
+                if check_password(new_password, email):
                     flash("You cannot use the old password.")
                 else:
                     with db.ConnectionInstance() as queries:
-                        queries.set_new_password(info[0].decode("utf-8"),hash_password(new_password))
+                        queries.set_new_password(email,hash_password(new_password))
                         return render_template("resetsuccess.html")
             else:
                 flash("Your password do not match")
-        return render_template(template)
+        return render_template("reset.html")
     else:
         return render_template("invalidlink.html")
 

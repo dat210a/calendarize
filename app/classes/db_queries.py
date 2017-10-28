@@ -156,6 +156,15 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
             return None
 
+    def get_reset_info(self, resetkey):
+        sql ="SELECT user_email FROM users WHERE resetkey=? and expires > now()"
+        self.__cur.execute(sql, [resetkey])
+        try:
+            res = self.__cur.fetchone()
+            return res[0].decode("utf-8")
+        except Exception as e:
+            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e))
+            return None
 
     def get_last_ID(self):
         sql = 'SELECT LAST_INSERT_ID();'
@@ -242,30 +251,7 @@ class ConnectionInstance:
         else:
             pass  # Does nothing if there is no file
 
-    def make_resetkey(self, email, resetkey):
-        sql ="UPDATE users SET resetkey=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_email=?"
-        self.__cur.execute(sql, (resetkey,email))
-        try:
-            self.__con.commit()
-        except Exception as e:
-            logging.debug('{}\nWhile setting resetkey for email:\n{}'.format(e, email))
 
-
-    def get_reset_info(self, resetkey):
-        sql ="SELECT user_email, user_password FROM users WHERE resetkey=? and expires > now()"
-        self.__cur.execute(sql, [resetkey])
-        try:
-            res = self.__cur.fetchone()
-            return res
-        except Exception as e:
-            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, email))
-    def set_new_password(self, email, new_password):
-        sql = "UPDATE users SET user_password =?, resetkey='' WHERE user_email = ?"
-        self.__cur.execute(sql, (new_password,email))
-        try:
-            self.__con.commit()
-        except Exception as e:
-            logging.debug('{}\nWhile setting user new password:\n{}'.format(e, email))
 #######################################################################################
             # Update
 
@@ -277,6 +263,23 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
 
+    def make_resetkey(self, email, resetkey):
+        sql ="UPDATE users SET resetkey=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_email=?"
+        self.__cur.execute(sql, (resetkey,email))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting resetkey for email:\n{}'.format(e, email))
+            self.__con.rollback()
+
+    def set_new_password(self, email, new_password):
+        sql = "UPDATE users SET user_password =?, resetkey='' WHERE user_email = ?"
+        self.__cur.execute(sql, (new_password,email))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting user new password:\n{}'.format(e, email))
+            self.__con.rollback()
 
     def update_user(self, user_data):
         #TODO
