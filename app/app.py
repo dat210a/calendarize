@@ -13,6 +13,7 @@ in the GitHub repository README.md
 """
 import logging
 import json, datetime
+import string, random
 from classes import db_queries as db
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
@@ -23,7 +24,6 @@ from flask_login import login_user, current_user
 from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
 from funcs import file_tools
-import string, random
 from flask_mail import Mail, Message
 
 # app initialization
