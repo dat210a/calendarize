@@ -169,80 +169,74 @@
                 <span>None</span>
             </div>
         </div>
-        <!-- <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light red right "><i class="material-icons ">edit</i></a>
-        </div> -->
+        <a class="btn-floating btn-large waves-effect waves-light red right "><i class="material-icons ">edit</i></a>
     </div>
 
     <div class="add_calendar_container " id="calendarForm ">
         <div class="row center " style="border-bottom: 2px solid lightgrey ">
             <p>New Calendar</p>
         </div>
-        <div class="row">
-            <form class='col s12 addCalendar' id="addCalendar ">
-                <div class="row ">
-                    <div class="input-field col s12 ">
-                        <input id="newCalendarName " Name="newCalendarName " type="text " class="validate " required autofocus>
-                        <label for="newCalendarName ">Name</label>
-                    </div>
+        <form class='col s12 addCalendar' id="addCalendar ">
+            <div class="row ">
+                <div class="input-field col s12 ">
+                    <input id="newCalendarName " Name="newCalendarName " type="text " class="validate " required autofocus>
+                    <label for="newCalendarName ">Name</label>
                 </div>
-                <div class="row ">
-                    <div class="col s6 offset-s6 ">
-                        <button id="btnNewCalendar " class="right btn waves-effect waves-light " type="submit ">Create</button>
-                    </div>
+            </div>
+            <div class="row ">
+                <div class="col s6 offset-s6 ">
+                    <button id="btnNewCalendar " class="right btn waves-effect waves-light " type="submit ">Create</button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
     
     <div class="add_event_container " id="eventForm ">
         <div class="row center " style="border-bottom: 2px solid lightgrey ">
             <p>New Event</p>
         </div>
-        <div class="row">
-            <form class='col s12 addEvent' id="addEvent ">
-                <div class="row ">
-                    <div class="input-field col s12 ">
-                        <input id="newEventName " Name="newEventName " type="text " class="validate " required autofocus>
-                        <label for="newEventName ">Event name</label>
-                    </div>
+        <form class='col s12 addEvent' id="addEvent ">
+            <div class="row ">
+                <div class="input-field col s12 ">
+                    <input id="newEventName " Name="newEventName " type="text " class="validate " required autofocus>
+                    <label for="newEventName ">Event name</label>
                 </div>
-                <div class="row ">
-                    <div class="input-field col s12 ">
-                        <select id="calendarID " Name="calendarID ">
-                        </select>
-                        <label>Calendar</label>
-                    </div>
+            </div>
+            <div class="row ">
+                <div class="input-field col s12 ">
+                    <select id="calendarID " Name="calendarID ">
+                    </select>
+                    <label>Calendar</label>
                 </div>
-                <div class="row ">
-                    <div class="input-field col s12 ">
-                        <input id="startDate " Name="startDate " type="text " class="datepicker ">
-                        <label for="startDate ">Start date</label>
-                    </div>
+            </div>
+            <div class="row ">
+                <div class="input-field col s12 ">
+                    <input id="startDate " Name="startDate " type="text " class="datepicker ">
+                    <label for="startDate ">Start date</label>
                 </div>
-                <div class="row ">
-                    <div class="input-field col s12 ">
-                        <input id="endDate " Name="endDate " type="text " class="datepicker ">
-                        <label for="endDate ">End date</label>
-                    </div>
+            </div>
+            <div class="row ">
+                <div class="input-field col s12 ">
+                    <input id="endDate " Name="endDate " type="text " class="datepicker ">
+                    <label for="endDate ">End date</label>
                 </div>
-                <div class="row ">
-                    <div class="col s6 ">Recurring</div>
-                    <div class="col s6 switch ">
-                        <label>
-                            No
-                            <input id="repeatEvent " name="recurring " type="checkbox " value='1'>
-                            <span class="lever "></span> Yes
-                        </label>
-                    </div>
+            </div>
+            <div class="row ">
+                <div class="col s6 ">Recurring</div>
+                <div class="col s6 switch ">
+                    <label>
+                        No
+                        <input id="repeatEvent " name="recurring " type="checkbox " value='1'>
+                        <span class="lever "></span> Yes
+                    </label>
                 </div>
-                <div class="row ">
-                    <div class="col s6 offset-s6 ">
-                        <button id="btnNewEvent " class="right btn waves-effect waves-light " type="submit ">Create</button>
-                    </div>
+            </div>
+            <div class="row ">
+                <div class="col s6 offset-s6 ">
+                    <button id="btnNewEvent " class="right btn waves-effect waves-light " type="submit ">Create</button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 <!-- TODO make a bundle -->
