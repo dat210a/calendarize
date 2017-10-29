@@ -195,14 +195,18 @@ def register():
         if name and email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
                 #adds new user to the database
-                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
-                key = x + email
+                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+                key = x + email[:5]
                 added = queries.add_user(name, email, hash_password(password),key)
                 if (added):
                     #user = User(email)
                     #login_user(user)
                     #adds default calendar to that user
                     #queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
+                    #send verfication email
+                    msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
+                    msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
+                    mail.send(msg)
                     return render_template("verify_send.html", email=email)
     # reload if something not right
     # TODO maybe some error messages
@@ -231,9 +235,9 @@ def login():
         email = request.form["inputEmail"]
         user = load_user(email)
         if user is not None:
-            with db.ConnectionInstance() as queries:
-                verified = queries.verfify_check(email)
-            if check_password(password, email) and verified > 0:
+            if not user.is_active():
+                return ("Please verify your account")
+            if check_password(password, email) and user.is_active():
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
                 else:
@@ -449,6 +453,19 @@ def reset(resetkey):
         return render_template("reset.html")
     else:
         return render_template("invalidlink.html")
+
+@app.route("/verify/<verify_key>", methods=["GET", "POST"])
+def verify(verify_key):
+    with db.ConnectionInstance() as queries:
+        info = queries.get_verify_info(verify_key)
+    if info:
+        if request.method=="POST":
+                with db.ConnectionInstance() as queries:
+                    queries.activate_user(info[0].decode("utf-8"))
+                    return render_template("verify_confirm.html")
+        return render_template("verify.html")
+    else:
+        return ("Your account has been alreaady verified or the link hase been expired")
 
 ##################################################################
 

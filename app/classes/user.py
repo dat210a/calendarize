@@ -19,10 +19,9 @@ class User:
         return True
 
     def is_active(self):
-        # change this when verification complete:
-        # return self.active
-        return True
-
+        if self.active > 0:
+            return True
+        return False
     def is_anonymous(self):
         return False
 
