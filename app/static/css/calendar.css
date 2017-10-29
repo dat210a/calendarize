@@ -54,7 +54,7 @@ line {
 
 .add_calendar_container, 
 .add_event_container,
-.event_details_container,
+.event_details_container
 {
     display: none;
 }
