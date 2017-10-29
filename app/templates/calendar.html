@@ -44,7 +44,11 @@
     </div>
 </div>
 <!-- sidebar -->
+
 <div class="col m3 hide-on-med-and-down z-depth-3 overflow fwHeader">
+
+<div class="col m3 hide-on-med-and-down accentgrey-light side_tab overflow fwHeader">
+
     <!-- <div class="event_details_container" id="eventDisplay">
             <table>
                 <thead>
@@ -98,54 +102,54 @@
         </div> -->
     <div class="event_details_container" id="eventDisplay">
         <div class="row red darken-2 z-depth-1">
-            <div class=" col s12 ">
-                <h4 class="left-align grey-text text-lighten-5 ">Event name</h4>
-                <span class="grey-text text-lighten-3 ">Created by: Person X</span>
+            <div class=" col s12">
+                <h4 class="left-align grey-text text-lighten-5">Event name</h4>
+                <span class="grey-text text-lighten-3">Created by: Person X</span>
             </div>
         </div>
-        <div class="row ">
-            <div class="col s12 ">
-                <span class="infotitle "><strong>Group</strong></span>
+        <div class="row">
+            <div class="col s12">
+                <span class="infotitle"><strong>Group</strong></span>
                 <br>
                 <span>Home</span>
             </div>
         </div>
-        <div class="row ">
-            <div class="col s12 ">
-                <span class="infotitle "><strong>Date</strong></span>
+        <div class="row">
+            <div class="col s12">
+                <span class="infotitle"><strong>Date</strong></span>
                 <br>
                 <span>20/04/17 - 23/04/17</span>
                 <br>
-                <span class="sub ">Recurring</span>
+                <span class="sub">Recurring</span>
             </div>
         </div>
-        <div class="row ">
-            <div class="col s12 ">
-                <span class="infotitle "><strong>Location</strong></span>
+        <div class="row">
+            <div class="col s12">
+                <span class="infotitle"><strong>Location</strong></span>
                 <br>
                 <span>Somewhere</span>
             </div>
         </div>
-        <div class="row ">
-            <div class="col s12 ">
-                <span class="infotitle "><strong>Notifications</strong></span>
+        <div class="row">
+            <div class="col s12">
+                <span class="infotitle"><strong>Notifications</strong></span>
                 <br>
                 <span>1 week in advance</span>
             </div>
         </div>
-        <div class="row ">
-            <div class="col s12 ">
-                <span class="infotitle "><strong>Members</strong></span>
-                <div class="row ">
-                    <div class="col s5 ">
+        <div class="row">
+            <div class="col s12">
+                <span class="infotitle"><strong>Members</strong></span>
+                <div class="row">
+                    <div class="col s5">
                         <ul>
                             <li>Person 1</li>
                             <li>Person 2</li>
                             <li>Person 3</li>
-                            <li><a href=" ">See more</a></li>
+                            <li><a href="">See more</a></li>
                         </ul>
                     </div>
-                    <div class="col 5 ">
+                    <div class="col 5">
                         <ul>
                             <li>Person 1</li>
                             <li>Person 2</li>
@@ -155,100 +159,100 @@
                 </div>
             </div>
         </div>
-        <div class="row ">
-            <div class="col s12 ">
-                <span class="infotitle "><strong>Notes</strong></span>
+        <div class="row">
+            <div class="col s12">
+                <span class="infotitle"><strong>Notes</strong></span>
                 <br>
                 <span>Don't forget to..</span>
             </div>
         </div>
-        <div class="row ">
-            <div class="col s12 ">
-                <span class="infotitle "><strong>Attachments</strong></span>
+        <div class="row">
+            <div class="col s12">
+                <span class="infotitle"><strong>Attachments</strong></span>
                 <br>
                 <span>None</span>
             </div>
         </div>
-        <a class="btn-floating btn-large waves-effect waves-light red right "><i class="material-icons ">edit</i></a>
+        <a class="btn-floating btn-large waves-effect waves-light red right"><i class="material-icons">edit</i></a>
     </div>
 
-    <div class="add_calendar_container " id="calendarForm ">
-        <div class="row center " style="border-bottom: 2px solid lightgrey ">
+    <div class="add_calendar_container" id="calendarForm">
+        <div class="row center" style="border-bottom: 2px solid lightgrey">
             <p>New Calendar</p>
         </div>
-        <form class='col s12 addCalendar' id="addCalendar ">
-            <div class="row ">
-                <div class="input-field col s12 ">
-                    <input id="newCalendarName " Name="newCalendarName " type="text " class="validate " required autofocus>
-                    <label for="newCalendarName ">Name</label>
+        <form class='col s12 addCalendar' id="addCalendar">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="newCalendarName" Name="newCalendarName" type="text" class="validate" required autofocus>
+                    <label for="newCalendarName">Name</label>
                 </div>
             </div>
-            <div class="row ">
-                <div class="col s6 offset-s6 ">
-                    <button id="btnNewCalendar " class="right btn waves-effect waves-light " type="submit ">Create</button>
+            <div class="row">
+                <div class="col s6 offset-s6">
+                    <button id="btnNewCalendar" class="right btn waves-effect waves-light" type="submit">Create</button>
                 </div>
             </div>
         </form>
     </div>
-
-    <div class="add_event_container " id="eventForm ">
-        <div class="row center " style="border-bottom: 2px solid lightgrey ">
+    
+    <div class="add_event_container" id="eventForm">
+        <div class="row center" style="border-bottom: 2px solid lightgrey">
             <p>New Event</p>
         </div>
-        <form class='col s12 addEvent' id="addEvent ">
-            <div class="row ">
-                <div class="input-field col s12 ">
-                    <input id="newEventName " Name="newEventName " type="text " class="validate " required autofocus>
-                    <label for="newEventName ">Event name</label>
+        <form class='col s12 addEvent' id="addEvent">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="newEventName" Name="newEventName" type="text" class="validate" required autofocus>
+                    <label for="newEventName">Event name</label>
                 </div>
             </div>
-            <div class="row ">
-                <div class="input-field col s12 ">
-                    <select id="calendarID " Name="calendarID ">
+            <div class="row">
+                <div class="input-field col s12">
+                    <select id="calendarID" Name="calendarID">
                     </select>
                     <label>Calendar</label>
                 </div>
             </div>
-            <div class="row ">
-                <div class="input-field col s12 ">
-                    <input id="startDate " Name="startDate " type="text " class="datepicker ">
-                    <label for="startDate ">Start date</label>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="startDate" Name="startDate" type="text" class="datepicker">
+                    <label for="startDate">Start date</label>
                 </div>
             </div>
-            <div class="row ">
-                <div class="input-field col s12 ">
-                    <input id="endDate " Name="endDate " type="text " class="datepicker ">
-                    <label for="endDate ">End date</label>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="endDate" Name="endDate" type="text" class="datepicker">
+                    <label for="endDate">End date</label>
                 </div>
             </div>
-            <div class="row ">
-                <div class="col s6 ">Recurring</div>
-                <div class="col s6 switch ">
+            <div class="row">
+                <div class="col s6">Recurring</div>
+                <div class="col s6 switch">
                     <label>
                         No
-                        <input id="repeatEvent " name="recurring " type="checkbox " value='1'>
-                        <span class="lever "></span> Yes
+                        <input id="repeatEvent" name="recurring" type="checkbox" value='1'>
+                        <span class="lever"></span> Yes
                     </label>
                 </div>
             </div>
-            <div class="row ">
-                <div class="col s6 offset-s6 ">
-                    <button id="btnNewEvent " class="right btn waves-effect waves-light " type="submit ">Create</button>
+            <div class="row">
+                <div class="col s6 offset-s6">
+                    <button id="btnNewEvent" class="right btn waves-effect waves-light" type="submit">Create</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 <!-- TODO make a bundle -->
-<script src="/static/js/lib/d3.min.js "></script>
-<script src="/static/js/timeline/DisplayCalendar.js "></script>
-<script src="/static/js/timeline/navigation_buttons.js "></script>
-<script src="/static/js/timeline/SubbedGroups.js "></script>
-<script src="/static/js/timeline/simulation.js "></script>
-<script src="/static/js/timeline/display_event_details.js "></script>
-<script src="/static/js/timeline/DisplayData.js "></script>
-<script src="/static/js/timeline/zoom_and_scroll.js "></script>
-<script src="/static/js/timeline/resize_timeline.js "></script>
-<script src="/static/js/toolbar_options.js "></script>
-<script src="/static/js/init.js "></script>
+<script src="/static/js/lib/d3.min.js"></script>
+<script src="/static/js/timeline/DisplayCalendar.js"></script>
+<script src="/static/js/timeline/navigation_buttons.js"></script>
+<script src="/static/js/timeline/SubbedGroups.js"></script>
+<script src="/static/js/timeline/simulation.js"></script>
+<script src="/static/js/timeline/display_event_details.js"></script>
+<script src="/static/js/timeline/DisplayData.js"></script>
+<script src="/static/js/timeline/zoom_and_scroll.js"></script>
+<script src="/static/js/timeline/resize_timeline.js"></script>
+<script src="/static/js/toolbar_options.js"></script>
+<script src="/static/js/init.js"></script>
 {% endblock %}
