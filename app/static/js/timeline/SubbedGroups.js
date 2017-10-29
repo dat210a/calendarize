@@ -56,8 +56,21 @@ function AddGroupButtons(groups){
             .attr("x", 20)
             .attr("y", 120)
             .style("font-size", 30)
-            .text(function(d){return d.name}); 
+            .text(function(d){return d.name})
+            .each(short_text);
 };
+
+// text cutoff
+function short_text() {
+    var self = d3.select(this),
+        textLength = self.node().getComputedTextLength(),
+        text = self.text();
+    while (textLength > (groupBoxDim - 30)) {
+        text = text.slice(0, -1);
+        self.text(text + ' ...');
+        textLength = self.node().getComputedTextLength();
+    }
+} 
 
 //toggle up/down
 function ToggleAgendaMenu(){

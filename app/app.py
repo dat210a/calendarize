@@ -248,6 +248,54 @@ def logout():
     return redirect('/')
 
 
+@app.route("/recover/", methods=["GET", "POST"])
+def recover():
+    if request.method=="POST":
+        email = request.form.get("email", None)
+        if not email:
+            flash("You need to fill out an email!")
+            return redirect(url_for('recover'))
+        if not user_exists(email):
+            flash("Unregistered Email")
+        else:
+            #Generate random unique string for resetkey, store in database and send it along with the email.
+            x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+            with db.ConnectionInstance() as queries:
+                key = x + str(queries.get_user_id(email))
+                queries.make_resetkey(email,key)
+            msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
+            msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+            mail.send(msg)
+            return render_template("recoverconfirm.html",email=email)
+    return render_template("recover.html")
+
+
+@app.route("/reset/<resetkey>", methods=["GET", "POST"])
+def reset(resetkey):
+    with db.ConnectionInstance() as queries:
+        email = queries.get_reset_info(resetkey)
+    if email:
+        if request.method=="POST":
+            new_password = request.form.get("new_password", None)
+            repeat_password = request.form.get("repeat_password", None)
+            if not new_password or not repeat_password:
+                flash("Please fill in both fields")
+            elif len(new_password) < 6:
+                flash("Minimum 6 characters.")
+            elif new_password == repeat_password:
+                if check_password(new_password, email):
+                    flash("You cannot use the old password.")
+                else:
+                    with db.ConnectionInstance() as queries:
+                        queries.set_new_password(email,hash_password(new_password))
+                        return render_template("resetsuccess.html")
+            else:
+                flash("Your password do not match")
+        return render_template("reset.html")
+    else:
+        return render_template("invalidlink.html")
+
+
 @app.route('/calendar')
 @mobile_template('/{mobile/}calendar.html')
 @login_required
@@ -363,7 +411,7 @@ def save_settings():
 
 
 @app.route('/delete_user', methods=['POST'])
-@login_required
+@fresh_login_required
 def delete_user():
     # TODO rewrite if necessary when login functionality is implemented
     req_user = get_user_id()
@@ -375,7 +423,7 @@ def delete_user():
 
 
 @app.route('/delete_event', methods=['POST'])
-@login_required
+@fresh_login_required
 def delete_event():
     user = get_user_id()
     event = request.form.get('event_id', None)
@@ -387,7 +435,7 @@ def delete_event():
 
 
 @app.route('/delete_calendar', methods=['POST'])
-@login_required
+@fresh_login_required
 def delete_cal():
     user = get_user_id()
     cal = request.form.get('calendar_id', None)
@@ -397,53 +445,6 @@ def delete_cal():
             if user in admins:
                 q.db_del_cal(cal)
 
-
-@app.route("/recover/", methods=["GET", "POST"])
-def recover():
-    if request.method=="POST":
-        email = request.form.get("email", None)
-        if not email:
-            flash("You need to fill out an email!")
-            return redirect(url_for('recover'))
-        if not user_exists(email):
-            flash("Unregistered Email")
-        else:
-            #Generate random unique string for resetkey, store in database and send it along with the email.
-            x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-            with db.ConnectionInstance() as queries:
-                key = x + str(queries.get_user_id(email))
-                queries.make_resetkey(email,key)
-            msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-            msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
-            mail.send(msg)
-            return render_template("recoverconfirm.html",email=email)
-    return render_template("recover.html")
-
-
-@app.route("/reset/<resetkey>", methods=["GET", "POST"])
-def reset(resetkey):
-    with db.ConnectionInstance() as queries:
-        email = queries.get_reset_info(resetkey)
-    if email:
-        if request.method=="POST":
-            new_password = request.form.get("new_password", None)
-            repeat_password = request.form.get("repeat_password", None)
-            if not new_password or not repeat_password:
-                flash("Please fill in both fields")
-            elif len(new_password) < 6:
-                flash("Minimum 6 characters.")
-            elif new_password == repeat_password:
-                if check_password(new_password, email):
-                    flash("You cannot use the old password.")
-                else:
-                    with db.ConnectionInstance() as queries:
-                        queries.set_new_password(email,hash_password(new_password))
-                        return render_template("resetsuccess.html")
-            else:
-                flash("Your password do not match")
-        return render_template("reset.html")
-    else:
-        return render_template("invalidlink.html")
 
 ##################################################################
 
