@@ -2,6 +2,7 @@
 svg {
     min-height: 300px;
     background-color: #F1F0F0;
+    max-height: 100%;
 } 
 
 rect {
@@ -14,6 +15,10 @@ text {
 
 line {
     pointer-events: none;
+}
+
+.calendarContainer {
+    height: 100%;
 }
 
 .calendarToolbox{
@@ -51,7 +56,6 @@ line {
     bottom: 15px;
 }
 
-
 .add_calendar_container, 
 .add_event_container,
 .event_details_container
@@ -80,10 +84,18 @@ span.infotitle {
     margin-bottom: 10px;
 }
 
-.overflow.fwHeader {
-    padding: 0;
+.headerBtn {
+    position: fixed;
+    top: 8.6em;
+    right: 0em;
+    border-style: solid;
+    border-width: 0.5px;
 }
 
+.fixedheader {
+    position: fixed;
+    width: 100%;
+}
 
 form label,
 form .input-field.col label {
@@ -94,6 +106,10 @@ form .input-field.col label {
 .overflow {
     height: 100%;
     overflow: scroll;
+}
+
+.overflow.fwheader {
+    padding: 0;
 }
 
 .switch label input[type=checkbox]:checked + .lever {

@@ -1,6 +1,7 @@
 body{
     display: flex; 
-    min-height: 100vh; 
+    /*min-height: 100vh;*/
+    height: 100vh;
     flex-direction: column;
 }
 
@@ -32,3 +33,10 @@ a {
     margin-left: 10px;
 }
 
+
+.bodyMain {
+    flex: 1; 
+    width: 100%; 
+    height: 0%; 
+    margin: 0px;
+}

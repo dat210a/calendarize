@@ -1,6 +1,6 @@
 ﻿{% extends 'nav_user.html' %} {% block content %}
 <link href="static/css/calendar.css" type="text/css" rel="stylesheet" media="screen,projection" />
-<div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
+<div class="timelineScreen col m12 l9" style="position: relative; padding: 0px; height: 100%">
     <div class="calendarContainer">
         <!-- options button for small screens-->
         <div class="fixed-action-btn horizontal hide-on-large-only" , style="position: absolute; height: 0; display: inline-block; right: 15px; top: 15px;">
@@ -44,11 +44,7 @@
     </div>
 </div>
 <!-- sidebar -->
-
-<div class="col m3 hide-on-med-and-down z-depth-3 overflow fwHeader">
-
-<div class="col m3 hide-on-med-and-down accentgrey-light side_tab overflow fwHeader">
-
+<div class="col m3 hide-on-med-and-down z-depth-3 overflow fwheader">
     <!-- <div class="event_details_container" id="eventDisplay">
             <table>
                 <thead>
@@ -100,82 +96,86 @@
                 </tbody>
             </table>
         </div> -->
-    <div class="event_details_container" id="eventDisplay">
-        <div class="row red darken-2 z-depth-1">
+    <div class="event_details_container" id="eventDisplay" style="height: 100; ">
+        <div class="row z-depth-1 fixedheader">
             <div class=" col s12">
-                <h4 class="left-align grey-text text-lighten-5">Event name</h4>
+                <h4 class="left-align grey-text text-lighten-5 eventName">Nan</h4>
                 <span class="grey-text text-lighten-3">Created by: Person X</span>
             </div>
         </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Group</strong></span>
-                <br>
-                <span>Home</span>
+        <a class="btn-floating btn-large waves-effect waves-light right headerBtn"><i class="material-icons">edit</i></a>
+        <div style="padding-top: 7em">
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Group</strong></span>
+                    <br>
+                    <span class="eventGroup">NaN</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Date</strong></span>
-                <br>
-                <span>20/04/17 - 23/04/17</span>
-                <br>
-                <span class="sub">Recurring</span>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Date</strong></span>
+                    <br>
+                    <span>From: </span><span class="eventDateStart">Nan</span><span> to: </span><span class="eventDateEnd"></span>
+                    <br>
+                    <span class="sub">Recurring: </span><span class="sub eventRecur">NaN</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Location</strong></span>
-                <br>
-                <span>Somewhere</span>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Location</strong></span>
+                    <br>
+                    <span>TBD</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Notifications</strong></span>
-                <br>
-                <span>1 week in advance</span>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Notifications</strong></span>
+                    <br>
+                    <span>TBD</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Members</strong></span>
-                <div class="row">
-                    <div class="col s5">
-                        <ul>
-                            <li>Person 1</li>
-                            <li>Person 2</li>
-                            <li>Person 3</li>
-                            <li><a href="">See more</a></li>
-                        </ul>
-                    </div>
-                    <div class="col 5">
-                        <ul>
-                            <li>Person 1</li>
-                            <li>Person 2</li>
-                            <li>Person 3</li>
-                        </ul>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Members</strong></span>
+                    <div class="row">
+                        <div class="col s5" style="padding: 0;">
+                            <ul>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li><a href="">See more</a></li>
+                            </ul>
+                        </div>
+                        <div class="col 5">
+                            <ul>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Notes</strong></span>
-                <br>
-                <span>Don't forget to..</span>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Notes</strong></span>
+                    <br>
+                    <span>TBD</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Attachments</strong></span>
+                    <br>
+                    <span class="eventFiles">NaN</span>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Attachments</strong></span>
-                <br>
-                <span>None</span>
-            </div>
-        </div>
-        <a class="btn-floating btn-large waves-effect waves-light red right"><i class="material-icons">edit</i></a>
     </div>
-
+<!-- 
+        Add calendar
+ -->    
     <div class="add_calendar_container" id="calendarForm">
         <div class="row center" style="border-bottom: 2px solid lightgrey">
             <p>New Calendar</p>
@@ -194,7 +194,9 @@
             </div>
         </form>
     </div>
-    
+<!-- 
+        Add event
+ -->    
     <div class="add_event_container" id="eventForm">
         <div class="row center" style="border-bottom: 2px solid lightgrey">
             <p>New Event</p>
