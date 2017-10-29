@@ -199,10 +199,10 @@ def register():
                 key = x + email[:5]
                 added = queries.add_user(name, email, hash_password(password),key)
                 if (added):
-                    #user = User(email)
+                    user = User(email)
                     #login_user(user)
                     #adds default calendar to that user
-                    #queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
+                    queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
                     #send verfication email
                     msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
                     msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
@@ -236,7 +236,7 @@ def login():
         user = load_user(email)
         if user is not None:
             if not user.is_active():
-                return ("Please verify your account")
+                flash("Please verify your account")                
             if check_password(password, email) and user.is_active():
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
