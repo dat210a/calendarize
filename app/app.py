@@ -236,7 +236,7 @@ def login():
         user = load_user(email)
         if user is not None:
             if not user.is_active():
-                flash("Please verify your account")                
+                return render_template("verify_option.html", email=email)
             if check_password(password, email) and user.is_active():
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
@@ -466,6 +466,25 @@ def verify(verify_key):
         return render_template("verify.html")
     else:
         return ("Your account has been alreaady verified or the link hase been expired")
+
+@app.route("/verifyoption", methods=["GET", "POST"])
+def verifyoption():
+    action = request.form.get("action", None)
+    email = request.form.get("email", None)
+    user = load_user(email)
+    if action == "do_1":
+        x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+
+        with db.ConnectionInstance() as queries:
+            key = x + str(queries.get_user_id(email))
+            queries.make_resetkey(email,key)
+        msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
+        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+        mail.send(msg)
+        return render_template("recoverconfirm.html",email=email)
+    if action == "do_2":
+        return ("Please insert your new email")
+
 
 ##################################################################
 
