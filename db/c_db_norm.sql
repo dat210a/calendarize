@@ -33,6 +33,7 @@ CREATE TABLE `users` (
   `user_phone` int(11) DEFAULT NULL,
   `user_record` varchar(45) DEFAULT NULL,
   `user_extra` varchar(45) DEFAULT NULL,
+  `verify_key` varchar(15) DEFAULT NULL,    
   `resetkey` varchar(80) DEFAULT NULL,  
   `expires` date DEFAULT NULL,  
   `active` tinyint(1) NOT NULL DEFAULT '0',
