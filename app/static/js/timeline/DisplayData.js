@@ -4,7 +4,7 @@ var timer = 0;
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
 var color = d3.scaleOrdinal(['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38']);
 
-var detailHeight = 100,
+var detailHeight = 74,
     detailWidth = 200;
 
 //load data async
@@ -19,13 +19,13 @@ function ready(error, allData){
         console.log("Can't load the data")
         return;
     }
-    d3.selectAll('.data').remove()
     datapoints = allData[1]
     groups = allData[0]
     
     groups.forEach(function(d, i){d.color = color(i)})
     AddGroupButtons(groups)
 
+    d3.selectAll('.data').remove()
     if (datapoints.length == 0) return
 
     //sort data so its displayed from right to left
@@ -58,11 +58,20 @@ function ready(error, allData){
                             .data(myData)
                             .enter()
                                 .append("g")
-                                    .attr("class", function(d){return 'datapoints ' + d.id;})
+                                    .attr("class", function(d, i){return 'datapoints ' + i;})
                                     .style('display', 'inline')
+
+    //initialize lines connecting point on timeline and detail boxes
+var connections = dataGroup
+                    .append('path')
+                        .attr('class', 'connector shadow')
+                        .style("stroke-width", '2')
+                        .style("stroke", '#3D4148')
+                        .style("fill", 'none')
+                        .style('display', 'none');
                             
     var points = dataGroup.append("rect")
-                            .attr('class', 'points')
+                            .attr('class', 'points shadow')
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
                                 d.color = groups.filter(function(gr){
@@ -88,14 +97,6 @@ function ready(error, allData){
                             });
 
 
-    //initialize lines connecting point on timeline and detail boxes
-    var connections = dataGroup
-                        .append('path')
-                            .attr('class', 'connector')
-                            .attr("stroke", 'darkgrey')
-                            .style("fill", 'none')
-                            .style('display', 'none');
-
     //initialize detail boxes
     var detailContainer = dataGroup
                             .append('g')
@@ -105,9 +106,11 @@ function ready(error, allData){
 
     detailContainer      
         .append("rect")
-            .attr('class', 'detailBox')
+            .attr('class', 'detailBox shadow')
             .attr("width", detailWidth)
             .attr("height", detailHeight)
+            .attr("rx", 2)
+            .attr("ry", 2)
 
 
     //bind data (locations) to lines
@@ -130,26 +133,28 @@ function ready(error, allData){
             .attr('class', 'miniID')
             .attr('x', 15)
             .attr('y', 30)
-            .style("font-size", 20)
+            .style("font-size", 30)
+            .style('fill', '#F1F0F0')
             .text(function(){
                 return this.parentNode.__data__.name;
             });
 
     detailContainer
         .append('line')
-            .attr('x1', 5)
+            .attr('x1', 10)
             .attr('x2', detailWidth - 10)
-            .attr('y1', detailHeight/2 - 10)
-            .attr('y2', detailHeight/2 - 10)
-            .attr('stroke-width', 2)
-            .attr('stroke', 'black');
+            .attr('y1', detailHeight/2)
+            .attr('y2', detailHeight/2)
+            .attr('stroke-width', 1)
+            .style('stroke', '#F1F0F0');
                 
     detailContainer
         .append('text')
             .attr('class', 'miniDate')
             .attr('x', 15)
-            .attr('y', detailHeight/2 + 30)
-            .style("font-size", 30)
+            .attr('y', detailHeight/2 + 25)
+            .style("font-size", 20)
+            .style('fill', '#F1F0F0')
             .text(function(){
                 return d3.timeFormat('%d / %m')(parse(this.parentNode.__data__.date));
             });
@@ -241,7 +246,7 @@ function showDetails(){
                                     .attr('y', 30)
                                 d3.selectAll('.miniDate')
                                     .attr('x', 15)
-                                    .attr('y', detailHeight/2 + 30)                              
+                                    .attr('y', detailHeight/2 + 25)                              
                                 d3.selectAll('.data').selectAll('path').style('display', 'inline');
                             })
             } 

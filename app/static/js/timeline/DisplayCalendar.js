@@ -22,7 +22,7 @@ var axis = d3.axisBottom(time)
                 .tickFormat(d3.timeFormat('%b'))
                 .tickArguments([d3.timeMonth.every(1)])
                 .tickPadding(15)
-                .tickSize(15)
+                .tickSize(20)
 
 //create canvas and all basic timeline objects
 var svg = d3.select('svg')
@@ -38,16 +38,19 @@ svg.append('g')
             .attr("class", "Year")
             .attr('transform', 'translate('+ width/2 +',' + 75 +')')
         .append('rect')
-            .attr('class', "yearBox")
+            .attr('class', "yearBox shadow")
             .attr("width", 150)
             .attr("height", 75)
             .attr("x", -75)
             .attr("y", -55)
+            .attr("rx", 2)
+            .attr("ry", 2)
 
 var yearTag = svg.select(".background_items").select(".Year")
                 .append("text")
                     .attr('class', 'yearText')
                     .attr("font-size", 50)
+                    .style('fill', '#F1F0F0')
                     .style('text-anchor', 'middle')
                     .text(function(){
                         return d3.timeFormat('%Y')(time.invert(width/2));
@@ -66,11 +69,12 @@ var displayAxis = d3.select(".timeline")
                         .call(axis)
 
 displayAxis.selectAll('path')
-                .attr("stroke-width", radius)
-                .attr("stroke", "lightgrey")
+                .style("stroke-width", radius)
+                .style("stroke", "#97989C")
 
 displayAxis
     .selectAll('line')
+        .attr('stroke', '#3D4148')
         .attr('y1', function(){
             return -d3.select(this).attr('y2')
         })
@@ -82,7 +86,7 @@ d3.select('.timeline')
     .attr('class', 'g-today')
     .append('text')
         .attr('class', 'todayMark')
-        .attr('font-family', 'Material Icons')
+        .style('font-family', 'Material Icons')
         .attr('font-size', '20px')
         .text('account_circle')
         .attr('y', 10)
@@ -117,12 +121,12 @@ leftSideBar.append("rect")
                 .attr('y', -midScreen)
 
 leftSideBar.append('line')
-            .attr("stroke", "black")
-            .attr("stroke-width", 3)
+            .style("stroke", "#3D4148")
+            .style("stroke-width", (3/4*radius))
             .attr("x1", -2)
             .attr("x2", -2)
-            .attr("y1", -60)
-            .attr("y2", 60);
+            .attr("y1", -40)
+            .attr("y2", 40);
 
 var firstMonth = leftSideBar.append("text")
                     .attr('transform', 'translate(' + (-12) + ','  + 0 + '), rotate(270)')
@@ -146,8 +150,8 @@ rightSideBar.append("rect")
             .attr("y", -midScreen)
 
 rightSideBar.append('line')
-            .attr("stroke", "black")
-            .attr("stroke-width", 3)
+            .style("stroke", "#3D4148")
+            .attr("stroke-width", (3/4*radius))
             .attr("y1", -40)
             .attr("y2", +40);
 

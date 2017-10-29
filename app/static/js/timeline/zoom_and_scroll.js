@@ -55,10 +55,11 @@ function rescale() {
     //update axis
     displayAxis
         .selectAll('line')
+            .style('stroke', '#3D4148')
+            .style('stroke-width', (3/4*radius))
             .attr('y1', function(){
                 return -d3.select(this).attr('y2')
             })
-            .attr('stroke-width', '2px')
     
     //update year count
     yearTag

@@ -19,8 +19,13 @@ rect {
     fill: white;
 }
 
+.shadow {
+    filter: url(#dropshadow);
+}
+
 text {
     pointer-events: none;
+    font-family: sans-serif;
 }
 
 line {

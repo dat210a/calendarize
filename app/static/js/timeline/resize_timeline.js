@@ -27,7 +27,7 @@ function resize(){
         .attr('width', totalWidth)
         .attr('height', totalHeight)
     d3.select('.scrollArea').attr("width", width)
-                            .attr('height', (height))
+                            .attr('height', height)
     d3.select('.Year').attr('transform', 'translate('+ width/2 +',' + 75 +')')
 
     //sides
