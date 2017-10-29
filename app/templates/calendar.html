@@ -2,7 +2,21 @@
 
 {% block content %}
     <link href="static/css/calendar.css" type="text/css" rel="stylesheet" media="screen,projection" />
-
+    <div id="preloader">
+        <div class="body_valign center">
+            <div class="preloader-wrapper big active body_valign">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div><div class="gap-patch">
+                        <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
         <div class="calendarContainer">
             <!-- options button for small screens-->

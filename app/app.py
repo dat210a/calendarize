@@ -228,7 +228,7 @@ def login():
         password = request.form["inputPassword"]
         email = request.form["inputEmail"]
         user = load_user(email)
-        if user is not None:
+        if user:
             if check_password(password, email):
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
