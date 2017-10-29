@@ -5,27 +5,24 @@ function resize(){
     oldWidth = width;
     oldHeight = height;
     totalWidth = $('.timelineScreen').width();
-    totalHeight = $('.bodyMain').height()-margin;
-
-    //header: 70px footer: 64px svg min-height: 300px
-    // var winH = $(window).height()-70-64-margin;
-    // if (winH > 300 && winH < totalHeight) totalHeight = winH;
+    totalHeight = $('.bodyMain').height();
 
     // set dimensions
     width = totalWidth - 2*xPadding;
-    height = totalHeight;
+    height = totalHeight-margin;
     midScreen = height/2;
     
     // Scales
     time.range([0, width]);
 
     //frames
-    $('.side_tab').height(totalHeight-margin+2);
+    $('.side_tab').css("min-height", totalHeight + "px" )
+                  .css("max-height", totalHeight + "px" );
 
     //background elements
     svg
         .attr('width', totalWidth)
-        .attr('height', totalHeight)
+        .attr('height', height)
     d3.select('.scrollArea').attr("width", width)
                             .attr('height', height)
     d3.select('.Year').attr('transform', 'translate('+ width/2 +',' + 75 +')')
@@ -36,14 +33,14 @@ function resize(){
             + (xPadding + width) + ',' 
             + midScreen + ')')
         .selectAll('rect')
-            .attr('height', totalHeight)
+            .attr('height', height)
             .attr('y', -midScreen)
 
     leftSideBar
         .attr('transform', 'translate(' 
             + xPadding + ',' + midScreen + ')')
         .selectAll('rect')
-            .attr('height', totalHeight)
+            .attr('height', height)
             .attr('y', -midScreen)
 
     //bottom bar
@@ -55,9 +52,6 @@ function resize(){
             })
             .select('.bottomBase')
                 .attr('width', totalWidth)
-
-    //side event panel
-    d3.select('.sidePanel').style('height', totalHeight)
 
     //readjust line position
     d3.select('.timeline')
