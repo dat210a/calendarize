@@ -61,6 +61,7 @@ line {
 .event_details_container
 {
     display: none;
+    height: 100%;
 }
 
 span.infotitle {
@@ -84,17 +85,34 @@ span.infotitle {
     margin-bottom: 10px;
 }
 
-.headerBtn {
+.eventdetailsheaderBtn {
     position: fixed;
     top: 8.6em;
     right: 0em;
     border-style: solid;
     border-width: 0.5px;
+    z-index: 999;
 }
 
-.fixedheader {
+.eventdetailsfixedheader {
     position: fixed;
     width: 100%;
+    z-index: 998;
+}
+
+.neweventheaderBtn {
+    position: fixed;
+    top: 6.7em;
+    right: 0em;
+    border-style: solid;
+    border-width: 0.5px;
+    z-index: 999;
+}
+
+.neweventfixedheader {
+    position: fixed;
+    width: 100%;
+    z-index: 998;
 }
 
 form label,

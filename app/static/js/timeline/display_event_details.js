@@ -8,8 +8,8 @@ function display(data){
     if (+data.recurring == 1) var format = d3.timeFormat('%d / %m')
     else var format = d3.timeFormat('%d/%m/%Y')
 
-    $('.fixedheader').css('background-color', data.color);
-    $('.headerBtn').css('background-color', data.color);
+    $('.eventdetailsfixedheader').css('background-color', data.color);
+    $('.eventdetailsheaderBtn').css('background-color', data.color);
 
     $('.eventName').text(data.name)
     $('.eventDateStart').text(format(parse(data.start_date)))
