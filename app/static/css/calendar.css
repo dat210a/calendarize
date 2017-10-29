@@ -91,13 +91,13 @@ span.infotitle {
     right: 0em;
     border-style: solid;
     border-width: 0.5px;
-    z-index: 999;
+    z-index: 10;
 }
 
 .eventdetailsfixedheader {
     position: fixed;
     width: 100%;
-    z-index: 998;
+    z-index: 9;
 }
 
 .neweventheaderBtn {
@@ -106,13 +106,13 @@ span.infotitle {
     right: 0em;
     border-style: solid;
     border-width: 0.5px;
-    z-index: 999;
+    z-index: 10;
 }
 
 .neweventfixedheader {
     position: fixed;
     width: 100%;
-    z-index: 998;
+    z-index: 9;
 }
 
 form label,
