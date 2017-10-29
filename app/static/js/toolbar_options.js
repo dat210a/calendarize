@@ -38,6 +38,7 @@ $("#addCalendar").submit(function(e){
         type: 'POST',
         success: function(response) {
             if (response == 'true') {
+                $("#calendarForm").hide()
                 load_data()
             }
             else {
@@ -58,6 +59,7 @@ $("#addEvent").submit(function(e){
         type: 'POST',
         success: function(response) {
             if (response == 'true') {
+                $("#eventForm").hide()
                 load_data()
             }
             else {

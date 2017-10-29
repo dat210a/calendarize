@@ -32,6 +32,9 @@ line {
     pointer-events: none;
 }
 
+path {
+}
+
 .calendarToolbox{
     position: absolute; 
     width:100%; 

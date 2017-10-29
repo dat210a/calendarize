@@ -22,7 +22,7 @@ var axis = d3.axisBottom(time)
                 .tickFormat(d3.timeFormat('%b'))
                 .tickArguments([d3.timeMonth.every(1)])
                 .tickPadding(15)
-                .tickSize(20)
+                .tickSize(25)
 
 //create canvas and all basic timeline objects
 var svg = d3.select('svg')
@@ -123,10 +123,10 @@ leftSideBar.append("rect")
 leftSideBar.append('line')
             .style("stroke", "#3D4148")
             .style("stroke-width", (3/4*radius))
-            .attr("x1", -2)
-            .attr("x2", -2)
-            .attr("y1", -40)
-            .attr("y2", 40);
+            .attr("x1", 1)
+            .attr("x2", 1)
+            .attr("y1", -50)
+            .attr("y2", 50);
 
 var firstMonth = leftSideBar.append("text")
                     .attr('transform', 'translate(' + (-12) + ','  + 0 + '), rotate(270)')
@@ -152,8 +152,8 @@ rightSideBar.append("rect")
 rightSideBar.append('line')
             .style("stroke", "#3D4148")
             .attr("stroke-width", (3/4*radius))
-            .attr("y1", -40)
-            .attr("y2", +40);
+            .attr("y1", -50)
+            .attr("y2", +50);
 
 
             

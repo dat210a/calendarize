@@ -4,7 +4,7 @@ var timer = 0;
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
 var color = d3.scaleOrdinal(['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38']);
 
-var detailHeight = 74,
+var detailHeight = 80,
     detailWidth = 200;
 
 //load data async
@@ -37,9 +37,8 @@ function ready(error, allData){
     //objects whith coordinates for detail boxes
     var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
-        detailsPoints[i] = {'name': myData[i].name, 'date': myData[i].start_date};
+        detailsPoints[i] = {'name': myData[i].name, 'start': myData[i].start_date, 'end': myData[i].end_date};
     }
-
 
     //setup simulation based on data
     nodes = myData.concat(detailsPoints);
@@ -65,6 +64,7 @@ function ready(error, allData){
 var connections = dataGroup
                     .append('path')
                         .attr('class', 'connector shadow')
+                        .attr('opacity', '0.99')
                         .style("stroke-width", '2')
                         .style("stroke", '#3D4148')
                         .style("fill", 'none')
@@ -152,11 +152,18 @@ var connections = dataGroup
         .append('text')
             .attr('class', 'miniDate')
             .attr('x', 15)
-            .attr('y', detailHeight/2 + 25)
-            .style("font-size", 20)
+            .attr('y', detailHeight/2 + 30)
+            .style("font-size", 25)
             .style('fill', '#F1F0F0')
             .text(function(){
-                return d3.timeFormat('%d / %m')(parse(this.parentNode.__data__.date));
+                data = this.parentNode.__data__;
+                if (data.start == data.end){
+                    return d3.timeFormat('%d / %m')(parse(this.parentNode.__data__.start));
+                }
+                else{
+                    return d3.timeFormat('%d/%m')(parse(this.parentNode.__data__.start)) + '  -  ' 
+                         + d3.timeFormat('%d/%m')(parse(this.parentNode.__data__.end));
+                }
             });
 
     dataGroup
@@ -246,7 +253,7 @@ function showDetails(){
                                     .attr('y', 30)
                                 d3.selectAll('.miniDate')
                                     .attr('x', 15)
-                                    .attr('y', detailHeight/2 + 25)                              
+                                    .attr('y', detailHeight/2 + 30)                              
                                 d3.selectAll('.data').selectAll('path').style('display', 'inline');
                             })
             } 
