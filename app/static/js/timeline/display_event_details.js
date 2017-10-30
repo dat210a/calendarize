@@ -4,6 +4,7 @@ var event_id = 0
 
 
 function display(data){
+    $("#eventDisplay").hide(0)
     event_id = data.id;
     if (+data.recurring == 1) var format = d3.timeFormat('%d / %m')
     else var format = d3.timeFormat('%d/%m/%Y')
@@ -28,7 +29,8 @@ function display(data){
 
     $("#calendarForm").hide()
     $("#eventForm").hide()
-    $("#eventDisplay").show()
+    $("#profileDisplay").hide()
+    $("#eventDisplay").show(700)
 }
 
 

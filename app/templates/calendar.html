@@ -46,8 +46,8 @@
 <!-- 
         sidebar
  -->
-<div class="col m3 hide-on-med-and-down z-depth-3 overflow fwheader">
-    <!-- 
+<div class="col m3 hide-on-med-and-down z-depth-3 overflow fwheader" id="">
+    <!--  
         Display event
  -->
     <div class="event_details_container" id="eventDisplay">
@@ -216,7 +216,7 @@
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
-                        <input value="Group name" id="newCalendarName" name="newCalendarName" type="text" required autofocus>
+                        <input value="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
                         <label for="newCalendarName">Name of group</label>
                     </div>
                 </div>
@@ -283,7 +283,7 @@
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
-                        <input value="Group name" id="editCalendarName" name="editCalendarName" type="text" required autofocus>
+                        <input value="Group name" id="editCalendarName" name="editCalendarName" type="text" required>
                         <label for="editCalendarName">Name of group</label>
                     </div>
                 </div>
@@ -350,7 +350,7 @@
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
-                        <input id="newEventName" Name="newEventName" type="text" class="" required autofocus>
+                        <input id="newEventName" Name="newEventName" type="text" class="" required>
                         <label for="newEventName">Name of event</label>
                     </div>
                 </div>
@@ -443,7 +443,7 @@
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
-                        <input id="editEventName" Name="editEventName" type="text" class="" required autofocus>
+                        <input id="editEventName" Name="editEventName" type="text" class="" required>
                         <label for="editEventName">Name of event</label>
                     </div>
                 </div>
@@ -531,6 +531,35 @@
                 </div>
             </div>
         </form>
+    </div>
+    <!-- 
+        Display profile
+     -->
+    <div class="profile_details_container" id="profileDisplay">
+        <div class="row z-depth-1 profileheaderimg ">
+            <div class="col s12 ">
+                <a href=""><img src="http://lorempixel.com/75/75" class="profileimg circle"></a>
+            </div>
+            <div class=" col s12">
+                <h4 class="left-align grey-text text-lighten-5">{{name}}</h4>
+                <span class="grey-text text-lighten-3">email@email.com</span>
+            </div>
+        </div>
+        <a class="btn-floating btn-large waves-effect waves-light right profiledetailsheaderBtn accentgrey-dark"><i class="material-icons">edit</i></a>
+        <div class="profilepaddingfix">
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Name</strong></span>
+                    <br>
+                    <span>Full Name Display</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <a class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete account</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- TODO make a bundle -->
