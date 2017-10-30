@@ -83,7 +83,7 @@ function rescale() {
                 return radius*2 + d.length*k;
             })
             .attr("x", function(d, i){
-                d.x = timeRescaled(parse(d.start_date))
+                d.x = timeRescaled(new Date(d.start_date))
                 if (d.recurring == 1){
                     d.x = d.x % Math.round(width*k);
                     return d.x + d.length*k >= 0 ? d.x : d.x = d.x + width*k;

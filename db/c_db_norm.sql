@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `user_id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_date_created` datetime NOT NULL,
   `user_name` varchar(45) NOT NULL,
   `user_email` varchar(45) NOT NULL,
   `user_password` varchar(80) NOT NULL,
@@ -35,7 +36,7 @@ CREATE TABLE `users` (
   `user_extra` varchar(45) DEFAULT NULL,
   `verify_key` varchar(15) DEFAULT NULL,    
   `resetkey` varchar(80) DEFAULT NULL,  
-  `expires` date DEFAULT NULL,  
+  `expires` datetime DEFAULT NULL,  
   `active` tinyint(1) NOT NULL DEFAULT '0',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`)
@@ -62,7 +63,7 @@ DROP TABLE IF EXISTS `calendars`;
 CREATE TABLE `calendars` (
   `calendar_id` int(11) NOT NULL AUTO_INCREMENT,
   `calendar_owner` varchar(45) NOT NULL,
-  `calendar_date_created` date NOT NULL,
+  `calendar_date_created` datetime NOT NULL,
   `calendar_name` varchar(45) NOT NULL,
   `calendar_details` varchar(45) DEFAULT NULL,
   `calendar_extra` varchar(45) DEFAULT NULL,
@@ -90,11 +91,11 @@ DROP TABLE IF EXISTS `events`;
 CREATE TABLE `events` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `event_calendar_id` int(11) NOT NULL,  
-  `event_date_created` date NOT NULL,
+  `event_date_created` datetime NOT NULL,
   `event_owner` varchar(45) NOT NULL,
   `event_name` varchar(45) NOT NULL,
-  `event_start` date NOT NULL,
-  `event_end` date NOT NULL,
+  `event_start` datetime NOT NULL,
+  `event_end` datetime NOT NULL,
   `event_recurring` tinyint(1) NOT NULL DEFAULT '0',
   `event_location` varchar(45) DEFAULT NULL,
   `event_details` varchar(45) DEFAULT NULL,

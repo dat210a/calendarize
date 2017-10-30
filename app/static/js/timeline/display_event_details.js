@@ -11,8 +11,8 @@ function display(data){
     $('.side_tab').css('border-color', data.color);
 
     $('.eventName').text(data.name)
-    $('.eventDateStart').text(format(parse(data.start_date)))
-    $('.eventDateEnd').text(format(parse(data.end_date)))
+    $('.eventDateStart').text(format(new Date(data.start_date)))
+    $('.eventDateEnd').text(format(new Date(data.end_date)))
     $('.eventGroup').text(function(){
         groupName = d3.selectAll('.group')
                             .filter(function(d){

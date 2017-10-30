@@ -84,13 +84,15 @@ class ConnectionInstance:
             logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
             return None
 
-    def get_calendars(self):
-        sql = "SELECT calendar_id FROM calendars"
-        self.__cur.execute(sql)
+    def get_calendars(self, uid):
+        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
+        self.__cur.execute(sql, [uid])
         try:
-            return [x[0] for x in self.__cur.fetchall()]
+            res = self.__cur.fetchall()
+            cals = [r[0] for r in res]
+            return cals
         except Exception as e:
-            logging.debug('{}\nWhile trying to retrieve calendar IDs'.format(e))
+            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
     def get_event_files(self, eid, rec):
@@ -101,37 +103,32 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
 
-    def db_get_cal_admin(self, cid=None, eid=None):
-        # Fetches a list of admins for a calendar
-        if cid:
-            sql = "SELECT calendar_admins FROM calendars WHERE calendar_id = %s"
-            self.__cur.execute(sql, [cid])
-        elif eid and not cid:
-            sql = "SELECT calendar_admins " \
-                  "FROM calendars WHERE calendar_id = (SELECT event_belongs_to FROM events WHERE event_id = %s)"
-            self.__cur.execute(sql, [eid])
-        else:
-            return None
-        try:
-            payload = ([x[0] for x in self.__cur.fetchall()])
-            logging.debug('Result of calendar admin db request: {}'.format(payload))
-            return payload
-        except Exception as e:
-            logging.debug('{}\nWhile trying to retrieve admins for calendar.\n'
-                          'Input parameters: cid={} eid={}'.format(e, cid, eid))
-            return None
+    # def db_get_cal_admin(self, cid=None, eid=None):
+    #     # Fetches a list of admins for a calendar
+    #     if cid:
+    #         sql = "SELECT calendar_admins FROM calendars WHERE calendar_id = %s"
+    #         self.__cur.execute(sql, [cid])
+    #     elif eid and not cid:
+    #         sql = "SELECT calendar_admins " \
+    #               "FROM calendars WHERE calendar_id = (SELECT event_belongs_to FROM events WHERE event_id = %s)"
+    #         self.__cur.execute(sql, [eid])
+    #     else:
+    #         return None
+    #     try:
+    #         payload = ([x[0] for x in self.__cur.fetchall()])
+    #         logging.debug('Result of calendar admin db request: {}'.format(payload))
+    #         return payload
+    #     except Exception as e:
+    #         logging.debug('{}\nWhile trying to retrieve admins for calendar.\n'
+    #                       'Input parameters: cid={} eid={}'.format(e, cid, eid))
+    #         return None
 
     def fetch_data_for_display(self, uid):
-        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
-        self.__cur.execute(sql, [uid])
-        try:
-            res = self.__cur.fetchall()
-            cals = [r[0] for r in res]
-        except Exception as e:
-            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
-            return None
+        cals = self.get_calendars(uid)
 
-        sql = "SELECT calendar_id, calendar_name FROM calendars WHERE calendar_id = ?"
+        sql = "SELECT calendar_id, calendar_name FROM calendars " \
+              "WHERE calendar_id = ? " \
+              "AND deleted = 0"
         if len(cals) > 1:
             for i in range(len(cals) - 1):
                 sql += " OR calendar_id = ?"
@@ -179,9 +176,10 @@ class ConnectionInstance:
 #######################################################################################
         # Insertion
 
-    def add_user(self, username, email, hashedpass):
-        query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?);'
-        user_data = [username, email, hashedpass]
+    def add_user(self, created, username, email, hashedpass):
+        query = "INSERT INTO users (user_date_created, user_name, user_email, user_password)" \
+                "VALUES (?,?,?,?);"
+        user_data = [created, username, email, hashedpass]
         try:
             self.__cur.execute(query, user_data)
             self.__con.commit()

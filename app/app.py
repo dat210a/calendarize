@@ -197,7 +197,7 @@ def register():
         if name and email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
                 #adds new user to the database
-                added = queries.add_user(name, email, hash_password(password))
+                added = queries.add_user(datetime.utcnow(), name, email, hash_password(password))
                 if (added):
                     user = User(email)
                     login_user(user)
@@ -308,48 +308,55 @@ def calendar(template):
     return render_template(template, name=current_user.username)
 
 
-@app.route('/get_data')
+@app.route('/get_data/<tz>')
 @login_required
-def get_data():
+def get_data(tz):
     """
     """
     log_basic()
+    try:
+        tz = timezone(request.args['tz'])
+    except ValueError:
+        tz = timezone('UTC')
     with db.ConnectionInstance() as queries:
         results = queries.fetch_data_for_display(current_user.user_id)
+    def type_handler(x):
+        if isinstance(x, date):
+            x = pytz.utc.localize(datetime.combine(x, datetime.min.time()))
+            x = x.astimezone(tz)
+            return x.isoformat()
+        elif isinstance(x, datetime):
+            x = pytz.utc.localize(x)
+            x = x.astimezone(tz)
+            return x.isoformat()
+        elif isinstance(x, bytearray):
+            return x.decode('utf-8')
+        raise TypeError("Unknown type")
     return json.dumps(results, default=type_handler)
 
 
-# should be moved to funcs/helper.py
-def type_handler(x):
-    if isinstance(x, date):
-        # TODO change date into clients time zone
-        return x.isoformat()
-    elif isinstance(x, bytearray):
-        return x.decode('utf-8')
-    raise TypeError("Unknown type")
 
+# @app.route('/view/<calendar_id>')
+# @mobile_template('{mobile/}calendar.html')
+# def view(template, calendar_id):
 
-@app.route('/view/<calendar_id>')
-@mobile_template('{mobile/}calendar.html')
-def view(template, calendar_id):
+#     log_basic()
 
-    log_basic()
+#     with db.ConnectionInstance() as q:
 
-    with db.ConnectionInstance() as q:
-
-        cals = q.get_calendars()
-        if calendar_id in cals:
-            members = q.get_calendar_members(calendar_id)
-            if get_user_id() in members:
-                # TODO create template
-                return render_template(template)
-            else:
-                # return redirect(url_for(error))
-                pass
-        else:
-            # return redirect(url_for(error))
-            # TODO create error route, uncomment above lines
-            pass
+#         cals = q.get_calendars()
+#         if calendar_id in cals:
+#             members = q.get_calendar_members(calendar_id)
+#             if get_user_id() in members:
+#                 # TODO create template
+#                 return render_template(template)
+#             else:
+#                 # return redirect(url_for(error))
+#                 pass
+#         else:
+#             # return redirect(url_for(error))
+#             # TODO create error route, uncomment above lines
+#             pass
 
 
 @app.route('/add_calendar', methods=['POST', 'GET'])
@@ -370,19 +377,23 @@ def add_calendar():
 def add_event():
     if request.method == "POST":
         data = request.form.to_dict()
-        if data['newEventName'] and data['calendarID'] and data['startDate']:
-            tz = timezone(data['tz'])
+        if data['newEventName'] and data['calendarID']:
             try:
+                tz = timezone(data['tz'])
                 dt = tz.localize(datetime.strptime(data['startDate'], "%Y-%m-%d"))
+                data['startDate'] = dt.astimezone(pytz.utc)
             except ValueError:
-                return json.dumps({'success' : 'false', 'message': 'wrong date format'})
-            data['startDate'] = dt.astimezone(pytz.utc)
+                return json.dumps({'success' : 'false', 'message': 'date'})
             try:
                 dt = tz.localize(datetime.strptime(data['endDate'], "%Y-%m-%d"))
                 data['endDate'] = dt.astimezone(pytz.utc)
+                if data['endDate'] < data['startDate']:
+                    data['endDate'] = data['startDate']
             except ValueError:
                 data['endDate'] = data['startDate']
             with db.ConnectionInstance() as queries:
+                # TODO check permissions
+                print(queries.get_calendars(current_user.user_id))
                 created = queries.add_event(data, datetime.utcnow(), current_user.user_id)
                 if created:
                     return json.dumps({'success' : 'true', 'id': created})

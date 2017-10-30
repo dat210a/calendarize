@@ -10,7 +10,7 @@ var detailHeight = 80,
 //load data async
 function load_data(){
     d3.queue()
-        .defer(d3.json, '/get_data')
+        .defer(d3.json, '/get_data/tz?tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone)
         .await(ready);
 }
 
@@ -82,14 +82,14 @@ var connections = dataGroup
                             .attr("height", radius*2)
                             .attr("rx", radius)
                             .attr("x", function(d){
-                                return d.x = time(parse(d.start_date))
+                                return d.x = time(new Date(d.start_date))
                             })
                             .attr("y", function(d){
                                 d.y = 0;
                                 return d.y - radius;
                             })
                             .attr("width", function(d){
-                                d.length = time(parse(d.end_date)) - d.x
+                                d.length = time(new Date(d.end_date)) - d.x
                                 return radius*2 + d.length;
                             })
                             .on('click', function (d, i) {
@@ -158,11 +158,11 @@ var connections = dataGroup
             .text(function(){
                 data = this.parentNode.__data__;
                 if (data.start == data.end){
-                    return d3.timeFormat('%d / %m')(parse(this.parentNode.__data__.start));
+                    return d3.timeFormat('%d / %m')(new Date(this.parentNode.__data__.start));
                 }
                 else{
-                    return d3.timeFormat('%d/%m')(parse(this.parentNode.__data__.start)) + '  -  ' 
-                         + d3.timeFormat('%d/%m')(parse(this.parentNode.__data__.end));
+                    return d3.timeFormat('%d/%m')(new Date(this.parentNode.__data__.start)) + '  -  ' 
+                         + d3.timeFormat('%d/%m')(new Date(this.parentNode.__data__.end));
                 }
             });
 

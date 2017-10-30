@@ -66,12 +66,17 @@ $("#addEvent").submit(function(e){
             r = JSON.parse(response)
             if (r.success == 'true') {
                 $("#eventForm").hide()
-                load_data('id')
-                var newEvent = d3.selectAll('.datapoints').filter(function(d){return d.id == r.id}).data()
-                display(newEvent)
+                load_data()
+                // var newEvent = d3.selectAll('.datapoints').filter(function(d){return d.id == r.id}).data()
+                // display(newEvent)
             }
             else {
-                console.log ('could not create new event')
+                if (r.message == 'date'){
+                    $('#startDate').addClass("validate invalid")
+                                    .blur(function(){
+                                        $(this).removeClass('validate invalid');
+                                    });
+                }
             }
         },
         error: function(error) {

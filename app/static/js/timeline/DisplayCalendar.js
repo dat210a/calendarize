@@ -13,9 +13,8 @@ var radius = 8;
 var tresholdNumPoints = 8;
 var k = 1;
 
-var parse = d3.timeParse('%Y-%m-%d');
 var time = d3.scaleTime()
-                .domain([new Date('1/1/2020'), new Date('12/31/2020')])
+                .domain([new Date('1/1/2020'), new Date('1/1/2021')])
                 .range([0, width]);
 
 var axis = d3.axisBottom(time)
