@@ -315,6 +315,24 @@ def add_calendar():
     return 'false'
 
 
+@app.route('/join_calander', methods=['POST'])
+@login_required
+def join_calander():
+    id = request.form.get("calender_id", None)
+    role = request.form.get("role", None)
+    with db.ConnectionInstance() as q:
+        q.join_calander(id, current_user.user_id, role)
+    return redirect("/")
+
+@app.route('/leave_calander', methods=['POST'])
+@login_required
+def leave_calander():
+    id = request.form.get("calender_id", None)
+    with db.ConnectionInstance() as q:
+        q.leave_calander(id, current_user.user_id)
+    return redirect("/")
+
+
 @app.route('/add_event', methods=['POST', 'GET'])
 @login_required
 def add_event():

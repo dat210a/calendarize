@@ -64,6 +64,23 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
+    def join_calander(self, calender_id, user_id, role):
+        self.__cur.execute("SELECT unique_id from user_calendars ORDER BY unique_id DESC LIMIT 1")
+        unique_id = self.__cur.fetchone()
+        if unique_id[0] == None:
+            unique_id = 1
+        else:
+            unique_id = unique_id[0] + 1
+        sql = "INSERT INTO user_calendars VALUES (?, ?, ?, ?)"
+        self.__cur.execute(sql, [user_id, calender_id, role, unique_id])
+        self.__con.commit()
+
+
+    def leave_calander(self, calender_id, user_id):
+        sql = "DELETE FROM user_calendars WHERE user_id = ? and calendar_id = ?"
+        self.__cur.execute(sql, [user_id, calender_id])
+        self.__con.commit()
+
     def get_pass_hash(self, email):
         sql = "SELECT user_password FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
