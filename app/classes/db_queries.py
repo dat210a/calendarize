@@ -85,12 +85,11 @@ class ConnectionInstance:
             return None
 
     def get_calendars(self, uid):
-        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
+        sql = "SELECT calendar_id, role FROM user_calendars WHERE user_id = ?"
         self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchall()
-            cals = [r[0] for r in res]
-            return cals
+            return res
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
@@ -124,14 +123,11 @@ class ConnectionInstance:
     #         return None
 
     def fetch_data_for_display(self, uid):
-        cals = self.get_calendars(uid)
+        cals = [r[0] for r in self.get_calendars(uid)]
 
         sql = "SELECT calendar_id, calendar_name FROM calendars " \
-              "WHERE calendar_id = ? " \
+              "WHERE calendar_id IN(" + ",".join("?"*len(cals)) + ") " \
               "AND deleted = 0"
-        if len(cals) > 1:
-            for i in range(len(cals) - 1):
-                sql += " OR calendar_id = ?"
         self.__cur.execute(sql, cals)
         try:
             calendars = self.__cur.fetchall()
@@ -140,10 +136,9 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-        sql = "SELECT event_id, event_name, event_calendar_id, event_start, event_end, event_recurring FROM events WHERE event_calendar_id = ?"
-        if len(cals) > 1:
-            for i in range(len(cals) - 1):
-                sql += " OR event_calendar_id = ?"
+        sql = "SELECT event_id, event_name, event_calendar_id, event_start, event_end, event_recurring FROM events " \
+              "WHERE event_calendar_id IN(" + ",".join("?"*len(cals)) + ") " \
+              "AND deleted = 0"
         self.__cur.execute(sql, cals)
         try:
             events = self.__cur.fetchall()
@@ -177,7 +172,7 @@ class ConnectionInstance:
         # Insertion
 
     def add_user(self, created, username, email, hashedpass):
-        query = "INSERT INTO users (user_date_created, user_name, user_email, user_password)" \
+        query = "INSERT INTO users (user_date_created, user_name, user_email, user_password) " \
                 "VALUES (?,?,?,?);"
         user_data = [created, username, email, hashedpass]
         try:
