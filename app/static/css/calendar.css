@@ -58,7 +58,10 @@ line {
 
 .add_calendar_container, 
 .add_event_container,
-.event_details_container
+.event_details_container,
+.edit_calendar_container,
+.edit_event_container,
+.calendar_details_container
 {
     display: none;
     height: 100%;
@@ -85,7 +88,8 @@ span.infotitle {
     margin-bottom: 10px;
 }
 
-.eventdetailsheaderBtn {
+.eventdetailsheaderBtn,
+.calendardetailsheaderBtn {
     position: fixed;
     top: 8.6em;
     right: 0em;
@@ -94,7 +98,8 @@ span.infotitle {
     z-index: 10;
 }
 
-.eventdetailsfixedheader {
+.eventdetailsfixedheader,
+.calendardetailsfixedheader {
     position: fixed;
     width: 100%;
     z-index: 9;
@@ -113,10 +118,6 @@ span.infotitle {
     position: fixed;
     width: 100%;
     z-index: 9;
-}
-
-.memberlist {
-    padding-left: 0;
 }
 
 form label,
