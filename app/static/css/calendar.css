@@ -115,6 +115,10 @@ span.infotitle {
     z-index: 9;
 }
 
+.memberlist {
+    padding-left: 0;
+}
+
 form label,
 form .input-field.col label {
     color: black;
