@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `calendarize_db` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `calendarize_db`;
--- MySQL dump 10.13  Distrib 5.7.12, for osx10.9 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: calendarize_db
+-- Host: localhost    Database: calendarize_db
 -- ------------------------------------------------------
--- Server version	5.7.17
+-- Server version	5.7.20-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,40 +16,6 @@ USE `calendarize_db`;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `user_id` BIGINT NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(45) NOT NULL,
-  `user_email` varchar(45) NOT NULL,
-  `user_password` varchar(80) NOT NULL,
-  `user_type` int(11) DEFAULT NULL,
-  `user_phone` int(11) DEFAULT NULL,
-  `user_record` varchar(45) DEFAULT NULL,
-  `user_extra` varchar(45) DEFAULT NULL,
-  `resetkey` varchar(80) DEFAULT NULL,  
-  `expires` date DEFAULT NULL,  
-  `active` tinyint(1) NOT NULL DEFAULT '0',
-  `deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
-
 
 --
 -- Table structure for table `calendars`
@@ -67,7 +33,7 @@ CREATE TABLE `calendars` (
   `calendar_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`calendar_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,6 +46,30 @@ LOCK TABLES `calendars` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `event_files`
+--
+
+DROP TABLE IF EXISTS `event_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_files` (
+  `event_id` int(11) NOT NULL,
+  `file_name` varchar(160) NOT NULL,
+  `unique_id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`unique_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_files`
+--
+
+LOCK TABLES `event_files` WRITE;
+/*!40000 ALTER TABLE `event_files` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_files` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `events`
 --
 
@@ -88,7 +78,7 @@ DROP TABLE IF EXISTS `events`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `events` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
-  `event_calendar_id` int(11) NOT NULL,  
+  `event_calendar_id` int(11) NOT NULL,
   `event_date_created` date NOT NULL,
   `event_owner` varchar(45) NOT NULL,
   `event_name` varchar(45) NOT NULL,
@@ -100,7 +90,7 @@ CREATE TABLE `events` (
   `event_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`event_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,7 +115,7 @@ CREATE TABLE `user_calendars` (
   `role` int(11) NOT NULL,
   `unique_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`unique_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,15 +151,6 @@ LOCK TABLES `user_friends` WRITE;
 /*!40000 ALTER TABLE `user_friends` ENABLE KEYS */;
 UNLOCK TABLES;
 
-
-CREATE TABLE `event_files` (
-  `event_id` int(11) NOT NULL,
-  `file_name` varchar(160) NOT NULL,
-  `unique_id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`unique_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 --
 -- Table structure for table `userconfig`
 --
@@ -194,14 +175,39 @@ LOCK TABLES `userconfig` WRITE;
 /*!40000 ALTER TABLE `userconfig` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `user_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(45) NOT NULL,
+  `user_email` varchar(45) NOT NULL,
+  `user_password` varchar(80) NOT NULL,
+  `user_type` int(11) DEFAULT NULL,
+  `user_phone` int(11) DEFAULT NULL,
+  `user_record` varchar(45) DEFAULT NULL,
+  `user_extra` varchar(45) DEFAULT NULL,
+  `verify_key` varchar(15) DEFAULT NULL,
+  `resetkey` varchar(80) DEFAULT NULL,
+  `expires` date DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping events for database 'calendarize_db'
+-- Dumping data for table `users`
 --
 
---
--- Dumping routines for database 'calendarize_db'
---
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -212,4 +218,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-10-17 12:23:03
+-- Dump completed on 2017-10-30 10:06:23
