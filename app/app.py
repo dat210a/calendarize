@@ -321,6 +321,7 @@ def join_calander():
     id = request.form.get("calender_id", None)
     role = request.form.get("role", None)
     with db.ConnectionInstance() as q:
+        #user_id = q.get_user_id(request.form.get("Email", None))
         q.join_calander(id, current_user.user_id, role)
     return redirect("/")
 
