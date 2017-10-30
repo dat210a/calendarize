@@ -23,7 +23,7 @@
             format: 'yyyy-mm-dd'
         });
 
-        load_data();
+        load_data('id');
     });
 
     jQuery(window).on('load', function(){

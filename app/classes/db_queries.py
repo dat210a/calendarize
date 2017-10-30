@@ -226,7 +226,7 @@ class ConnectionInstance:
                 created,
                 owner,
                 event_data['startDate'],
-                event_data['startDate'] if event_data['endDate'] == '' else event_data['endDate'],
+                event_data['endDate'],
                 1 if 'recurring' in event_data else 0,
             ]
         )

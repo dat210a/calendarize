@@ -12,8 +12,10 @@ in the GitHub repository README.md
 
 """
 import logging
-import json, datetime, pytz
-import string, random
+import json, string, random
+import pytz
+from pytz import timezone
+from datetime import datetime, date
 from classes import db_queries as db
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
@@ -200,7 +202,7 @@ def register():
                     user = User(email)
                     login_user(user)
                     #adds default calendar to that user
-                    queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
+                    queries.add_calendar(datetime.utcnow(), current_user.user_id)
                     return redirect('/calendar')
     # reload if something not right
     # TODO maybe some error messages
@@ -319,7 +321,7 @@ def get_data():
 
 # should be moved to funcs/helper.py
 def type_handler(x):
-    if isinstance(x, datetime.date):
+    if isinstance(x, date):
         # TODO change date into clients time zone
         return x.isoformat()
     elif isinstance(x, bytearray):
@@ -357,7 +359,7 @@ def add_calendar():
         cal_name = request.form['newCalendarName']
         if cal_name:
             with db.ConnectionInstance() as queries:
-                created = queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id, cal_name)
+                created = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name)
                 if created:
                     return 'true'
     return 'false'
@@ -366,16 +368,25 @@ def add_calendar():
 @app.route('/add_event', methods=['POST', 'GET'])
 @login_required
 def add_event():
-    data = request.form
     if request.method == "POST":
-        if data['newEventName'] and data['calendarID'] and data['startDate'] \
-                                and (data['endDate'] == '' or data['endDate'] >= data['startDate']):
-            # TODO conversion of dates into right format if they are not and into utc
+        data = request.form.to_dict()
+        if data['newEventName'] and data['calendarID'] and data['startDate']:
+            tz = timezone(data['tz'])
+            try:
+                dt = tz.localize(datetime.strptime(data['startDate'], "%Y-%m-%d"))
+            except ValueError:
+                return json.dumps({'success' : 'false', 'message': 'wrong date format'})
+            data['startDate'] = dt.astimezone(pytz.utc)
+            try:
+                dt = tz.localize(datetime.strptime(data['endDate'], "%Y-%m-%d"))
+                data['endDate'] = dt.astimezone(pytz.utc)
+            except ValueError:
+                data['endDate'] = data['startDate']
             with db.ConnectionInstance() as queries:
-                created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
+                created = queries.add_event(data, datetime.utcnow(), current_user.user_id)
                 if created:
-                    return 'true'
-    return 'false'
+                    return json.dumps({'success' : 'true', 'id': created})
+    return json.dumps({'success' : 'false'})
 
 
 @app.route('/add_files', methods=['POST'])

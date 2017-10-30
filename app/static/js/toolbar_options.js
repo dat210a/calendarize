@@ -53,14 +53,22 @@ $("#addCalendar").submit(function(e){
 
 $("#addEvent").submit(function(e){
     e.preventDefault()
+    var form = $(this);
+    oData = new FormData(form[0]);
+    oData.append("tz", Intl.DateTimeFormat().resolvedOptions().timeZone)
     $.ajax({
         url: '/add_event',
-        data: $(this).serialize(), 
+        data: oData, 
+        processData: false,
+        contentType: false,
         type: 'POST',
         success: function(response) {
-            if (response == 'true') {
+            r = JSON.parse(response)
+            if (r.success == 'true') {
                 $("#eventForm").hide()
-                load_data()
+                load_data('id')
+                var newEvent = d3.selectAll('.datapoints').filter(function(d){return d.id == r.id}).data()
+                display(newEvent)
             }
             else {
                 console.log ('could not create new event')
