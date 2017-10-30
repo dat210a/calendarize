@@ -196,7 +196,6 @@ def register():
             with db.ConnectionInstance() as queries:
                 #adds new user to the database
                 added = queries.add_user(name, email, hash_password(password))
-                print(added)
                 if (added):
                     user = User(email)
                     login_user(user)
@@ -229,7 +228,6 @@ def login():
         password = request.form["inputPassword"]
         email = request.form["inputEmail"]
         user = load_user(email)
-        print(user)
         if user is not None:
             if check_password(password, email):
                 if 'remember' in request.form and request.form["remember"] == 'on':
@@ -398,16 +396,6 @@ def delete_cal():
             admins = q.db_get_cal_admin(cid=cal)
             if user in admins:
                 q.db_del_cal(cal)
-
-
-@app.route('/join_calander', methods=['POST'])
-@login_required
-def join_calander():
-    print("test3")
-    id = request.form.get("calender_id", None)
-    with db.ConnectionInstance() as q:
-        q.join_calander(id, current_user.user_id)
-    return redirect("/")
 
 
 @app.route("/recover", methods=["GET", "POST"])

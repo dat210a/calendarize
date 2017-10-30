@@ -74,18 +74,6 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
 
-    def join_calander(self, calender_id, user_id):
-        print("test")
-        self.__cur.execute("SELECT unique_id from user_calendars ORDER BY unique_id DESC LIMIT 1")
-        unique_id = self.__cur.fetchone()
-        if unique_id[0] == None:
-            unique_id = 1
-        else:
-            unique_id = unique_id[0] + 1
-        sql = "INSERT INTO user_calendars VALUES (?, ?, ?)"
-        self.__cur.execute(sql, [user_id, calender_id, unique_id])
-        self.__con.commit()
-
     def get_username(self, email):
         sql = "SELECT user_name FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
@@ -186,11 +174,10 @@ class ConnectionInstance:
         query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?,?,?);'
         user_data = [username, email, hashedpass]
         try:
-            self.__cur.execute(query, [username, email, hashedpass])
+            self.__cur.execute(query, user_data)
             self.__con.commit()
             return self.get_last_ID()
         except Exception as e:
-            print(e)
             logging.debug('{}\nWhile trying to insert user with data:\n'
                           '\tUsername: {}\n'
                           '\tEmail: {}\n'
