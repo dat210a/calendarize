@@ -381,23 +381,43 @@ def add_calendar():
     return 'false'
 
 
-@app.route('/join_calander', methods=['POST'])
+@app.route('/join_calander', methods=['POST', 'GET'])
 @login_required
 def join_calander():
-    id = request.form.get("calender_id", None)
-    role = request.form.get("role", None)
-    with db.ConnectionInstance() as q:
-        #user_id = q.get_user_id(request.form.get("Email", None))
-        q.join_calander(id, current_user.user_id, role)
-    return redirect("/")
+    if request.method == 'POST':
+        id = request.form.get("calender_id", None)
+        role = request.form.get("role", None)
+        with db.ConnectionInstance() as q:
+            #user_id = q.get_user_id(request.form.get("Email", None))
+            q.join_calander(id, current_user.user_id, role)
+        return 'true'
+    return 'false'
 
-@app.route('/leave_calander', methods=['POST'])
+
+
+@app.route('/invite_calander', methods=['POST', 'GET'])
+@login_required
+def invite_calander():
+    if request.method == 'POST':
+        email = request.form.get("email", None)
+        calendar_id = request.form.get("calendar_id", None)
+        role = request.form.get("role", None)
+        with db.ConnectionInstance() as q:
+            if q.get_role(current_user.user_id, calendar_id) == 0:
+                q.send_invite(calendar_id, q.get_user_id(email), current_user.user_id, role)
+                return 'true'
+    return 'false'
+
+
+@app.route('/leave_calander', methods=['POST', 'GET'])
 @login_required
 def leave_calander():
-    id = request.form.get("calender_id", None)
-    with db.ConnectionInstance() as q:
-        q.leave_calander(id, current_user.user_id)
-    return redirect("/")
+    if request.method == 'POST':
+        id = request.form.get("calender_id", None)
+        with db.ConnectionInstance() as q:
+            q.leave_calander(id, current_user.user_id)
+        return 'true'
+    return 'false'
 
 
 @app.route('/add_event', methods=['POST', 'GET'])
