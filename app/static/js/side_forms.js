@@ -1,5 +1,5 @@
 
-var form_ids = ["#eventDisplay", "#calendarDisplay", "#addCalendarForm", "#editCalendarForm", "#addEventForm", "#editEventForm", "#profileDisplay"]
+var form_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"]
 
 function hide_all_forms(){
     form_ids.forEach (function(form){
