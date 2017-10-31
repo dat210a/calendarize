@@ -8,12 +8,11 @@ class User:
         self.email = email
         with ConnectionInstance() as con:
             self.user_id = con.get_user_id(self.email)
-            self.username = con.get_username(self.email)
             self.active = con.get_user_activity(self.email)
 
     def __repr__(self):
         if not self.is_anonymous():
-                return '<User %r>' % self.username
+                return '<User %r>' % self.email
 
     def is_authenticated(self):
         return True
@@ -22,6 +21,7 @@ class User:
         if self.active > 0:
             return True
         return False
+
     def is_anonymous(self):
         return False
 

@@ -45,7 +45,7 @@ class ConnectionInstance:
         # Retrieval
 
     def get_user_id(self, email):
-        sql = "SELECT user_id FROM users WHERE ? = user_email"
+        sql = "SELECT user_id FROM users WHERE ? = user_email "
         self.__cur.execute(sql, [email])
         try:
             res = self.__cur.fetchone()
@@ -107,15 +107,15 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
 
-    def get_username(self, email):
-        sql = "SELECT user_name FROM users WHERE user_email = ?"
-        self.__cur.execute(sql, [email])
-        try:
-            res = self.__cur.fetchone()
-            return res[0].decode('utf-8')
-        except Exception as e:
-            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
-            return None
+    # def get_username(self, email):
+    #     sql = "SELECT user_name FROM users WHERE user_email = ?"
+    #     self.__cur.execute(sql, [email])
+    #     try:
+    #         res = self.__cur.fetchone()
+    #         return res[0].decode('utf-8')
+    #     except Exception as e:
+    #         logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+    #         return None
 
     def get_calendars(self, uid):
         sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
@@ -126,6 +126,16 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
+
+    def get_event_calendar_id(self, eid):
+        sql = "SELECT event_calendar_id FROM events WHERE event_id = ?"
+        self.__cur.execute(sql, [eid])
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching parent calendar for event: {}'.format(e, eid))
+            return None   
 
     def get_calendar_role(self, uid, cid):
         sql = "SELECT role FROM user_calendars WHERE user_id = ? AND calendar_id = ?"
@@ -198,17 +208,7 @@ class ConnectionInstance:
             res = self.__cur.fetchone()
             return res[0].decode("utf-8")
         except Exception as e:
-            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e))
-            return None
-        
-    def verfify_check(self,email):
-        sql ="SELECT active FROM users WHERE user_email=?"
-        self.__cur.execute(sql, [email])
-        try:
-            res = self.__cur.fetchone()
-            return res
-        except Exception as e:
-            logging.debug('{}\nWhile checking if account is verified:\n{}'.format(e, email))
+            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, resetkey))
             return None
 
     def get_verify_info(self, verify_key):
@@ -216,9 +216,9 @@ class ConnectionInstance:
         self.__cur.execute(sql, [verify_key])
         try:
             res = self.__cur.fetchone()
-            return res
+            return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, email))
+            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, verify_key))
             return None
 
     def get_last_ID(self):
@@ -234,18 +234,17 @@ class ConnectionInstance:
 #######################################################################################
         # Insertion
 
-    def add_user(self, created, username, email, hashedpass,verify_key):
-        query = 'INSERT INTO users (user_date_created, user_name, user_email, user_password,verify_key,expires, active) VALUES (?,?,?,?,?, now()+ INTERVAL 24 HOUR,0);'
-        user_data = [created, username, email, hashedpass, verify_key]
+    def add_user(self, created, email, hashedpass,verify_key):
+        query = 'INSERT INTO users (user_date_created, user_email, user_password,verify_key,expires) VALUES (?,?,?,?, now()+ INTERVAL 24 HOUR);'
+        user_data = [created, email, hashedpass, verify_key]
+        self.__cur.execute(query, user_data)
         try:
-            self.__cur.execute(query, user_data)
             self.__con.commit()
             return self.get_last_ID()
         except Exception as e:
             logging.debug('{}\nWhile trying to insert user with data:\n'
-                          '\tUsername: {}\n'
                           '\tEmail: {}\n'
-                          '\tPW hash: {}'.format(e, username, email, hashedpass))
+                          '\tPW hash: {}'.format(e, email, hashedpass))
             self.__con.rollback()
             return None
 
@@ -335,7 +334,7 @@ class ConnectionInstance:
             self.__con.commit()
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
-
+            self.__con.rollback()
 
     def update_user(self, user_data):
         #TODO
@@ -358,7 +357,7 @@ class ConnectionInstance:
             # Deletion
 
     def db_del_user(self, uid):
-        self.__cur.execute("UPDATE user SET deleted=1 WHERE ? = UserID", [uid])
+        self.__cur.execute("UPDATE users SET deleted = 1 WHERE ? = user_id", [uid])
         try:
             self.__con.commit()
         except Exception as e:
@@ -366,7 +365,7 @@ class ConnectionInstance:
             self.__con.rollback()
 
     def db_del_event(self, eid):
-        self.__cur.execute("UPDATE event SET deleted=1 WHERE ? = EventID", [eid])
+        self.__cur.execute("UPDATE events SET deleted=1 WHERE ? = event_id", [eid])
         try:
             self.__con.commit()
         except Exception as e:
@@ -374,7 +373,7 @@ class ConnectionInstance:
             self.__con.rollback()
 
     def db_del_cal(self, cid):
-        self.__cur.execute("UPDATE calendar SET deleted=1 WHERE ? = CalendarID", [cid])
+        self.__cur.execute("UPDATE calendars SET deleted=1 WHERE ? = calendar_id", [cid])
         try:
             self.__con.commit()
         except Exception as e:

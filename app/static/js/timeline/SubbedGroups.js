@@ -57,17 +57,18 @@ function AddGroupButtons(groups){
             .attr("y", 120)
             .style("font-size", 30)
             .text(function(d){return d.name})
-            .each(short_text);
+            .each(function(){
+                short_text(d3.select(this), groupBoxDim, 30)
+            });
 };
 
 // text cutoff
-function short_text() {
-    var self = d3.select(this),
-        textLength = self.node().getComputedTextLength(),
+function short_text(self, textWidth, endTextBuffer) {
+    var textLength = self.node().getComputedTextLength(),
         text = self.text();
-    while (textLength > (groupBoxDim - 30)) {
+    while (textLength > (textWidth - endTextBuffer)) {
         text = text.slice(0, -1);
-        self.text(text + ' ...');
+        self.text(text + '...');
         textLength = self.node().getComputedTextLength();
     }
 } 

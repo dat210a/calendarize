@@ -30,7 +30,7 @@
                 <defs>
                     <filter id="dropshadow" x="-40%" y="-40%" width="180%" height="180%" filterUnits="userSpaceOnUse">
                         <feGaussianBlur in="SourceAlpha" stdDeviation="2"/> <!-- stdDeviation is how much to blur -->
-                        <feOffset dx="1" dy="1" result="offsetblur"/> 
+                        <feOffset dx="1.5" dy="1.5" result="offsetblur"/> 
                         <!-- <feOffset dx="-5" dy="-5" result="offsetblur"/> -->
                         <feMerge> 
                         <feMergeNode/>
@@ -159,7 +159,7 @@
             </div>
             <div class="row">
                 <div class="col s12">
-                    <a class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete event</a>
+                    <a id="delete_event" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete event</a>
                 </div>
             </div>
         </div>
@@ -227,7 +227,7 @@
             </div>
             <div class="row">
                 <div class="col s12">
-                    <a class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete group</a>
+                    <a id="delete_calendar" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete group</a>
                 </div>
             </div>
         </div>
@@ -242,7 +242,7 @@
                     <h4 class="left-align grey-text text-lighten-5 ">New calendar</h4>
                 </div>
             </div>
-            <a id="btnNewCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></a>
+            <button id="btnNewCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
@@ -309,7 +309,7 @@
                     <h4 class="left-align grey-text text-lighten-5 ">Edit calendar</h4>
                 </div>
             </div>
-            <a id="btnEditCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></a>
+            <button id="btnEditCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
@@ -376,7 +376,7 @@
                     <h4 class="left-align grey-text text-lighten-5 ">New event</h4>
                 </div>
             </div>
-            <a id="btnNewEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></a>
+            <button id="btnNewEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
@@ -469,7 +469,7 @@
                     <h4 class="left-align grey-text text-lighten-5 ">Edit event</h4>
                 </div>
             </div>
-            <a id="btnEditEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></a>
+            <button id="btnEditEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
             <div style="padding-top: 5em">
                 <div class="row  ">
                     <div class="col s12 input-field">
@@ -575,7 +575,7 @@
                 <span class="grey-text text-lighten-3">email@email.com</span>
             </div>
         </div>
-        <a class="btn-floating btn-large waves-effect waves-light right profiledetailsheaderBtn accentgrey-dark"><i class="material-icons">edit</i></a>
+        <button class="btn-floating btn-large waves-effect waves-light right profiledetailsheaderBtn accentgrey-dark"><i class="material-icons">edit</i></button>
         <div class="profilepaddingfix">
             <div class="row">
                 <div class="col s12">
@@ -593,7 +593,7 @@
             </div>
             <div class="row">
                 <div class="col s12">
-                    <a class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete account</a>
+                    <a id="delete_account" href="/delete_user" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete account</a>
                 </div>
             </div>
         </div>
@@ -605,10 +605,10 @@
 <script src="/static/js/timeline/navigation_buttons.js"></script>
 <script src="/static/js/timeline/SubbedGroups.js"></script>
 <script src="/static/js/timeline/simulation.js"></script>
-<script src="/static/js/timeline/display_event_details.js"></script>
+<script src="/static/js/display_event_details.js"></script>
 <script src="/static/js/timeline/DisplayData.js"></script>
 <script src="/static/js/timeline/zoom_and_scroll.js"></script>
 <script src="/static/js/timeline/resize_timeline.js"></script>
-<script src="/static/js/toolbar_options.js"></script>
+<script src="/static/js/side_forms.js"></script>
 <script src="/static/js/init.js"></script>
 {% endblock %}

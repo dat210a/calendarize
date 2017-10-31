@@ -27,9 +27,7 @@ function display(data){
     $('.eventRecur').text(function () {return +data.recurring == 1 ? 'YES' : 'NO'})
     //$('eventFiles').text(data.files)
 
-    $("#calendarForm").hide()
-    $("#eventForm").hide()
-    $("#profileDisplay").hide()
+    hide_all_forms()
     $("#eventDisplay").show(700)
 }
 

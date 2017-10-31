@@ -27,9 +27,9 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `user_id` BIGINT NOT NULL AUTO_INCREMENT,
   `user_date_created` datetime NOT NULL,
-  `user_name` varchar(45) NOT NULL,
   `user_email` varchar(45) NOT NULL,
   `user_password` varchar(80) NOT NULL,
+  `user_name` varchar(45) DEFAULT NULL,
   `user_type` int(11) DEFAULT NULL,
   `user_phone` int(11) DEFAULT NULL,
   `user_record` varchar(45) DEFAULT NULL,

@@ -137,6 +137,9 @@ var connections = dataGroup
             .style('fill', '#F1F0F0')
             .text(function(){
                 return this.parentNode.__data__.name;
+            })
+            .each(function(){
+                short_text(d3.select(this), detailWidth, 25)
             });
 
     detailContainer
