@@ -4,6 +4,7 @@ import errno
 from werkzeug.utils import secure_filename
 
 upload_folder = 'files/uploaded'  # temporary path
+max_file_size = 50000000
 banned_extensions = []
 
 
@@ -19,6 +20,10 @@ def secure_fn(fname):
 
 def save_file(file, eid):
     if file.filename == "":
+        return None
+    file.seek(0, os.SEEK_END)
+    file_length = file.tell()
+    if file_length > max_file_size:
         return None
     if file and allowed_file(file.filename):
         fpath = '{}/{}'.format(upload_folder, eid)
