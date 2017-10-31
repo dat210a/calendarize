@@ -64,17 +64,16 @@ $("#addCalendar").submit(function(e){
     });
 });
 
-$("#addEvent").submit(function(e){
+$("#btnNewEvent").click(function(e){
     e.preventDefault()
-    var form = $(this);
-    oData = new FormData(form[0]);
-    console.log(oData)
+    var form = $('#addEvent')[0];
+    oData = new FormData(form);
     oData.append("tz", Intl.DateTimeFormat().resolvedOptions().timeZone)
     $.ajax({
         url: '/add_event',
         type: 'POST',
         data: oData, 
-        dataType: 'multipart/form-data',
+        dataType: "multipart/form-data",
         processData: false,
         contentType: false,
         success: function(response) {

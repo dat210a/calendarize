@@ -426,7 +426,7 @@ def add_event():
         data = request.form.to_dict()
         print(data)
         print(request.files)
-        if data['newEventName'] and data['calendarID']:
+        if 'newEventName' in data and 'calendarID' in data:
             try:
                 tz = timezone(data['tz'])
                 dt = tz.localize(datetime.strptime(data['startDate'], "%Y-%m-%d"))
