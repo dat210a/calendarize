@@ -89,10 +89,14 @@ rightLinearGradient.append("stop")
 
 right_timeline_button
     .on('mouseover', function(d){
-        right_timeline_button.attr('opacity', 1)
+        right_timeline_button.transition()
+                             .duration(500)
+                             .attr('opacity', 1)
     })
     .on('mouseout', function(d){
-        right_timeline_button.attr('opacity', 0)
+        right_timeline_button.transition()
+                             .duration(500)
+                             .attr('opacity', 0)
     })
     .on('click', function(){
         d3.select('.scrollArea').call(zoom.translateBy, -width/k)
