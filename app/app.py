@@ -392,9 +392,8 @@ def add_event():
             except ValueError:
                 data['endDate'] = data['startDate']
             with db.ConnectionInstance() as queries:
-                cals = queries.get_calendars(current_user.user_id)
-                role = [r[1] for r in cals if r[0] == int(data['calendarID'])]
-                if role is not [] and role[0] == 0:
+                role = queries.get_calendar_role(current_user.user_id, data['calendarID'])
+                if role is not None and role == 0:
                     created = queries.add_event(data, datetime.utcnow(), current_user.user_id)
                     if created:
                         return json.dumps({'success' : 'true', 'id': created})

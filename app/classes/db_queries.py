@@ -85,11 +85,21 @@ class ConnectionInstance:
             return None
 
     def get_calendars(self, uid):
-        sql = "SELECT calendar_id, role FROM user_calendars WHERE user_id = ?"
+        sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
         self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchall()
-            return res
+            return [r[0] for r in res]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
+            return None
+
+    def get_calendar_role(self, uid, cid):
+        sql = "SELECT role FROM user_calendars WHERE user_id = ? AND calendar_id = ?"
+        self.__cur.execute(sql, [uid, cid])
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
@@ -123,7 +133,7 @@ class ConnectionInstance:
     #         return None
 
     def fetch_data_for_display(self, uid):
-        cals = [r[0] for r in self.get_calendars(uid)]
+        cals = self.get_calendars(uid)
 
         sql = "SELECT calendar_id, calendar_name FROM calendars " \
               "WHERE calendar_id IN(" + ",".join("?"*len(cals)) + ") " \
