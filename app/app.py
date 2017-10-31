@@ -413,12 +413,9 @@ def recover():
         if not email:
             flash("You need to fill out an email!")
             return redirect(url_for('recover'))
-        if not user_exists(email):
-                    flash("Unregistered Email")
-        else:
+        if user_exists(email):
                 #Generate random unique string for resetkey, store in database and send it along with the email.
                 x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-
                 with db.ConnectionInstance() as queries:
                     key = x + str(queries.get_user_id(email))
                     queries.make_resetkey(email,key)
@@ -426,6 +423,8 @@ def recover():
                 msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
                 mail.send(msg)
                 return render_template("recoverconfirm.html",email=email)
+        else:
+            return render_template("recoverconfirm.html",email=email)
     return render_template("recover.html")
 
 
@@ -443,7 +442,7 @@ def reset(resetkey):
                 flash("Minimum 6 characters.")
             elif new_password == repeat_password:
                 if check_password(new_password, info[0].decode("utf-8")):
-                    flash("You cannot use the old password.")
+                    flash("You cannot use the previous password.")
                 else:
                     with db.ConnectionInstance() as queries:
                         queries.set_new_password(info[0].decode("utf-8"),hash_password(new_password))
@@ -465,7 +464,7 @@ def verify(verify_key):
                     return render_template("verify_confirm.html")
         return render_template("verify.html")
     else:
-        return ("Your account has been alreaady verified or the link hase been expired")
+        return ("Your account has been already verified or the link hase been expired")
 
 @app.route("/verifyoption", methods=["GET", "POST"])
 def verifyoption():
@@ -476,14 +475,12 @@ def verifyoption():
         x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
 
         with db.ConnectionInstance() as queries:
-            key = x + str(queries.get_user_id(email))
-            queries.make_resetkey(email,key)
-        msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+            key = x + email[:5]
+            queries.make_verifykey(user.user_id,key)
+        msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
+        msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
         mail.send(msg)
-        return render_template("recoverconfirm.html",email=email)
-    if action == "do_2":
-        return ("Please insert your new email")
+        return render_template("verify_send.html", email=email)
 
 
 ##################################################################

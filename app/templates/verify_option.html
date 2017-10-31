@@ -5,7 +5,6 @@
 <form action="{{ url_for("verifyoption") }}" method="POST">
 <input type="hidden" name="email" value= "{{ email }}" />
 <button type="submit" name="action" value="do_1">Resend Link</button>
-<button type="submit" name="action" value="do_2">Change Email</button>
 <button><a href="{{ url_for('index') }}">Return to homepage</a></button>
 </form>
 {% endblock %}

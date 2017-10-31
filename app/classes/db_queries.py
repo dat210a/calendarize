@@ -267,7 +267,7 @@ class ConnectionInstance:
             res = self.__cur.fetchone()
             return res
         except Exception as e:
-            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, email))
+            logging.debug('{}\nWhile checking verify key and expire:\n{}'.format(e, email))
 
     def set_new_password(self, email, new_password):
         sql = "UPDATE users SET user_password =?, resetkey='' WHERE user_email = ?"
@@ -278,6 +278,13 @@ class ConnectionInstance:
             logging.debug('{}\nWhile setting user new password:\n{}'.format(e, email))
 #######################################################################################
             # Update
+    def make_verifykey(self, user_id, verify_key):
+        sql ="UPDATE users SET verify_key=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_id=?"
+        self.__cur.execute(sql, (verify_key,user_id))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting new verify key:\n{}'.format(e, email))
 
     def activate_user(self, email):
         sql = "UPDATE users SET active = 1, verify_key='' WHERE user_email = ?"
