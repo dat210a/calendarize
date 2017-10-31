@@ -464,7 +464,7 @@ def verify(verify_key):
                     return render_template("verify_confirm.html")
         return render_template("verify.html")
     else:
-        return ("Your account has been already verified or the link hase been expired")
+        return ("Your account has been already verified or the link has been expired")
 
 @app.route("/verifyoption", methods=["GET", "POST"])
 def verifyoption():
