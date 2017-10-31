@@ -527,7 +527,7 @@ def verify(verify_key):
                     return render_template("verify_confirm.html")
         return render_template("verify.html")
     else:
-        return ("Your account has been alreaady verified or the link hase been expired")
+        return ("Your account has been already verified or the link has been expired")
 
 @app.route("/verifyoption", methods=["GET", "POST"])
 def verifyoption():
@@ -538,14 +538,12 @@ def verifyoption():
         x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
 
         with db.ConnectionInstance() as queries:
-            key = x + str(queries.get_user_id(email))
-            queries.make_resetkey(email,key)
-        msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+            key = x + email[:5]
+            queries.make_verifykey(user.user_id,key)
+        msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
+        msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
         mail.send(msg)
-        return render_template("recoverconfirm.html",email=email)
-    if action == "do_2":
-        return ("Please insert your new email")
+        return render_template("verify_send.html", email=email)
 
 
 ##################################################################
