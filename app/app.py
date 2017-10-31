@@ -204,7 +204,7 @@ def register():
                     user = User(email)
                     #login_user(user)
                     #adds default calendar to that user
-                    queries.add_calendar(datetime.datetime.utcnow(), user.user_id)
+                    queries.add_calendar(datetime.utcnow(), user.user_id)
                     #send verfication email
                     msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
                     msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
