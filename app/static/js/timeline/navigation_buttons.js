@@ -74,10 +74,14 @@ rightLinearGradient.append("stop")
 
     leftSideBar
     .on('mouseover', function(d){
-        left_timeline_button.attr('opacity', 1)
+        left_timeline_button.transition()
+                            .duration(500)
+                            .attr('opacity', 1)
     })
     .on('mouseout', function(d){
-        left_timeline_button.attr('opacity', 0)
+        left_timeline_button.transition()
+                            .duration(500)
+                            .attr('opacity', 0)
     })
     .on('click', function(){
         d3.select('.scrollArea').call(zoom.translateBy, width/k)

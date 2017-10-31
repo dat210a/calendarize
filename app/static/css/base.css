@@ -3,6 +3,12 @@ body{
     /*min-height: 100vh;*/
     height: 100vh;
     flex-direction: column;
+    margin: 0;
+    overflow: hidden;
+}
+
+html {
+    margin: 0; height: 100%; overflow: hidden
 }
 
 nav ul a {
