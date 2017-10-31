@@ -64,26 +64,21 @@ $("#addCalendar").submit(function(e){
     });
 });
 
-$("#btnNewEvent").click(function(e){
+$("#addEvent").submit(function(e){
     e.preventDefault()
-    $('#addEvent').each(function(){
-        console.log($(this).find(':input')) //<-- Should return all input elements in that specific form.
-    });
-    var form = $('#addEvent')[0];
+    var form = $(this)[0];
     oData = new FormData(form);
-    oData.append("tz", Intl.DateTimeFormat().resolvedOptions().timeZone)
+    oData.append("tz", Intl.DateTimeFormat().resolvedOptions().timeZone) // maybe won't be needed
     $.ajax({
         url: '/add_event',
         type: 'POST',
         data: oData, 
-        dataType: "multipart/form-data",
+        encType: "multipart/form-data",
         processData: false,
         contentType: false,
         success: function(response) {
-            console.log(response)
             r = JSON.parse(response)
             if (r.success == 'true') {
-                console.log('here')
                 $("#eventForm").hide()
                 load_data()
                 // var newEvent = d3.selectAll('.datapoints').filter(function(d){return d.id == r.id}).data()

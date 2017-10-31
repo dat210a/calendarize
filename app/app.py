@@ -424,8 +424,6 @@ def leave_calander():
 def add_event():
     if request.method == "POST":
         data = request.form.to_dict()
-        print(data)
-        print(request.files)
         if 'newEventName' in data and 'calendarID' in data:
             try:
                 tz = timezone(data['tz'])
@@ -446,7 +444,7 @@ def add_event():
                     created = queries.add_event(data, datetime.utcnow(), current_user.user_id)
                     if created:
                         for file in request.files:
-                            q.add_file(request.files[file], created)
+                            queries.add_file(request.files[file], created)
                         return json.dumps({'success' : 'true', 'id': created})
     return json.dumps({'success' : 'false'})
 
@@ -504,6 +502,7 @@ def delete_event():
                 role = queries.get_calendar_role(current_user.user_id, cal)
                 if role is not None and role == 0:
                     queries.db_del_event(event)
+                    # TODO delete files
                     return 'true'
     return 'false'
 

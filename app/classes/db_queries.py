@@ -315,7 +315,7 @@ class ConnectionInstance:
         fname = save_file(rqdat, eid)
         if fname:
             sql = "INSERT INTO event_files (event_id, file_name) VALUES (?, ?)"
-            self.__cur.execute(sql, eid, fname)
+            self.__cur.execute(sql, (eid, fname))
             try:
                 self.__con.commit()
             except Exception as e:
