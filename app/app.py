@@ -112,12 +112,12 @@ def log_basic():
         logger.info(request_data(request))
 
 
-def get_user_id():
-    """
-    """
-    if 'user' in session:
-        return session['user']['id']
-    return None
+# def get_user_id():
+#     """
+#     """
+#     if 'user' in session:
+#         return session['user']['id']
+#     return None
 
 # It should be moved to a separate file if there
 # ends up being more functions like this one
@@ -247,6 +247,7 @@ def logout():
     """ Logs user out and redirects to main page
     """
     logout_user()
+    # TODO redirect to user has benn logged out page
     return redirect('/')
 
 
@@ -435,37 +436,37 @@ def save_settings():
 @app.route('/delete_user', methods=['POST'])
 @fresh_login_required
 def delete_user():
-    # TODO rewrite if necessary when login functionality is implemented
-    req_user = get_user_id()
     del_user = request.form.get('user_id', None)
-    if del_user and req_user == del_user:  # ensures only the user can delete themselves
-        with db.ConnectionInstance() as q:
-            q.db_del_user(del_user)
+    if del_user and del_user == current_user.user_id:  # ensures only the user can delete themselves
+        with db.ConnectionInstance() as queries:
+            queries.db_del_user(del_user)
+            # TODO redirect to user has been deleted page
     return redirect(url_for(index))
 
 
 @app.route('/delete_event', methods=['POST'])
 @fresh_login_required
 def delete_event():
-    user = get_user_id()
+    # TODO agree wheter permissions are set on event basis
     event = request.form.get('event_id', None)
     if event:
-        with db.ConnectionInstance() as q:
-            admins = q.db_get_cal_admin(eid=event)
-            if user in admins:
+        with db.ConnectionInstance() as queries:
+            role = queries.get_calendar_role(current_user.user_id, cal)
+            if role is not None and role == 0:
                 q.db_del_event(event)
 
 
 @app.route('/delete_calendar', methods=['POST'])
 @fresh_login_required
 def delete_cal():
-    user = get_user_id()
     cal = request.form.get('calendar_id', None)
     if cal:
-        with db.ConnectionInstance() as q:
-            admins = q.db_get_cal_admin(cid=cal)
-            if user in admins:
-                q.db_del_cal(cal)
+        with db.ConnectionInstance() as queries:
+            role = queries.get_calendar_role(current_user.user_id, cal)
+            if role is not None and role == 0:
+                queries.db_del_cal(cal)
+                return json.dumps({'success': 'true'})
+    return json.dumps({'success': 'false'})
 
 
 ##################################################################
