@@ -87,10 +87,10 @@ class ConnectionInstance:
         self.__con.commit()
 
     def send_invite(self, calender_id, user_id, sender_id, role):
-        sql = "INSERT INTO calendat_invites VALUES (?,?,?,?,?)"
+        sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?)"
         self.__cur.execute("SELECT unique_id from calendar_invites ORDER BY unique_id DESC LIMIT 1")
         unique_id = self.__cur.fetchone()
-        if unique_id[0] == None:
+        if unique_id == None:
             unique_id = 1
         else:
             unique_id = unique_id[0] + 1
