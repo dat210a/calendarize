@@ -318,7 +318,7 @@ def add_calendar():
 @app.route('/join_calander', methods=['POST', 'GET'])
 @login_required
 def join_calander():
-    if request.method == 'POST'
+    if request.method == 'POST':
         id = request.form.get("calender_id", None)
         role = request.form.get("role", None)
         with db.ConnectionInstance() as q:
@@ -346,7 +346,7 @@ def invite_calander():
 @app.route('/leave_calander', methods=['POST', 'GET'])
 @login_required
 def leave_calander():
-    if request.method == 'GET'
+    if request.method == 'POST':
         id = request.form.get("calender_id", None)
         with db.ConnectionInstance() as q:
             q.leave_calander(id, current_user.user_id)
