@@ -262,39 +262,6 @@ LOCK TABLES `userconfig` WRITE;
 /*!40000 ALTER TABLE `userconfig` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `user_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(45) NOT NULL,
-  `user_email` varchar(45) NOT NULL,
-  `user_password` varchar(80) NOT NULL,
-  `user_type` int(11) DEFAULT NULL,
-  `user_phone` int(11) DEFAULT NULL,
-  `user_record` varchar(45) DEFAULT NULL,
-  `user_extra` varchar(45) DEFAULT NULL,
-  `verify_key` varchar(15) DEFAULT NULL,
-  `resetkey` varchar(80) DEFAULT NULL,
-  `expires` date DEFAULT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '0',
-  `deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
