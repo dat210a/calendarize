@@ -23,12 +23,6 @@ $("#addCalendarForm").click(function(){
     $("#calendarForm").show(700)
 });
 
-$("#openProfile").click(function(){
-    $('.side_tab').css('border-color', 'lightgrey');
-    hide_all_forms()
-    $("#profileDisplay").show(700)
-})
-
 $("#addEventForm").click(function(){
     selector = $('#calendarID');
     selector.empty()
@@ -42,6 +36,25 @@ $("#addEventForm").click(function(){
     hide_all_forms()
     $("#eventForm").show(700)
 })
+
+// $("#editCalendarForm").click(function(){
+//     $('.side_tab').css('border-color', 'lightgrey');
+//     hide_all_forms()
+//     $("#calendarForm").show(700)
+// });
+
+$("#editEvent").click(function(){
+    $('.side_tab').css('border-color', 'lightgrey');
+    hide_all_forms()
+    $("#editEventForm").show(700)
+});
+
+$("#openProfile").click(function(){
+    $('.side_tab').css('border-color', 'lightgrey');
+    hide_all_forms()
+    $("#profileDisplay").show(700)
+})
+
 
 $("#addCalendar").submit(function(e){
     e.preventDefault()
