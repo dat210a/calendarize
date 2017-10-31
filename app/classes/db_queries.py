@@ -54,6 +54,11 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
+    def get_validation_info(self, calendar_id, user_id):
+        sql = "SELECT role FROM user_calendars WHERE calendar_id = ? AND user_id = ?"
+        self.__cur.execute(sql, [calendar_id, user_id])
+        return self.__cur.fetchone()[0]
+
     def get_user_activity(self, email):
         sql = "SELECT active FROM users WHERE ? = user_email"
         self.__cur.execute(sql, [email])
@@ -79,6 +84,17 @@ class ConnectionInstance:
     def leave_calander(self, calender_id, user_id):
         sql = "DELETE FROM user_calendars WHERE user_id = ? and calendar_id = ?"
         self.__cur.execute(sql, [user_id, calender_id])
+        self.__con.commit()
+
+    def send_invite(self, calender_id, user_id, sender_id, role):
+        sql = "INSERT INTO calendat_invites VALUES (?,?,?,?,?)"
+        self.__cur.execute("SELECT unique_id from calendar_invites ORDER BY unique_id DESC LIMIT 1")
+        unique_id = self.__cur.fetchone()
+        if unique_id[0] == None:
+            unique_id = 1
+        else:
+            unique_id = unique_id[0] + 1
+        self.__cur.execute(sql, [unique_id, calender_id, user_id, sender_id, role])
         self.__con.commit()
 
     def get_pass_hash(self, email):
