@@ -11,9 +11,18 @@ slider.onchange = function (){
 
 $("#addCalendarForm").click(function(){
     $('.side_tab').css('border-color', 'lightgrey');
-    $("#calendarForm").show()
+    $("#eventForm").hide()
+    $("#profileDisplay").hide()
+    $("#eventDisplay").hide()
+    $("#calendarForm").show(700)
+})
+
+$("#openProfile").click(function(){
+    $('.side_tab').css('border-color', 'lightgrey');
     $("#eventForm").hide()
     $("#eventDisplay").hide()
+    $("#calendarForm").hide()
+    $("#profileDisplay").show(700)
 })
 
 $("#addEventForm").click(function(){
@@ -25,9 +34,10 @@ $("#addEventForm").click(function(){
     selector.material_select();
 
     $('.side_tab').css('border-color', 'lightgrey');
-    $("#calendarForm").hide()
-    $("#eventForm").show()
     $("#eventDisplay").hide()
+    $("#profileDisplay").hide()
+    $("#calendarForm").hide()
+    $("#eventForm").show(700)
 })
 
 $("#addCalendar").submit(function(e){

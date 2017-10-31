@@ -4,11 +4,13 @@ var event_id = 0
 
 
 function display(data){
+    $("#eventDisplay").hide(0)
     event_id = data.id;
     if (+data.recurring == 1) var format = d3.timeFormat('%d / %m')
     else var format = d3.timeFormat('%d/%m/%Y')
 
-    $('.side_tab').css('border-color', data.color);
+    $('.eventdetailsfixedheader').css('background-color', data.color);
+    $('.eventdetailsheaderBtn').css('background-color', data.color);
 
     $('.eventName').text(data.name)
     $('.eventDateStart').text(format(new Date(data.start_date)))
@@ -27,7 +29,8 @@ function display(data){
 
     $("#calendarForm").hide()
     $("#eventForm").hide()
-    $("#eventDisplay").show()
+    $("#profileDisplay").hide()
+    $("#eventDisplay").show(700)
 }
 
 

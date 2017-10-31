@@ -5,9 +5,14 @@
 
 }
 
-.dropdown-content li>a, span{
-    color: black  
+.dropdown-content li>a{
+    color: #F1F0F0;
 }
 .dropdown-content li>a:hover{
-    background-color: darkgrey;
+    background-color: #F1F0F0;
+    color: #3D4148;
+}
+
+nav {
+	z-index: 11;
 }
