@@ -385,12 +385,12 @@ def add_calendar():
 @login_required
 def join_calander():
     if request.method == 'POST':
-        id = request.form.get("calender_id", None)
+        id = request.form.get("calendar_id", None)
         role = request.form.get("role", None)
         with db.ConnectionInstance() as q:
-            #user_id = q.get_user_id(request.form.get("Email", None))
-            q.join_calander(id, current_user.user_id, role)
-        return 'true'
+            if q.check_invite(current_user.user_id, id, role) == True:
+                q.join_calander(id, current_user.user_id, role)
+                return 'true'
     return 'false'
 
 
