@@ -184,6 +184,26 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e))
             return None
+        
+    def verfify_check(self,email):
+        sql ="SELECT active FROM users WHERE user_email=?"
+        self.__cur.execute(sql, [email])
+        try:
+            res = self.__cur.fetchone()
+            return res
+        except Exception as e:
+            logging.debug('{}\nWhile checking if account is verified:\n{}'.format(e, email))
+            return None
+
+    def get_verify_info(self, verify_key):
+        sql ="SELECT user_email FROM users WHERE verify_key=? and expires > now()"
+        self.__cur.execute(sql, [verify_key])
+        try:
+            res = self.__cur.fetchone()
+            return res
+        except Exception as e:
+            logging.debug('{}\nWhile checking resetkey and expire:\n{}'.format(e, email))
+            return None
 
     def get_last_ID(self):
         sql = 'SELECT LAST_INSERT_ID();'
@@ -198,10 +218,9 @@ class ConnectionInstance:
 #######################################################################################
         # Insertion
 
-    def add_user(self, created, username, email, hashedpass):
-        query = "INSERT INTO users (user_date_created, user_name, user_email, user_password) " \
-                "VALUES (?,?,?,?);"
-        user_data = [created, username, email, hashedpass]
+    def add_user(self, created, username, email, hashedpass,verify_key):
+        query = 'INSERT INTO users (user_date_created, user_name, user_email, user_password,verify_key,expires, active) VALUES (?,?,?,?,?, now()+ INTERVAL 24 HOUR,0);'
+        user_data = [created, username, email, hashedpass, verify_key]
         try:
             self.__cur.execute(query, user_data)
             self.__con.commit()
@@ -275,14 +294,6 @@ class ConnectionInstance:
 #######################################################################################
             # Update
 
-    def activate_user(self, email):
-        sql = 'UPDATE users SET active = 1 WHERE ? = user_email;'
-        self.__cur.execute(sql, [email])
-        try:
-            self.__con.commit()
-        except Exception as e:
-            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
-
     def make_resetkey(self, email, resetkey):
         sql ="UPDATE users SET resetkey=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_email=?"
         self.__cur.execute(sql, (resetkey,email))
@@ -300,6 +311,15 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile setting user new password:\n{}'.format(e, email))
             self.__con.rollback()
+
+    def activate_user(self, email):
+        sql = "UPDATE users SET active = 1, verify_key='' WHERE user_email = ?"
+        self.__cur.execute(sql, [email])
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
+
 
     def update_user(self, user_data):
         #TODO

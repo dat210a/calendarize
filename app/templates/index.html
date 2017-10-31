@@ -1,5 +1,14 @@
 {% extends 'nav_index.html' %}
 {% block content %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="notifications">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
     <link href="static/css/login.css" type="text/css" rel="stylesheet" media="screen,projection" />
     <div>
     <div class="z-depth-3">
@@ -11,7 +20,7 @@
                     </div>
                     <div class="col s12 m5 offset-m1">
                         <h3 class="accentgrey-dark-text">Welcome to Calendarize!</h3>
-                        <h5 class="accentgrey-dark-text" style="margin-top: 10%">A new way of planning annual events that are 
+                        <h5 class="accentgrey-dark-text" style="margin-top: 10%">A new way of planning annual events that are
                                                                                     otherwise forgotten</h5>
                         <a class="waves-effect waves-light btn-large" href="#" id="register_btn" style="margin-top: 10%">Register now!</a>
                     </div>

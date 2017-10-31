@@ -197,13 +197,19 @@ def register():
         if name and email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
                 #adds new user to the database
-                added = queries.add_user(datetime.utcnow(), name, email, hash_password(password))
+                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+                key = x + email[:5]
+                added = queries.add_user(datetime.utcnow(), name, email, hash_password(password),key)
                 if (added):
                     user = User(email)
-                    login_user(user)
+                    #login_user(user)
                     #adds default calendar to that user
-                    queries.add_calendar(datetime.utcnow(), current_user.user_id)
-                    return redirect('/calendar')
+                    queries.add_calendar(datetime.datetime.utcnow(), user.user_id)
+                    #send verfication email
+                    msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
+                    msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
+                    mail.send(msg)
+                    return render_template("verify_send.html", email=email)
     # reload if something not right
     # TODO maybe some error messages
     return redirect('/')
@@ -230,8 +236,10 @@ def login():
         password = request.form["inputPassword"]
         email = request.form["inputEmail"]
         user = load_user(email)
-        if user:
-            if check_password(password, email):
+        if user is not None:
+            if not user.is_active():
+                return render_template("verify_option.html", email=email)
+            if check_password(password, email) and user.is_active():
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
                 else:
@@ -486,6 +494,38 @@ def delete_cal():
                 queries.db_del_cal(cal)
                 return json.dumps({'success': 'true'})
     return json.dumps({'success': 'false'})
+
+
+@app.route("/verify/<verify_key>", methods=["GET", "POST"])
+def verify(verify_key):
+    with db.ConnectionInstance() as queries:
+        info = queries.get_verify_info(verify_key)
+    if info:
+        if request.method=="POST":
+                with db.ConnectionInstance() as queries:
+                    queries.activate_user(info[0].decode("utf-8"))
+                    return render_template("verify_confirm.html")
+        return render_template("verify.html")
+    else:
+        return ("Your account has been alreaady verified or the link hase been expired")
+
+@app.route("/verifyoption", methods=["GET", "POST"])
+def verifyoption():
+    action = request.form.get("action", None)
+    email = request.form.get("email", None)
+    user = load_user(email)
+    if action == "do_1":
+        x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+
+        with db.ConnectionInstance() as queries:
+            key = x + str(queries.get_user_id(email))
+            queries.make_resetkey(email,key)
+        msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
+        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+        mail.send(msg)
+        return render_template("recoverconfirm.html",email=email)
+    if action == "do_2":
+        return ("Please insert your new email")
 
 
 ##################################################################
