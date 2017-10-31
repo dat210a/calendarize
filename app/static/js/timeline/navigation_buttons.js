@@ -12,7 +12,7 @@ left_timeline_button.append("rect")
 left_timeline_button.append('text')
         .attr('font-family', 'Material Icons')
         .attr('font-size', '50px')
-        .attr('fill', 'lightgrey')
+        .attr('fill', '#3D4148')
         .text('chevron_left')
         .attr('x', -70)
         .attr('y', 25)
@@ -30,7 +30,7 @@ right_timeline_button.append("rect")
 right_timeline_button.append('text')
     .attr('font-family', 'Material Icons')
     .attr('font-size', '50px')
-    .attr('fill', 'lightgrey')
+    .attr('fill', '#3D4148')
     .text('chevron_right')
     .attr('x', 20)
     .attr('y', 25)
@@ -52,7 +52,7 @@ leftLinearGradient
 
 leftLinearGradient.append("stop") 
     .attr("offset", "0%")   
-    .attr("stop-color", "rgba(0,0,0,0.5)");
+    .attr("stop-color", "rgba(0,0,0,0.3)");
 
 leftLinearGradient.append("stop") 
     .attr("offset", "100%")   
@@ -70,7 +70,7 @@ rightLinearGradient.append("stop")
 
 rightLinearGradient.append("stop") 
     .attr("offset", "100%")   
-    .attr("stop-color", "rgba(0,0,0,0.5)"); 
+    .attr("stop-color", "rgba(0,0,0,0.3)"); 
 
     leftSideBar
     .on('mouseover', function(d){
