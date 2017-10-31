@@ -66,6 +66,9 @@ $("#addCalendar").submit(function(e){
 
 $("#btnNewEvent").click(function(e){
     e.preventDefault()
+    $('#addEvent').each(function(){
+        console.log($(this).find(':input')) //<-- Should return all input elements in that specific form.
+    });
     var form = $('#addEvent')[0];
     oData = new FormData(form);
     oData.append("tz", Intl.DateTimeFormat().resolvedOptions().timeZone)
