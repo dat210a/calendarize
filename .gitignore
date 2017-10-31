@@ -107,3 +107,4 @@ app/cfg/
 # files
 app/files/
 
+app/classes/.DS_Store
