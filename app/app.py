@@ -445,8 +445,8 @@ def add_event():
                 if role is not None and role == 0:
                     eid = queries.add_event(data, datetime.utcnow(), current_user.user_id)
                     if eid:
-                        for file in request.files.getlist('file'):
-                            queries.add_file(file, eid)
+                        for f in request.files.getlist('file'):
+                            queries.add_file(f, eid)
                         return json.dumps({'success' : 'true', 'id': eid})
     return json.dumps({'success' : 'false'})
 

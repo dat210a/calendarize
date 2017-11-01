@@ -92,6 +92,7 @@ $("#addEvent").submit(function(e){
         encType: "multipart/form-data",
         processData: false,
         contentType: false,
+        cache: false,
         success: function(response) {
             r = JSON.parse(response)
             if (r.success == 'true') {
