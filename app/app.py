@@ -451,13 +451,16 @@ def add_event():
     return json.dumps({'success' : 'false'})
 
 
-# @app.route('/add_files', methods=['POST'])
-# @login_required
-# def add_files():
-#     with db.ConnectionInstance() as q:
-#         for file in request.files:
-#             q.add_file(request.files[file], request.form['event_id'])
-#     return 'true'
+@app.route('/add_files', methods=['POST'])
+@login_required
+def add_files():
+    with db.ConnectionInstance() as q:
+        for file in request.files:
+            success = q.add_file(request.files[file], request.form['event_id'])
+            if not success:
+                # TODO handle what happens if the file fails to upload
+                pass
+    return 'true'
 
 
 @app.route('/settings')

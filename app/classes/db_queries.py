@@ -319,11 +319,12 @@ class ConnectionInstance:
             self.__cur.execute(sql, (eid, fname))
             try:
                 self.__con.commit()
+                return True
             except Exception as e:
                 logging.debug('{}\nWhile adding file with name:\n{}'.format(e, fname))
                 self.__con.rollback()
         else:
-            pass  # Does nothing if there is no file
+            return False
 
 
 #######################################################################################

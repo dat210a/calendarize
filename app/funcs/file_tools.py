@@ -36,6 +36,7 @@ def save_file(file, eid):
                 if e.errno != errno.EEXIST:
                     raise
         filename = secure_filename(file.filename)
+        file.seek(0)
         file.save(os.path.join(fpath, filename))
         return filename
     else:
