@@ -1,9 +1,11 @@
 
-var form_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"]
+var form_div_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"]
 
 function hide_all_forms(){
-    form_ids.forEach (function(form){
-        $($(form)).hide()
+    form_div_ids.forEach (function(form_parent){
+        $(form_parent).hide()
+        form = $(form_parent).children('form')[0]
+        if (typeof form != 'undefined') form.reset()
     });
 }
 
@@ -120,7 +122,7 @@ $("#addEvent").submit(function(e){
 //     e.preventDefault()
 //     var form = $('#formFiles');
 //     oData = new FormData(form[0]);
-//     oData.append("event_id", event_id)
+//     oData.append("event_id", current_event.id)
 //     $.ajax({
 //         url: '/add_files',
 //         type: 'POST',
@@ -147,7 +149,7 @@ $('#delete_event').click(function(e){
     $.ajax({
         url: '/delete_event',
         type: 'POST',
-        data: {'event_id': event_id},
+        data: {'event_id': current_event.id},
         success: function(response) {
             if (response == 'true') {
                 $("#eventDisplay").hide()

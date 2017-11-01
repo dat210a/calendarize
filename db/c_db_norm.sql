@@ -122,7 +122,7 @@ CREATE TABLE `events` (
   `event_end` datetime NOT NULL,
   `event_recurring` tinyint(1) NOT NULL DEFAULT '0',
   `event_location` varchar(45) DEFAULT NULL,
-  `event_details` varchar(45) DEFAULT NULL,
+  `event_details` varchar(255) DEFAULT NULL,
   `event_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`event_id`)

@@ -1,11 +1,11 @@
 
 //id,date,duration,group,recurring
-var event_id = 0
+var current_event = {}
 
 
 function display(data){
     $("#eventDisplay").hide(0)
-    event_id = data.id;
+    current_event = data;
     if (+data.recurring == 1) var format = d3.timeFormat('%d / %m')
     else var format = d3.timeFormat('%d/%m/%Y')
 
@@ -25,7 +25,15 @@ function display(data){
         return groupName;
     })
     $('.eventRecur').text(function () {return +data.recurring == 1 ? 'YES' : 'NO'})
-    //$('eventFiles').text(data.files)
+    $('#eventFiles').empty()
+    if (data.files.length > 0){
+        data.files.forEach (function(filename){
+            $('#eventFiles').append("<a href='/uploads/"+ filename +"?id="+ data.id +"' download='"+ filename +"'>"+ filename +"</a><br>")
+        })
+    }
+    else{
+        $('#eventFiles').append("<span>No files added</span>")
+    }
 
     hide_all_forms()
     $("#eventDisplay").show(700)

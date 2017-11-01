@@ -2,6 +2,7 @@ import os
 import hashlib
 import errno
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
 
 upload_folder = 'files/uploaded'  # temporary path
 max_file_size = 50000000
@@ -19,6 +20,7 @@ def secure_fn(fname):
 
 
 def save_file(file, eid):
+    print(file)
     if file.filename == "":
         return None
     file.seek(0, os.SEEK_END)
@@ -39,3 +41,7 @@ def save_file(file, eid):
     else:
         return None
 
+
+def load_file(filename, eid):
+    fpath = '{}/{}'.format(upload_folder, eid)
+    return send_from_directory(fpath, filename)

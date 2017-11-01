@@ -144,7 +144,7 @@ class ConnectionInstance:
             return [r[0] for r in res]
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
-            return None
+            return []
 
     def get_event_calendar_id(self, eid):
         sql = "SELECT event_calendar_id FROM events WHERE event_id = ?"
@@ -166,13 +166,14 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-    def get_event_files(self, eid, rec):
-        sql = "SELECT file_name FROM event_files WHERE event_id = ? AND recurring = ?"
-        self.__cur.execute(sql, eid, rec)
+    def get_event_files(self, eid):
+        sql = "SELECT file_name FROM event_files WHERE event_id = ?"
+        self.__cur.execute(sql, (eid,))
         try:
-            return [x[0] for x in self.__cur.fetchall()]
+            return [x[0].decode('utf-8') for x in self.__cur.fetchall()]
         except Exception as e:
             logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
+            return []
 
     # def db_get_cal_admin(self, cid=None, eid=None):
     #     # Fetches a list of admins for a calendar
@@ -213,8 +214,8 @@ class ConnectionInstance:
               "AND deleted = 0"
         self.__cur.execute(sql, cals)
         try:
-            events = self.__cur.fetchall()
-            events2 = [dict(zip(('id', 'name', 'group', 'start_date', 'end_date', 'recurring'), event)) for event in events]
+            events = [list(event)+[self.get_event_files(event[0])] for event in self.__cur.fetchall()]
+            events2 = [dict(zip(('id', 'name', 'group', 'start_date', 'end_date', 'recurring', 'files'), e)) for e in events]
             return [calendars2, events2]
         except Exception as e:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))

@@ -27,6 +27,7 @@ from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
 from funcs import file_tools
 from flask_mail import Mail, Message
+from funcs.file_tools import load_file
 
 # app initialization
 app = Flask(__name__)
@@ -324,18 +325,29 @@ def get_data():
     log_basic()
     with db.ConnectionInstance() as queries:
         results = queries.fetch_data_for_display(current_user.user_id)
-    def type_handler(x):
-        if isinstance(x, (date, datetime)):
-            # TODO if desired timezone set use this lines:
-            # x = pytz.utc.localize(x)
-            # x = x.astimezone(tz)
-            return x.isoformat()
-        elif isinstance(x, bytearray):
-            return x.decode('utf-8')
-        raise TypeError("Unknown type")
     return json.dumps(results, default=type_handler)
 
+# helper function, should be moved
+def type_handler(x):
+    if isinstance(x, (date, datetime)):
+        # TODO if desired timezone set use this lines:
+        # x = pytz.utc.localize(x)
+        # x = x.astimezone(tz)
+        return x.isoformat()
+    elif isinstance(x, bytearray):
+        return x.decode('utf-8')
+    raise TypeError("Unknown type")
 
+@app.route('/uploads/<filename>')
+@login_required
+def uploaded_file(filename):
+    eid = request.args.get('id')
+    with db.ConnectionInstance() as queries:
+        cal = queries.get_event_calendar_id(eid)
+        role = queries.get_calendar_role(current_user.user_id, cal)
+        if role is not None:
+            return load_file(filename, eid)
+    # return redirect(url_for('error'))
 
 # @app.route('/view/<calendar_id>')
 # @mobile_template('{mobile/}calendar.html')
@@ -429,14 +441,13 @@ def add_event():
             except:
                 data['endDate'] = data['startDate']
             with db.ConnectionInstance() as queries:
-                print(data['startDate'])
                 role = queries.get_calendar_role(current_user.user_id, data['calendarID'])
                 if role is not None and role == 0:
-                    created = queries.add_event(data, datetime.utcnow(), current_user.user_id)
-                    if created:
-                        for file in request.files:
-                            queries.add_file(request.files[file], created)
-                        return json.dumps({'success' : 'true', 'id': created})
+                    eid = queries.add_event(data, datetime.utcnow(), current_user.user_id)
+                    if eid:
+                        for file in request.files.getlist('file'):
+                            queries.add_file(file, eid)
+                        return json.dumps({'success' : 'true', 'id': eid})
     return json.dumps({'success' : 'false'})
 
 
@@ -476,6 +487,7 @@ def save_settings():
 @fresh_login_required
 def delete_user():
     if current_user.user_id:  # ensures only the user can delete themselves
+        logout_user()
         with db.ConnectionInstance() as queries:
             queries.db_del_user(current_user.user_id)
             # TODO redirect to user has been deleted page
