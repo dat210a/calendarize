@@ -10,7 +10,7 @@ var detailHeight = 80,
 //load data async
 function load_data(){
     d3.queue()
-        .defer(d3.json, '/get_data/tz?tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone)
+        .defer(d3.json, '/get_data') //  /tz?tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone)
         .await(ready);
 }
 

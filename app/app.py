@@ -316,26 +316,19 @@ def calendar(template):
     return render_template(template, name=current_user.email)
 
 
-@app.route('/get_data/<tz>')
+@app.route('/get_data')
 @login_required
-def get_data(tz):
+def get_data():
     """
     """
     log_basic()
-    try:
-        tz = timezone(request.args['tz'])
-    except ValueError:
-        tz = timezone('UTC')
     with db.ConnectionInstance() as queries:
         results = queries.fetch_data_for_display(current_user.user_id)
     def type_handler(x):
-        if isinstance(x, date):
-            x = pytz.utc.localize(datetime.combine(x, datetime.min.time()))
-            x = x.astimezone(tz)
-            return x.isoformat()
-        elif isinstance(x, datetime):
-            x = pytz.utc.localize(x)
-            x = x.astimezone(tz)
+        if isinstance(x, (date, datetime)):
+            # TODO if desired timezone set use this lines:
+            # x = pytz.utc.localize(x)
+            # x = x.astimezone(tz)
             return x.isoformat()
         elif isinstance(x, bytearray):
             return x.decode('utf-8')
@@ -426,19 +419,17 @@ def add_event():
         data = request.form.to_dict()
         if 'newEventName' in data and 'calendarID' in data:
             try:
-                tz = timezone(data['tz'])
-                dt = tz.localize(datetime.strptime(data['startDate'], "%Y-%m-%d"))
-                data['startDate'] = dt.astimezone(pytz.utc)
-            except ValueError:
+                data['startDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)
+            except:
                 return json.dumps({'success' : 'false', 'message': 'date'})
             try:
-                dt = tz.localize(datetime.strptime(data['endDate'], "%Y-%m-%d"))
-                data['endDate'] = dt.astimezone(pytz.utc)
+                data['endDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)
                 if data['endDate'] < data['startDate']:
                     data['endDate'] = data['startDate']
-            except ValueError:
+            except:
                 data['endDate'] = data['startDate']
             with db.ConnectionInstance() as queries:
+                print(data['startDate'])
                 role = queries.get_calendar_role(current_user.user_id, data['calendarID'])
                 if role is not None and role == 0:
                     created = queries.add_event(data, datetime.utcnow(), current_user.user_id)

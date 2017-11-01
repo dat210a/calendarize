@@ -81,7 +81,8 @@ $("#addEvent").submit(function(e){
     e.preventDefault()
     var form = $(this)[0];
     oData = new FormData(form);
-    oData.append("tz", Intl.DateTimeFormat().resolvedOptions().timeZone) // maybe won't be needed
+    oData.set('startDate', new Date(oData.get('startDate')).getTime())
+    if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
     $.ajax({
         url: '/add_event',
         type: 'POST',
