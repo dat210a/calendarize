@@ -70,8 +70,9 @@ $("#addCalendar").submit(function(e){
         type: 'POST',
         success: function(response) {
             if (response == 'true') {
-                $("#calendarForm").hide()
-                load_data()
+                $("#calendarForm").hide();
+                current_event_id = null;
+                load_data();
             }
             else {
                 console.log ('could not create new calendar')
@@ -101,9 +102,8 @@ $("#addEvent").submit(function(e){
             r = JSON.parse(response)
             if (r.success == 'true') {
                 $("#eventForm").hide()
+                current_event_id = r.id;
                 load_data()
-                // var newEvent = d3.selectAll('.datapoints').filter(function(d){return d.event_id == r.id}).data()
-                // display(newEvent)
             }
             else {
                 if (r.message == 'date'){
@@ -127,7 +127,7 @@ $("#addEvent").submit(function(e){
 //     e.preventDefault()
 //     var form = $('#formFiles');
 //     oData = new FormData(form[0]);
-//     oData.append("event_id", current_event.id)
+//     oData.append("event_id", current_event_id)
 //     $.ajax({
 //         url: '/add_files',
 //         type: 'POST',
@@ -162,11 +162,12 @@ $('#delete_event').click(function(e){
     $.ajax({
         url: '/delete_event',
         type: 'POST',
-        data: {'event_id': current_event.event_id},
+        data: {'event_id': current_event_id},
         success: function(response) {
             if (response == 'true') {
                 $("#eventDisplay").hide()
-                load_data()
+                current_event_id = null;
+                load_data();
             }
             else {
                 console.log (response, 'could not delete this event')
@@ -187,7 +188,8 @@ $('#delete_calendar').click(function(e){
         success: function(response) {
             if (response == 'true') {
                 $("#eventDisplay").hide()
-                load_data()
+                current_event_id = null;
+                load_data();
             }
             else {
                 console.log (response, 'could not delete this calendar')

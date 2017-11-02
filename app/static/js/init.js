@@ -22,7 +22,7 @@
             closeOnSelect: true, // Close upon selecting a date,
         });
 
-        load_data('id');
+        load_data();
     });
 
     jQuery(window).on('load', function(){

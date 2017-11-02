@@ -1,11 +1,11 @@
 
 //id,date,duration,group,recurring
-var current_event = {}
+var current_event_id = null
 
 
 function display(data){
     $("#eventDisplay").hide(0)
-    current_event = data;
+    current_event_id = data.event_id;
     if (+data.event_recurring == 1) var format = d3.timeFormat('%d %B, ' + data.event_year)
     else var format = d3.timeFormat('%d %B, %Y')
 
@@ -16,16 +16,8 @@ function display(data){
     $('#event_owner').text("Created by: "+data.event_owner)
     $('.eventDateStart').text(format(new Date(data.event_start)))
     $('.eventDateEnd').text(format(new Date(data.event_end)))
-    $('.eventGroup').text(function(){
-        groupName = d3.selectAll('.group')
-                            .filter(function(d){
-                                return d.calendar_id == data.event_calendar_id
-                            })
-                            .data()[0]
-                                .calendar_name
-        return groupName;
-    })
-    $('.eventRecur').text(function () {return +data.event_calendar_id == 1 ? 'YES' : 'NO'})
+    $('.eventGroup').text(() => d3.selectAll('.group').filter(d => d.calendar_id == data.event_calendar_id).data()[0].calendar_name)
+    $('.eventRecur').text(() => +data.event_recurring == 1 ? 'YES' : 'NO')
     
     $('#event_notes').empty()
     if (data.event_details == '') $('#event_notes').text("No notes added")
@@ -45,4 +37,6 @@ function display(data){
     $("#eventDisplay").show(700)
 }
 
+function populate_edit_form(){
 
+}
