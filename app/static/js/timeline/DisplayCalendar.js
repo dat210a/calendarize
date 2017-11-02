@@ -1,6 +1,6 @@
 ﻿
-var totalWidth = 900;
-var totalHeight = 670;
+var totalWidth = 800;
+var totalHeight = 600;
 var xPadding = 75;
 
 var width = totalWidth - 2*xPadding,

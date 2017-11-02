@@ -115,33 +115,36 @@ LOCK TABLES `events` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `event_child`
+-- Table structure for table `event_children`
 --
 
-DROP TABLE IF EXISTS `event_child`;
+DROP TABLE IF EXISTS `event_children`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `event_child` (
-  `event_id` int NOT NULL AUTO_INCREMENT,
-  `event_parent_id` int NOT NULL, 
-  `event_date_created` datetime NOT NULL,
-  `event_start` datetime NOT NULL,
-  `event_end` datetime NOT NULL,
-  `event_location` varchar(45) DEFAULT NULL,
-  `event_details` varchar(1000) DEFAULT NULL,
-  `event_extra` varchar(45) DEFAULT NULL,
-  `deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`event_id`)
+CREATE TABLE `event_children` (
+  `child_id` int NOT NULL AUTO_INCREMENT,
+  `child_parent_id` int NOT NULL, 
+  `child_date_created` datetime NOT NULL,
+  `child_owner` int NOT NULL,
+  `child_year` int NOT NULL,  
+  `child_start` datetime DEFAULT NULL,
+  `child_end` datetime DEFAULT NULL,
+  `child_location` varchar(45) DEFAULT NULL,
+  `child_details` varchar(1000) DEFAULT NULL,
+  `child_extra` varchar(45) DEFAULT NULL,
+  `skip_year` tinyint(1) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',  
+  PRIMARY KEY (`child_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `event_child`
+-- Dumping data for table `event_children`
 --
 
-LOCK TABLES `event_child` WRITE;
-/*!40000 ALTER TABLE `event_child` DISABLE KEYS */;
-/*!40000 ALTER TABLE `event_child` ENABLE KEYS */;
+LOCK TABLES `event_children` WRITE;
+/*!40000 ALTER TABLE `event_children` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_children` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

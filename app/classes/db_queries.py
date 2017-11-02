@@ -174,6 +174,40 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
+    def get_calendars_details(self, cids):
+        cal_keys = ["calendar_id", "calendar_name"]
+        sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
+              "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
+              "AND deleted = 0"
+        self.__cur.execute(sql, cids)
+        try:
+            return [dict(zip(cal_keys, calendar)) for calendar in self.__cur.fetchall()]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendar(s) details for user: {}'.format(e, cids))
+            return None
+
+    def get_events_details(self, cids):
+        data_key = ["event_id", "event_owner", "event_calendar_id", "event_name", "event_start", "event_end", "event_recurring", "event_details"]
+        sql = "SELECT " + ",".join(data_key) + " FROM events " \
+              "WHERE event_calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
+              "AND deleted = 0"
+        self.__cur.execute(sql, cids)
+        try:
+            events = []
+            for event in self.__cur.fetchall():
+                event = list(event)
+                files = self.get_event_files(event[0])
+                children = self.get_event_children(event[0])
+                owner = self.get_user_name(event[1])
+                if not owner:
+                    owner = self.get_user_email(event[1])
+                event[1] = owner
+                events.append(event+[children]+[files])
+            return [dict(zip(data_key+['children']+['files'], e)) for e in events]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching event(s) details for calendar(s): {}'.format(e, cids))
+            return None
+
     def get_event_files(self, eid):
         sql = "SELECT file_name FROM event_files WHERE event_id = ?"
         self.__cur.execute(sql, (eid,))
@@ -182,6 +216,18 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
             return []
+
+    def get_event_children(self, eid):
+        data_key = ["child_id", "child_owner", "child_year", "child_start", "child_end", "child_location", "child_details", "skip_year"]
+        sql = "SELECT " + ",".join(data_key) + " FROM event_children " \
+              "WHERE child_parent_id = ? " \
+              "AND deleted = 0"
+        self.__cur.execute(sql, (eid,))
+        try:
+            return self.__cur.fetchall()
+        except Exception as e:
+            logging.debug('{}\nWhile fetching event children for event with id: {}'.format(e, eid))
+            return ()
 
     # def db_get_cal_admin(self, cid=None, eid=None):
     #     # Fetches a list of admins for a calendar
@@ -202,45 +248,6 @@ class ConnectionInstance:
     #         logging.debug('{}\nWhile trying to retrieve admins for calendar.\n'
     #                       'Input parameters: cid={} eid={}'.format(e, cid, eid))
     #         return None
-
-    def fetch_data_for_display(self, uid):
-        cals = self.get_calendars(uid)
-
-        sql = "SELECT calendar_id, calendar_name FROM calendars " \
-              "WHERE calendar_id IN(" + ",".join("?"*len(cals)) + ") " \
-              "AND deleted = 0"
-        self.__cur.execute(sql, cals)
-        try:
-            calendars = self.__cur.fetchall()
-            calendars2 = [dict(zip(('id', 'name'), calendar)) for calendar in calendars]
-        except Exception as e:
-            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
-            return None
-
-        data_key = ["event_id", "event_owner", "event_calendar_id", "event_name", "event_start", "event_end", "event_recurring", "event_details"]
-
-        sql = "SELECT " + ",".join(data_key) + " FROM events " \
-              "WHERE event_calendar_id IN(" + ",".join("?"*len(cals)) + ") " \
-              "AND deleted = 0"
-        self.__cur.execute(sql, cals)
-        try:
-            events = []
-            for event in self.__cur.fetchall():
-                event = list(event)
-                files = self.get_event_files(event[0])
-                owner = self.get_user_name(event[1])
-                if not owner:
-                    owner = self.get_user_email(event[1])
-                event[1] = owner
-                events.append(event+[files])
-            # events = [list(event)+[self.get_event_files(event[0])] for event in self.__cur.fetchall()]
-            print(events)
-            events2 = [dict(zip(data_key + ['files'], e)) for e in events]
-            print(events2)
-            return [calendars2, events2]
-        except Exception as e:
-            logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
-            return None
 
     def get_reset_info(self, resetkey):
         sql ="SELECT user_email FROM users WHERE resetkey=? and expires > now()"

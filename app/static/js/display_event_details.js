@@ -19,10 +19,10 @@ function display(data){
     $('.eventGroup').text(function(){
         groupName = d3.selectAll('.group')
                             .filter(function(d){
-                                return d.id == data.event_calendar_id
+                                return d.calendar_id == data.event_calendar_id
                             })
                             .data()[0]
-                                .name
+                                .calendar_name
         return groupName;
     })
     $('.eventRecur').text(function () {return +data.event_calendar_id == 1 ? 'YES' : 'NO'})

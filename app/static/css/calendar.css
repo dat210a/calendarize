@@ -36,19 +36,12 @@ line {
 .calendarToolbox{
     position: absolute; 
     width:100%; 
-    bottom: 181px; 
+    bottom: 180px; 
     height: 45px;
 }
 
 .calendarContainer {
     height: 100%;
-}
-
-.calendarToolbox {
-    position: absolute;
-    width: 100%;
-    bottom: 181px;
-    height: 45px;
 }
 
 .yearBox {

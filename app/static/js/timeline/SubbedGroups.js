@@ -28,7 +28,7 @@ function AddGroupButtons(groups){
     var agendasContainer = d3.selectAll(".agendas").selectAll('g')
                                 .data(groups)
                                 .enter()
-                                .append('g').attr('class', function(d){return 'group ' + d.name})
+                                .append('g').attr('class', function(d){return 'group ' + d.calendar_name})
                                     .attr('transform', function(d, i){
                                         return "translate("+((groupBoxDim+padding)*i + padding)+","+((bottomBarHeight - groupBoxDim)/2)+")"
                                     })
@@ -56,7 +56,7 @@ function AddGroupButtons(groups){
             .attr("x", 20)
             .attr("y", 120)
             .style("font-size", 30)
-            .text(function(d){return d.name})
+            .text(function(d){return d.calendar_name})
             .each(function(){
                 short_text(d3.select(this), groupBoxDim, 30)
             });
@@ -93,7 +93,7 @@ function ToggleAgendaMenu(){
         .transition()
         .duration(1000)
         .style("bottom", function(){
-            return toggle ? '1px' : '181px'
+            return toggle ? '5px' : '180px'
         })
     if (toggle){
         d3.select('.toggleArrow')

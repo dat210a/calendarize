@@ -380,7 +380,7 @@
             <div style="padding-top: 5em">
                 <div class="row">
                     <div class="col s12 input-field">
-                        <input id="newEventName" Name="newEventName" type="text" class="" required>
+                        <input id="newEventName" Name="newEventName" type="text" class="" validate required>
                         <label for="newEventName">Name of event</label>
                     </div>
                 </div>
@@ -394,13 +394,13 @@
                 <div class="row">
                     <div class="col s12">
                         <label for="startDate">Start date</label>
-                        <input id="startDate" Name="startDate" type="text" class="datepicker">
+                        <input id="startDate" Name="startDate" type="text" class="datepicker" validate required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s12">
-                        <label for="endDate">End date</label>
-                        <input id="endDate" Name="endDate" type="text" class="datepicker">
+                        <label for="uniqueendDate">End date</label>
+                        <input id="uniqueendDate" placeholder="Optional" Name="endDate" type="text" class="datepicker">
                     </div>
                 </div>
                 <div class="row">
@@ -411,7 +411,7 @@
                 </div>
                 <div class="row">
                     <div class="col s12 input-field">
-                        <input value="Somewhere" id="first_name2" type="text">
+                        <input placeholder="Optional" id="first_name2" type="text">
                         <label class="active" for="first_name2">Location</label>
                     </div>
                 </div>
@@ -432,6 +432,7 @@
                 <div class="row">
                     <div class="input-field col s12">
                         <select multiple>
+                            <option value="0" selected disabled>None</option>
                             <option value="1">Person 1</option>
                             <option value="2">Person 2</option>
                             <option value="3">Person 3</option>
@@ -441,7 +442,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="textarea1" name="event_details" class="materialize-textarea"></textarea>
+                        <textarea id="textarea1" name="event_details" placeholder="Optional" class="materialize-textarea"></textarea>
                         <label for="textarea1">Notes</label>
                     </div>
                 </div>

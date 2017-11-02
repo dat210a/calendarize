@@ -14,13 +14,11 @@ $("#resetToToday" ).click(function() {
 });
 
 var slider = document.getElementById("zoomSlider");
-
 slider.onchange = function (){
-    d3.select('.scrollArea').call(zoom.scaleTo, this.value);
+    d3.select('svg').call(zoom.scaleTo, this.value);
 }
 
 $("#addCalendarForm").click(function(){
-    $('.side_tab').css('border-color', 'lightgrey');
     hide_all_forms()
     $("#calendarForm").show(700)
 });
@@ -30,29 +28,31 @@ $("#addEventForm").click(function(){
     selector.empty()
     // selector.append('<option value="" disabled selected>Choose your option</option>')
     d3.selectAll('.group').each(function(d){
-        selector.append("<option value=" + d.id + ">" + d.name + "</option>");
+        selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
     })
     selector.material_select();
 
-    $('.side_tab').css('border-color', 'lightgrey');
     hide_all_forms()
     $("#eventForm").show(700)
 })
 
+$("#startDate").change(function(){
+    var $input = $('#uniqueendDate').pickadate()
+    var picker = $input.pickadate('picker')
+    picker.set('min', $(this).val())
+})
+
 // $("#editCalendarForm").click(function(){
-//     $('.side_tab').css('border-color', 'lightgrey');
 //     hide_all_forms()
 //     $("#calendarForm").show(700)
 // });
 
 $("#editEvent").click(function(){
-    $('.side_tab').css('border-color', 'lightgrey');
     hide_all_forms()
     $("#editEventForm").show(700)
 });
 
 $("#openProfile").click(function(){
-    $('.side_tab').css('border-color', 'lightgrey');
     hide_all_forms()
     $("#profileDisplay").show(700)
 })
@@ -98,7 +98,7 @@ $("#addEvent").submit(function(e){
             if (r.success == 'true') {
                 $("#eventForm").hide()
                 load_data()
-                // var newEvent = d3.selectAll('.datapoints').filter(function(d){return d.id == r.id}).data()
+                // var newEvent = d3.selectAll('.datapoints').filter(function(d){return d.event_id == r.id}).data()
                 // display(newEvent)
             }
             else {

@@ -75,7 +75,7 @@ var connections = dataGroup
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
                                 d.color = groups.filter(function(gr){
-                                    return gr.id == d.event_calendar_id
+                                    return gr.calendar_id == d.event_calendar_id
                                 })[0].color
                                 return d.color
                             })

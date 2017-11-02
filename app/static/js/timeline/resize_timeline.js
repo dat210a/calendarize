@@ -1,5 +1,4 @@
 
-var margin = 6;
 
 function resize(){
     oldWidth = width;
@@ -9,15 +8,15 @@ function resize(){
 
     // set dimensions
     width = totalWidth - 2*xPadding;
-    height = totalHeight-margin;
+    height = totalHeight;
     midScreen = height/2;
     
     // Scales
     time.range([0, width]);
 
     //frames
-    $('.side_tab').css("min-height", totalHeight + "px" )
-                  .css("max-height", totalHeight + "px" );
+    // $('.side_tab').css("min-height", totalHeight + "px" )
+    //               .css("max-height", totalHeight + "px" );
 
     //background elements
     svg

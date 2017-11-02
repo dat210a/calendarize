@@ -326,8 +326,10 @@ def get_data():
     """
     log_basic()
     with db.ConnectionInstance() as queries:
-        results = queries.fetch_data_for_display(current_user.user_id)
-    return json.dumps(results, default=type_handler)
+        calendar_ids = queries.get_calendars(current_user.user_id)
+        cal_details = queries.get_calendars_details(calendar_ids)
+        event_details = queries.get_events_details(calendar_ids)
+    return json.dumps([cal_details, event_details], default=type_handler)
 
 # helper function, should be moved
 def type_handler(x):
@@ -448,9 +450,8 @@ def add_event():
                 if role is not None and role == 0:
                     eid = queries.add_event(data, datetime.utcnow(), current_user.user_id)
                     if eid:
-                        for f in request.files.getlist('file'):
-                            queries.add_file(f, eid)
-                        return json.dumps({'success' : 'true', 'id': eid})
+                        success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
+                        return json.dumps({'success' : 'true', 'id': eid, 'files': success})
     return json.dumps({'success' : 'false'})
 
 
@@ -492,11 +493,10 @@ def save_settings():
 @app.route('/delete_user')
 @fresh_login_required
 def delete_user():
-    if current_user.user_id:  # ensures only the user can delete themselves
+    with db.ConnectionInstance() as queries:
+        queries.db_del_user(current_user.user_id)
         logout_user()
-        with db.ConnectionInstance() as queries:
-            queries.db_del_user(current_user.user_id)
-            # TODO redirect to user has been deleted page
+        # TODO redirect to user has been deleted page
     return redirect(url_for('index'))
 
 
@@ -512,6 +512,7 @@ def delete_event():
                 if role is not None and role == 0:
                     queries.db_del_event(event)
                     # TODO delete files
+                    # TODO delete children
                     return 'true'
     return 'false'
 
