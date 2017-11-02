@@ -6,8 +6,8 @@ var current_event = {}
 function display(data){
     $("#eventDisplay").hide(0)
     current_event = data;
-    if (+data.event_recurring == 1) var format = d3.timeFormat('%d / %m')
-    else var format = d3.timeFormat('%d/%m/%Y')
+    if (+data.event_recurring == 1) var format = d3.timeFormat('%d %B, ' + data.event_year)
+    else var format = d3.timeFormat('%d %B, %Y')
 
     $('.eventdetailsfixedheader').css('background-color', data.color);
     $('.eventdetailsheaderBtn').css('background-color', data.color);

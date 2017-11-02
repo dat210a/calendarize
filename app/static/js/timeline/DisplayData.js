@@ -82,7 +82,9 @@ var connections = dataGroup
                             .attr("height", radius*2)
                             .attr("rx", radius)
                             .attr("x", function(d){
-                                return d.x = time(new Date(d.event_start))
+                                var startDate = new Date(d.event_start)
+                                d.event_year = d3.timeFormat('%Y')(startDate)
+                                return d.x = time(startDate)
                             })
                             .attr("y", function(d){
                                 d.y = 0;

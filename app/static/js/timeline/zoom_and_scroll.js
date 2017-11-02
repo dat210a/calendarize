@@ -83,8 +83,11 @@ function rescale() {
                 return radius*2 + d.length*k;
             })
             .attr("x", function(d, i){
-                d.x = timeRescaled(new Date(d.event_start))
+                var startDate = new Date(d.event_start)
+                d.event_year = d3.timeFormat('%Y')(startDate)
+                d.x = timeRescaled(startDate)
                 if (d.event_recurring == 1){
+                    d.event_year -= Math.floor(d.x / Math.round(width*k))
                     d.x = d.x % Math.round(width*k);
                     return d.x + d.length*k >= 0 ? d.x : d.x = d.x + width*k;
                 }

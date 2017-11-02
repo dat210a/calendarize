@@ -1,5 +1,7 @@
 
-var form_div_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"]
+var form_div_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"];
+
+var slider = document.getElementById("zoomSlider");
 
 function hide_all_forms(){
     form_div_ids.forEach (function(form_parent){
@@ -7,17 +9,17 @@ function hide_all_forms(){
         form = $(form_parent).children('form')[0]
         if (typeof form != 'undefined') form.reset()
     });
-}
+};
 
 $("#resetToToday" ).click(function() {
     resetView();
 });
 
-var slider = document.getElementById("zoomSlider");
 slider.onchange = function (){
     d3.select('svg').call(zoom.scaleTo, this.value);
-}
+};
 
+// load forms
 $("#addCalendarForm").click(function(){
     hide_all_forms()
     $("#calendarForm").show(700)
@@ -26,7 +28,6 @@ $("#addCalendarForm").click(function(){
 $("#addEventForm").click(function(){
     selector = $('#calendarID');
     selector.empty()
-    // selector.append('<option value="" disabled selected>Choose your option</option>')
     d3.selectAll('.group').each(function(d){
         selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
     })
@@ -34,13 +35,7 @@ $("#addEventForm").click(function(){
 
     hide_all_forms()
     $("#eventForm").show(700)
-})
-
-$("#startDate").change(function(){
-    var $input = $('#uniqueendDate').pickadate()
-    var picker = $input.pickadate('picker')
-    picker.set('min', $(this).val())
-})
+});
 
 // $("#editCalendarForm").click(function(){
 //     hide_all_forms()
@@ -55,8 +50,17 @@ $("#editEvent").click(function(){
 $("#openProfile").click(function(){
     hide_all_forms()
     $("#profileDisplay").show(700)
-})
+});
 
+//
+$("#startDate").change(function(){
+    var $input = $('#uniqueendDate').pickadate()
+    var picker = $input.pickadate('picker')
+    picker.set('min', $(this).val())
+});
+
+////////////////////////////////////////////////////////////////////////
+//                           Add new data
 
 $("#addCalendar").submit(function(e){
     e.preventDefault()
@@ -144,6 +148,14 @@ $("#addEvent").submit(function(e){
 //         }
 //     });
 // });
+
+////////////////////////////////////////////////////////////////////////
+//                           Edit data
+
+
+
+////////////////////////////////////////////////////////////////////////
+//                           Delete data
 
 $('#delete_event').click(function(e){
     e.preventDefault()

@@ -353,28 +353,6 @@ def uploaded_file(filename):
             return load_file(filename, eid)
     # return redirect(url_for('error'))
 
-# @app.route('/view/<calendar_id>')
-# @mobile_template('{mobile/}calendar.html')
-# def view(template, calendar_id):
-
-#     log_basic()
-
-#     with db.ConnectionInstance() as q:
-
-#         cals = q.get_calendars()
-#         if calendar_id in cals:
-#             members = q.get_calendar_members(calendar_id)
-#             if get_user_id() in members:
-#                 # TODO create template
-#                 return render_template(template)
-#             else:
-#                 # return redirect(url_for(error))
-#                 pass
-#         else:
-#             # return redirect(url_for(error))
-#             # TODO create error route, uncomment above lines
-#             pass
-
 
 @app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
