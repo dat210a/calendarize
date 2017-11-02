@@ -82,10 +82,10 @@ function ToggleAgendaMenu(){
         .attr('transform', function(){
             toggle = d3.select(this).attr('up') === 'true'
             var move = toggle ? height : height-bottomBarHeight
-            d3.selectAll('.scrollArea')
-                .attr('height', function(){
-                    return +d3.select(this).attr('height') + (toggle ? bottomBarHeight : -(bottomBarHeight))
-                })
+            // d3.selectAll('.scrollArea')
+            //     .attr('height', function(){
+            //         return +d3.select(this).attr('height') + (toggle ? bottomBarHeight : -(bottomBarHeight))
+            //     })
             d3.select(this).attr('up', !toggle)
             return "translate(0," + move + ")"
         })

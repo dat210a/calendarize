@@ -84,7 +84,7 @@
         <div class="row z-depth-1 eventdetailsfixedheader">
             <div class=" col s12">
                 <h4 class="left-align grey-text text-lighten-5 eventName">Nan</h4>
-                <span class="grey-text text-lighten-3">Created by: Person X</span>
+                <span class="grey-text text-lighten-3" id="event_owner">Created by: Person X</span>
             </div>
         </div>
         <a class="btn-floating btn-large waves-effect waves-light right eventdetailsheaderBtn" id="editEvent"><i class="material-icons">edit</i></a>
@@ -130,7 +130,7 @@
                                 <li>TBD</li>
                                 <li>TBD</li>
                                 <li>TBD</li>
-                                <li><a href="">See more</a></li>
+                                <li><a href="#">See more</a></li>
                             </ul>
                         </div>
                         <div class="col 5">
@@ -147,7 +147,7 @@
                 <div class="col s12">
                     <span class="infotitle"><strong>Notes</strong></span>
                     <br>
-                    <span>TBD</span>
+                    <span id="event_notes"></span>
                 </div>
             </div>
             <div class="row">
@@ -441,7 +441,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="textarea1" class="materialize-textarea"></textarea>
+                        <textarea id="textarea1" name="event_details" class="materialize-textarea"></textarea>
                         <label for="textarea1">Notes</label>
                     </div>
                 </div>

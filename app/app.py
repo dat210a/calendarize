@@ -170,7 +170,8 @@ def index_user(template):
 #            print(app.config['shards'])
 #            st.work()
 #        print(app.config['shards'])
-    return render_template(template, name=current_user.email)
+    displayed_name = current_user.email if current_user.name is None else current_user.name
+    return render_template(template, name=displayed_name)
 
 
 @app.route('/user_availability', methods=['GET', 'POST'])
@@ -314,7 +315,8 @@ def calendar(template):
     """
     """
     log_basic()
-    return render_template(template, name=current_user.email)
+    displayed_name = current_user.email if current_user.name is None else current_user.name
+    return render_template(template, name=displayed_name)
 
 
 @app.route('/get_data')
@@ -429,6 +431,7 @@ def leave_calander():
 def add_event():
     if request.method == "POST":
         data = request.form.to_dict()
+        print(data)
         if 'newEventName' in data and 'calendarID' in data:
             try:
                 data['startDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)

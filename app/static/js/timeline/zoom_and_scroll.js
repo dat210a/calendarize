@@ -4,16 +4,16 @@ var zoom = d3.zoom()
                 .scaleExtent([1, 12])
                 .on("zoom", rescale)
 
-//attach listener to an object
-d3.select('.scrollArea')            
+//attach zoom listener to svg
+d3.select('svg')            
         .call(zoom)
         .on("dblclick.zoom", null);
 
 function resetView() {
     //adjust view to today
     var today = time(new Date());
-    d3.select('.scrollArea').call(zoom.scaleTo, 12);
-    d3.select('.scrollArea').call(zoom.translateTo, today+xPadding/12);
+    d3.select('svg').call(zoom.scaleTo, 12);
+    d3.select('svg').call(zoom.translateTo, today+xPadding/12);
 
     //set next event
     d3.selectAll('.datapoints')
@@ -83,8 +83,8 @@ function rescale() {
                 return radius*2 + d.length*k;
             })
             .attr("x", function(d, i){
-                d.x = timeRescaled(new Date(d.start_date))
-                if (d.recurring == 1){
+                d.x = timeRescaled(new Date(d.event_start))
+                if (d.event_recurring == 1){
                     d.x = d.x % Math.round(width*k);
                     return d.x + d.length*k >= 0 ? d.x : d.x = d.x + width*k;
                 }

@@ -90,20 +90,20 @@ d3.select('.timeline')
         .text('account_circle')
         .attr('y', 10)
 
-svg.append('g')
-        .attr("class", "foreground_items")
-        .attr("transform", "translate(" + xPadding + ", 0)")
-        .append('rect')
-            .attr('class', 'scrollArea')
-            .attr("height", height)
-            .attr("width", width)
-            .style('fill', "transparent")
-            .on('click', function(){
-                d3.select(this).attr('display', 'none');
-                var element = document.elementFromPoint(event.clientX,event.clientY)
-                d3.select($(element).parent()[0]).dispatch('click')
-                d3.select(this).attr('display', 'inline');
-            })
+// svg.append('g')
+//         .attr("class", "foreground_items")
+//         .attr("transform", "translate(" + xPadding + ", 0)")
+//         .append('rect')
+//             .attr('class', 'scrollArea')
+//             .attr("height", height)
+//             .attr("width", width)
+//             .style('fill', "transparent")
+//             .on('click', function(){
+//                 d3.select(this).attr('display', 'none');
+//                 var element = document.elementFromPoint(event.clientX,event.clientY)
+//                 d3.select($(element).parent()[0]).dispatch('click')
+//                 d3.select(this).attr('display', 'inline');
+//             })
 
 
 

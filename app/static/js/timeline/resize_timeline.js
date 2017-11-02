@@ -23,8 +23,8 @@ function resize(){
     svg
         .attr('width', totalWidth)
         .attr('height', height)
-    d3.select('.scrollArea').attr("width", width)
-                            .attr('height', height)
+    // d3.select('.scrollArea').attr("width", width)
+    //                         .attr('height', height)
     d3.select('.Year').attr('transform', 'translate('+ width/2 +',' + 75 +')')
 
     //sides
@@ -58,8 +58,8 @@ function resize(){
         .attr("transform", 'translate(' +xPadding+ ','+midScreen+')')
 
     //realign movables
-    var oldX = d3.zoomTransform(d3.select('.scrollArea').node()).x
-    d3.select('.scrollArea').call(zoom.translateBy, oldX/oldWidth*(width - oldWidth)/k, 0);
+    var oldX = d3.zoomTransform(d3.select('svg').node()).x
+    d3.select('svg').call(zoom.translateBy, oldX/oldWidth*(width - oldWidth)/k, 0);
  }
 
 $( window ).resize(function(){resize()});

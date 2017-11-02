@@ -114,8 +114,6 @@ class ConnectionInstance:
         self.__cur.execute(sql, [unique_id])
         self.__con.commit()
 
-
-
     def get_pass_hash(self, email):
         sql = "SELECT user_password FROM users WHERE user_email = ?"
         self.__cur.execute(sql, [email])
@@ -126,15 +124,25 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
 
-    # def get_username(self, email):
-    #     sql = "SELECT user_name FROM users WHERE user_email = ?"
-    #     self.__cur.execute(sql, [email])
-    #     try:
-    #         res = self.__cur.fetchone()
-    #         return res[0].decode('utf-8')
-    #     except Exception as e:
-    #         logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
-    #         return None
+    def get_user_name(self, email):
+        sql = "SELECT user_name FROM users WHERE user_id = ?"
+        self.__cur.execute(sql, [email])
+        try:
+            res = self.__cur.fetchone()
+            return res[0].decode('utf-8')
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+            return None
+
+    def get_user_email(self, email):
+        sql = "SELECT user_email FROM users WHERE user_id = ?"
+        self.__cur.execute(sql, [email])
+        try:
+            res = self.__cur.fetchone()
+            return res[0].decode('utf-8')
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+            return None
 
     def get_calendars(self, uid):
         sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
@@ -209,13 +217,26 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-        sql = "SELECT event_id, event_name, event_calendar_id, event_start, event_end, event_recurring FROM events " \
+        data_key = ["event_id", "event_owner", "event_calendar_id", "event_name", "event_start", "event_end", "event_recurring", "event_details"]
+
+        sql = "SELECT " + ",".join(data_key) + " FROM events " \
               "WHERE event_calendar_id IN(" + ",".join("?"*len(cals)) + ") " \
               "AND deleted = 0"
         self.__cur.execute(sql, cals)
         try:
-            events = [list(event)+[self.get_event_files(event[0])] for event in self.__cur.fetchall()]
-            events2 = [dict(zip(('id', 'name', 'group', 'start_date', 'end_date', 'recurring', 'files'), e)) for e in events]
+            events = []
+            for event in self.__cur.fetchall():
+                event = list(event)
+                files = self.get_event_files(event[0])
+                owner = self.get_user_name(event[1])
+                if not owner:
+                    owner = self.get_user_email(event[1])
+                event[1] = owner
+                events.append(event+[files])
+            # events = [list(event)+[self.get_event_files(event[0])] for event in self.__cur.fetchall()]
+            print(events)
+            events2 = [dict(zip(data_key + ['files'], e)) for e in events]
+            print(events2)
             return [calendars2, events2]
         except Exception as e:
             logging.debug('{}\nWhile fetching events for calendar(s): {}'.format(e, cals))
@@ -289,9 +310,10 @@ class ConnectionInstance:
             return None
 
     def add_event(self, event_data, created, owner):
+        data_key = ["event_name", "event_calendar_id", "event_date_created", "event_owner", "event_start", "event_end", "event_recurring", "event_details"]
         sql = "INSERT INTO events " \
-              "(event_name, event_calendar_id, event_date_created, event_owner, event_start, event_end, event_recurring)" \
-              "VALUES (?, ?, ?, ?, ?, ?, ?)"
+              "(" + ",".join(data_key) + ") " \
+              "VALUES (" + ",".join("?"*len(data_key)) + ")"
         self.__cur.execute(
             sql,
             [
@@ -302,6 +324,7 @@ class ConnectionInstance:
                 event_data['startDate'],
                 event_data['endDate'],
                 1 if 'recurring' in event_data else 0,
+                event_data['event_details']
             ]
         )
         try:

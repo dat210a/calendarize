@@ -9,6 +9,7 @@ class User:
         with ConnectionInstance() as con:
             self.user_id = con.get_user_id(self.email)
             self.active = con.get_user_activity(self.email)
+            self.name = con.get_user_name(self.user_id)
 
     def __repr__(self):
         if not self.is_anonymous():

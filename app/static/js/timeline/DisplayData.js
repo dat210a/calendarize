@@ -15,7 +15,7 @@ function load_data(){
 }
 
 function ready(error, allData){
-    if (error){
+    if (error || allData == null){
         console.log("Can't load the data")
         return;
     }
@@ -31,13 +31,13 @@ function ready(error, allData){
     //sort data so its displayed from right to left
     //due to overlap
     var myData = datapoints.sort(function(x, y){
-        return d3.descending(+x.start_date, +y.start_date);
+        return d3.descending(+x.event_start, +y.event_start);
     })
 
     //objects whith coordinates for detail boxes
     var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
-        detailsPoints[i] = {'name': myData[i].name, 'start': myData[i].start_date, 'end': myData[i].end_date};
+        detailsPoints[i] = {'name': myData[i].event_name, 'start': myData[i].event_start, 'end': myData[i].event_end};
     }
 
     //setup simulation based on data
@@ -75,21 +75,21 @@ var connections = dataGroup
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
                                 d.color = groups.filter(function(gr){
-                                    return gr.id == d.group
+                                    return gr.id == d.event_calendar_id
                                 })[0].color
                                 return d.color
                             })
                             .attr("height", radius*2)
                             .attr("rx", radius)
                             .attr("x", function(d){
-                                return d.x = time(new Date(d.start_date))
+                                return d.x = time(new Date(d.event_start))
                             })
                             .attr("y", function(d){
                                 d.y = 0;
                                 return d.y - radius;
                             })
                             .attr("width", function(d){
-                                d.length = time(new Date(d.end_date)) - d.x
+                                d.length = time(new Date(d.event_end)) - d.x
                                 return radius*2 + d.length;
                             })
                             .on('click', function (d, i) {
@@ -135,8 +135,8 @@ var connections = dataGroup
             .attr('y', 30)
             .style("font-size", 30)
             .style('fill', '#F1F0F0')
-            .text(function(){
-                return this.parentNode.__data__.name;
+            .text(function(d){
+                return d.name;
             })
             .each(function(){
                 short_text(d3.select(this), detailWidth, 25)
@@ -158,8 +158,7 @@ var connections = dataGroup
             .attr('y', detailHeight/2 + 30)
             .style("font-size", 25)
             .style('fill', '#F1F0F0')
-            .text(function(){
-                data = this.parentNode.__data__;
+            .text(function(data){
                 if (data.start == data.end){
                     return d3.timeFormat('%d / %m')(new Date(this.parentNode.__data__.start));
                 }
@@ -175,12 +174,12 @@ var connections = dataGroup
                 .style('fill', function(){return data.color;});
         });
     
-    d3.select('.scrollArea').call(zoom.translateBy, 0)
+    d3.select('svg').call(zoom.translateBy, 0)
 };
 
 //update data position after forces have taken effect
 function ticked() {
-    // if (timer == 1) {            //for debuging purposes - only allows one tick 
+    // if (timer == 0) {            //for debuging purposes - only allows one tick 
     //     simulation.stop()
     // }
     // timer++;

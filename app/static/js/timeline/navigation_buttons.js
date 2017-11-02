@@ -75,25 +75,29 @@ rightLinearGradient.append("stop")
     leftSideBar
     .on('mouseover', function(d){
         left_timeline_button.transition()
-                            .duration(500)
+                            .duration(200)
                             .attr('opacity', 1)
     })
     .on('mouseout', function(d){
         left_timeline_button.transition()
-                            .duration(500)
+                            .duration(200)
                             .attr('opacity', 0)
     })
     .on('click', function(){
-        d3.select('.scrollArea').call(zoom.translateBy, width/k)
+        d3.select('svg').call(zoom.translateBy, width/k)
     })
 
 right_timeline_button
     .on('mouseover', function(d){
-        right_timeline_button.attr('opacity', 1)
+        right_timeline_button.transition()
+                             .duration(200)
+                             .attr('opacity', 1)
     })
     .on('mouseout', function(d){
-        right_timeline_button.attr('opacity', 0)
+        right_timeline_button.transition()
+                             .duration(200)
+                             .attr('opacity', 0)
     })
     .on('click', function(){
-        d3.select('.scrollArea').call(zoom.translateBy, -width/k)
+        d3.select('svg').call(zoom.translateBy, -width/k)
     })

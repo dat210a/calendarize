@@ -150,7 +150,7 @@ $('#delete_event').click(function(e){
     $.ajax({
         url: '/delete_event',
         type: 'POST',
-        data: {'event_id': current_event.id},
+        data: {'event_id': current_event.event_id},
         success: function(response) {
             if (response == 'true') {
                 $("#eventDisplay").hide()
