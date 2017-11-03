@@ -38,6 +38,44 @@ $("#addEventForm").click(function(){
     
         // hide_all_forms()
         $("#eventForm").show(700)
+        $("#addEvent").submit(function(e){
+            e.preventDefault()
+            var form = $(this)[0];
+            oData = new FormData(form);
+            oData.set('startDate', new Date(oData.get('startDate')).getTime())
+            if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
+            $.ajax({
+                url: '/add_event',
+                type: 'POST',
+                data: oData, 
+                encType: "multipart/form-data",
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function(response) {
+                    r = JSON.parse(response)
+                    if (r.success == 'true') {
+                        $("#eventForm").hide()
+                        current_event_id = r.id;
+                        load_data()
+                    }
+                    else {
+                        if (r.message == 'date'){
+                            $('#startDate').addClass("validate invalid")
+                                            .blur(function(){
+                                                $(this).removeClass('validate invalid');
+                                            });
+                        }
+                        else{
+                            console.log ('Cannot create new event at this time')
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
     })
 });
 
