@@ -79,7 +79,7 @@ line {
 .edit_event_container,
 .calendar_details_container,
 .profile_details_container {
-    display: none;
+    /* display: none; */
     height: 100%;
 }
 

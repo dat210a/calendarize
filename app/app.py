@@ -318,6 +318,13 @@ def calendar(template):
     displayed_name = current_user.email if current_user.name is None else current_user.name
     return render_template(template, name=displayed_name)
 
+@app.route('/add_event_form')
+# @mobile_template('/{mobile/}add_event.html')
+@login_required
+def add_event_form():
+    log_basic()
+    print('loading')
+    return render_template('/forms/add_event.html')
 
 @app.route('/get_data')
 @login_required

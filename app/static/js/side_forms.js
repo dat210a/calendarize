@@ -26,15 +26,19 @@ $("#addCalendarForm").click(function(){
 });
 
 $("#addEventForm").click(function(){
-    selector = $('#calendarID');
-    selector.empty()
-    d3.selectAll('.group').each(function(d){
-        selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
+    $('#sidebar').load("/add_event_form", function(){
+        init()
+        $("#eventForm").hide(0)
+        selector = $('#calendarID');
+        selector.empty()
+        d3.selectAll('.group').each(function(d){
+            selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
+        })
+        selector.material_select();
+    
+        // hide_all_forms()
+        $("#eventForm").show(700)
     })
-    selector.material_select();
-
-    hide_all_forms()
-    $("#eventForm").show(700)
 });
 
 // $("#editCalendarForm").click(function(){
