@@ -9,24 +9,27 @@ d3.select('svg')
         .call(zoom)
         .on("dblclick.zoom", null);
 
-function resetView() {
-    console.log(d3.timeMillisecond.offset(new Date, 20930400))
+function resetView(date) {
     //adjust view to today
-    var today = time(new Date);
-    d3.select('svg').call(zoom.scaleTo, 10);
-    d3.select('svg').call(zoom.translateTo, today+xPadding/10);
+    var monthStart = d3.timeMonth.floor(date)
+    var numDays = d3.timeDay.count(monthStart, d3.timeMonth.ceil(date))
+    if (d3.timeDay.count(monthStart, date) > numDays*3/4) var monthToFocusOn = d3.timeMonth.ceil(date);
+    else var monthToFocusOn = monthStart;
+    var focusOn = time(d3.timeDay.offset(monthToFocusOn, Math.floor(numDays/2.0)));
+    d3.select('svg').call(zoom.scaleTo, 3.8);
+    d3.select('svg').call(zoom.translateTo, focusOn+xPadding/3.8);
 
-    //set next event
-    d3.selectAll('.datapoints')
-        .filter(function(d){
-            return d.x > +d3.select('.todayMark').attr('x');
-        })
-        .filter(function(d, i, j){
-            return i == j.length-1;
-        })
-        .each(function(d){
-            display(d)
-        })
+    // //display next event
+    // d3.selectAll('.datapoints')
+    //     .filter(function(d){
+    //         return d.x > +d3.select('.todayMark').attr('x');
+    //     })
+    //     .filter(function(d, i, j){
+    //         return i == j.length-1;
+    //     })
+    //     .each(function(d){
+    //         display(d)
+    //     })
 }
 
 //zoom and scroll update function
@@ -74,7 +77,7 @@ function rescale() {
         })
     
     //reposition today
-    d3.select('.todayMark').attr('x', function(){return timeRescaled(new Date())})
+    d3.select('.todayMark').attr('x', () => timeRescaled(new Date()) - radius)
 
     //reposition datapoints
     if (!d3.selectAll('.data').empty()){  

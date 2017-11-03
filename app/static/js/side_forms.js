@@ -12,7 +12,7 @@ function hide_all_forms(){
 };
 
 $("#resetToToday" ).click(function() {
-    resetView();
+    resetView(new Date);
 });
 
 slider.onchange = function (){

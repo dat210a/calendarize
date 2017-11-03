@@ -29,6 +29,9 @@ var svg = d3.select('svg')
                     .attr('height', height)
                     .attr("transform", "translate(" + 0 + "," + 0 + ")")
 
+svg.append('path')
+        .attr('d', 'M515,-14L597,-395L617,-395')
+
 //year display
 svg.append('g')
         .attr("class", "background_items")

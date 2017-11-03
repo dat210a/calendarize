@@ -181,6 +181,7 @@ var connections = dataGroup
         d3.select('svg').call(zoom.translateBy, 0) // TODO center to event
         event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event_id).data()[0]
         display(event_data)
+        resetView(new Date(event_data.event_start))
     }
 };
 

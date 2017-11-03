@@ -28,14 +28,14 @@
             <!-- main calendar -->
             <svg class="calendarMain">
                 <defs>
-                    <filter id="dropshadow" x="-40%" y="-40%" width="180%" height="180%" filterUnits="userSpaceOnUse">
+                    <filter id="dropshadow" x="-100%" y="-100%" width="200%" height="200%" filterUnits="userSpaceOnUse">
                         <feGaussianBlur in="SourceAlpha" stdDeviation="2"/> <!-- stdDeviation is how much to blur -->
                         <feOffset dx="1.5" dy="1.5" result="offsetblur"/> 
                         <!-- <feOffset dx="-5" dy="-5" result="offsetblur"/> -->
                         <feMerge> 
-                        <feMergeNode/>
-                        <feMergeNode in="SourceGraphic"/>
-                        <feMergeNode in="SourceGraphic"/>
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/>
+                            <feMergeNode in="SourceGraphic"/>
                         </feMerge>
                     </filter>
                 </defs>

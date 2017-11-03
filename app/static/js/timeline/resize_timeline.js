@@ -64,5 +64,5 @@ function resize(){
 $( window ).resize(function(){resize()});
 $( document ).ready(function(){
     resize();
-    resetView();
+    resetView(new Date);
 });
