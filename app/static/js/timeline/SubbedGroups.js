@@ -4,11 +4,10 @@ var groupBoxDim = 150;
 var padding = 20;
 
 //create bottom bar 
-var bottomMenu = d3.selectAll('svg')
-                        .append('g')
-                            .attr("class", "bottomMenu")
-                            .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
-                            .attr('up', true)
+var bottomMenu = svg.append('g')
+                        .attr("class", "bottomMenu")
+                        .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
+                        .attr('up', true)
 
 bottomMenu.append('rect')
     .attr('class', 'bottomBase')

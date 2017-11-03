@@ -5,19 +5,17 @@ var zoom = d3.zoom()
                 .on("zoom", rescale)
 
 //attach zoom listener to svg
-d3.select('svg')            
-        .call(zoom)
-        .on("dblclick.zoom", null);
+svg.call(zoom)
+   .on("dblclick.zoom", null);
 
 function resetView(date) {
     //adjust view to today
-    var monthStart = d3.timeMonth.floor(date)
-    var numDays = d3.timeDay.count(monthStart, d3.timeMonth.ceil(date))
-    if (d3.timeDay.count(monthStart, date) > numDays*3/4) var monthToFocusOn = d3.timeMonth.ceil(date);
-    else var monthToFocusOn = monthStart;
-    var focusOn = time(d3.timeDay.offset(monthToFocusOn, Math.floor(numDays/2.0)));
-    d3.select('svg').call(zoom.scaleTo, 3.8);
-    d3.select('svg').call(zoom.translateTo, focusOn+xPadding/3.8);
+    var month = d3.timeMonth.floor(date)
+    var numDays = d3.timeDay.count(month, d3.timeMonth.ceil(date))
+    if (d3.timeDay.count(month, date) > numDays*3/4) month = d3.timeMonth.ceil(date);
+    var focusOn = time(d3.timeDay.offset(month, Math.floor(numDays/2.0)));
+    svg.call(zoom.scaleTo, 3.8);
+    svg.call(zoom.translateTo, focusOn+xPadding/3.8);
 
     // //display next event
     // d3.selectAll('.datapoints')

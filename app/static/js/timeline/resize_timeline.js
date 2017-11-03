@@ -57,8 +57,8 @@ function resize(){
         .attr("transform", 'translate(' +xPadding+ ','+midScreen+')')
 
     //realign movables
-    var oldX = d3.zoomTransform(d3.select('svg').node()).x
-    d3.select('svg').call(zoom.translateBy, oldX/oldWidth*(width - oldWidth)/k, 0);
+    var oldX = d3.zoomTransform(svg.node()).x
+    svg.call(zoom.translateBy, oldX/oldWidth*(width - oldWidth)/k, 0);
  }
 
 $( window ).resize(function(){resize()});

@@ -16,7 +16,7 @@ $("#resetToToday" ).click(function() {
 });
 
 slider.onchange = function (){
-    d3.select('svg').call(zoom.scaleTo, this.value);
+    svg.call(zoom.scaleTo, this.value);
 };
 
 // load forms

@@ -84,7 +84,7 @@ rightLinearGradient.append("stop")
                             .attr('opacity', 0)
     })
     .on('click', function(){
-        d3.select('svg').call(zoom.translateBy, width/k)
+        svg.call(zoom.translateBy, width/k)
     })
 
 right_timeline_button
@@ -99,5 +99,5 @@ right_timeline_button
                              .attr('opacity', 0)
     })
     .on('click', function(){
-        d3.select('svg').call(zoom.translateBy, -width/k)
+        svg.call(zoom.translateBy, -width/k)
     })

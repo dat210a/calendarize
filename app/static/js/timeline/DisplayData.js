@@ -176,9 +176,9 @@ var connections = dataGroup
                 .style('fill', function(){return data.color;});
         });
     
-    if (current_event_id == null) d3.select('svg').call(zoom.translateBy, 0)
+    if (current_event_id == null) svg.call(zoom.translateBy, 0)
     else{
-        d3.select('svg').call(zoom.translateBy, 0) // TODO center to event
+        svg.call(zoom.translateBy, 0) // TODO center to event
         event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event_id).data()[0]
         display(event_data)
         resetView(new Date(event_data.event_start))
