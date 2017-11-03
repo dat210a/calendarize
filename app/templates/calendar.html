@@ -246,7 +246,7 @@
             <div style="padding-top: 5em">
                 <div class="row">
                     <div class="col s12 input-field">
-                        <input value="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
+                        <input placeholder="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
                         <label for="newCalendarName">Name of group</label>
                     </div>
                 </div>
@@ -287,11 +287,7 @@
                 </div>
                 <div class="row">
                     <div class="col s12 input-field">
-                        <select>
-                            <option value="1">Red</option>
-                            <option value="2">Blue</option>
-                            <option value="3">Purple</option>
-                            <option value="4">Yellow</option>
+                        <select id="setCalendarColor" name="calendar_color">
                         </select>
                         <label>Color</label>
                     </div>
@@ -354,11 +350,7 @@
                 </div>
                 <div class="row">
                     <div class="col s12 input-field">
-                        <select>
-                            <option value="1">Red</option>
-                            <option value="2">Blue</option>
-                            <option value="3">Purple</option>
-                            <option value="4">Yellow</option>
+                        <select id="editCalendarColor" name="calendar_color">
                         </select>
                         <label>Color</label>
                     </div>
@@ -606,10 +598,10 @@
 <script src="/static/js/timeline/navigation_buttons.js"></script>
 <script src="/static/js/timeline/SubbedGroups.js"></script>
 <script src="/static/js/timeline/simulation.js"></script>
-<script src="/static/js/display_event_details.js"></script>
 <script src="/static/js/timeline/DisplayData.js"></script>
 <script src="/static/js/timeline/zoom_and_scroll.js"></script>
 <script src="/static/js/timeline/resize_timeline.js"></script>
-<script src="/static/js/side_forms.js"></script>
+<script src="/static/js/set_forms.js"></script>
+<script src="/static/js/get_forms.js"></script>
 <script src="/static/js/init.js"></script>
 {% endblock %}

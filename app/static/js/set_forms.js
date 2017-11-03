@@ -3,14 +3,14 @@
 var current_event_id = null
 
 
-function display(data){
-    $("#eventDisplay").hide(0)
+function display_event(data){
+    hide_all_forms()
     current_event_id = data.event_id;
     if (+data.event_recurring == 1) var format = d3.timeFormat('%d %B, ' + data.event_year)
     else var format = d3.timeFormat('%d %B, %Y')
 
-    $('.eventdetailsfixedheader').css('background-color', data.color);
-    $('.eventdetailsheaderBtn').css('background-color', data.color);
+    $('.eventdetailsfixedheader').css('background-color', data.calendar_color);
+    $('.eventdetailsheaderBtn').css('background-color', data.calendar_color);
 
     $('.eventName').text(data.event_name)
     $('.eventGroup').text(() => d3.selectAll('.group').filter(d => d.calendar_id == data.event_calendar_id).data()[0].calendar_name)
@@ -50,10 +50,25 @@ function display(data){
         $('#eventFiles').append("<span>No files added</span>")
     }
 
-    hide_all_forms()
     $("#eventDisplay").show(700)
 }
 
-function populate_edit_form(){
+function fillIn_editEvent_form(){
 
+}
+
+function display_calendar(){
+
+}
+
+function fillIn_editCalendar_form(){
+    
+}
+
+function display_profile(){
+
+}
+
+function fillIn_editCalendar_form(){
+    
 }

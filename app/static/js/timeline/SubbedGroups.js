@@ -40,12 +40,12 @@ function AddGroupButtons(groups){
             .attr("rx", 20)
             .attr("ry", 20)
             .style("fill", function (d) {
-                return d.color;
+                return d.calendar_color;
             })
             .on('click', function (d) {
-                ToggleAgenda(d.color)
+                ToggleAgenda(d.calendar_color)
                 if (d3.select(this).style("fill") == "darkgrey") { 
-                    d3.select(this).style("fill", function (d) {return d.color;}) 
+                    d3.select(this).style("fill", function (d) {return d.calendar_color;}) 
                 }
                 else { d3.select(this).style("fill", "darkgrey") }
             });
@@ -107,7 +107,7 @@ function ToggleAgendaMenu(){
 //toggle on/off
 function ToggleAgenda(data) {
     d3.selectAll(".data").selectAll('.points')
-        .filter(function(d){return d.color == data})
+        .filter(function(d){return d.calendar_color == data})
         .each(function(){
             d3.select(this.parentNode).style("display", function(){
                     return d3.select(this).style("display") == 'inline' ? 'none' : 'inline';

@@ -65,6 +65,7 @@ CREATE TABLE `calendars` (
   `calendar_owner` int NOT NULL,
   `calendar_date_created` datetime NOT NULL,
   `calendar_name` varchar(45) NOT NULL,
+  `calendar_color` varchar(6) DEFAULT NULL
   `calendar_details` varchar(45) DEFAULT NULL,
   `calendar_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',

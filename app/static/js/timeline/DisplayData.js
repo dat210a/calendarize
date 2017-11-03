@@ -2,7 +2,6 @@
 var timer = 0;
 
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
-var color = d3.scaleOrdinal(['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38']);
 
 var detailHeight = 80,
     detailWidth = 200;
@@ -22,9 +21,24 @@ function ready(error, allData){
     datapoints = allData[1]
     groups = allData[0]
     
-    groups.forEach(function(d, i){d.color = color(i)})
+    // set colors for all calendars that don't have one yet
+    groups.forEach(function(d){
+                i = colors.length - 1
+                while (i >= 0){
+                    if (d.calendar_color == colors[i]) {
+                        colors.push(colors[i]);
+                        colors.splice(i, 1);
+                        break;
+                    }
+                    i--;
+                }
+            })
+
+    // add groups / calendars
     AddGroupButtons(groups)
 
+    // clear data before assigning new one
+    // TODO figure out whether it's possible to do with update() enter() exit()
     d3.selectAll('.data').remove()
     if (datapoints.length == 0) return
 
@@ -74,10 +88,10 @@ var connections = dataGroup
                             .attr('class', 'points shadow')
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
-                                d.color = groups.filter(function(gr){
+                                d.calendar_color = groups.filter(function(gr){
                                     return gr.calendar_id == d.event_calendar_id
-                                })[0].color
-                                return d.color
+                                })[0].calendar_color
+                                return d.calendar_color
                             })
                             .attr("height", radius*2)
                             .attr("rx", radius)
@@ -95,7 +109,7 @@ var connections = dataGroup
                                 return radius*2 + d.length;
                             })
                             .on('click', function (d, i) {
-                                display(d);
+                                display_event(d);
                             });
 
 
@@ -126,7 +140,7 @@ var connections = dataGroup
     detailContainer 
         .data(detailsPoints)
         .on('click', function (d, i) {
-            display(this.parentNode.__data__);
+            display_event(this.parentNode.__data__);
         });
 
     
@@ -173,14 +187,14 @@ var connections = dataGroup
     dataGroup
         .each(function(data){
             d3.select(this).selectAll('.detailBox')
-                .style('fill', function(){return data.color;});
+                .style('fill', function(){return data.calendar_color;});
         });
     
     if (current_event_id == null) svg.call(zoom.translateBy, 0)
     else{
         svg.call(zoom.translateBy, 0) // TODO center to event
         event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event_id).data()[0]
-        display(event_data)
+        display_event(event_data)
         resetView(new Date(event_data.event_start))
     }
 };
