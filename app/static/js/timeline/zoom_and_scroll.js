@@ -83,7 +83,7 @@ function rescale() {
             .attr('width', function(d){
                 return radius*2 + d.length*k;
             })
-            .attr("x", function(d, i){
+            .each(function(d, i){
                 var startDate = new Date(d.event_start)
                 d.x = timeRescaled(startDate)
                 if (d.event_recurring == 1){
@@ -92,10 +92,7 @@ function rescale() {
                     startDate.setFullYear(d.event_year)
                     d.x = timeRescaled(startDate)
                     // TODO make duplicate if need to display more on same screen
-                    return d.x + d.length*k >= 0 ? d.x : d.x = d.x + width*k;
-                }
-                else {
-                    return d.x
+                    d.x = d.x + d.length*k >= 0 ? d.x : d.x = d.x + width*k;
                 }
             })
 

@@ -198,7 +198,7 @@ function ticked() {
 
     selection.selectAll('.points')
         .attr("x", function (d) {
-            return d.x;
+            return d.x - radius;
         })
         .attr("y", function (d) {
             d.y = d.y > 0 ? 0 : d.y;
@@ -273,7 +273,7 @@ function showDetails(){
 
 //draw lines data-details
 function link(target, source) {
-    var x1 = Math.round(source.x + source.length*k/2 + radius);
+    var x1 = Math.round(source.x + source.length*k/2);
     var y1 = Math.round(source.y);
     var x2 = Math.round(target.x);
     var y2 = Math.round(target.y);
