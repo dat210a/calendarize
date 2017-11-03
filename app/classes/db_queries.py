@@ -212,10 +212,10 @@ class ConnectionInstance:
         sql = "SELECT file_name FROM event_files WHERE event_id = ?"
         self.__cur.execute(sql, (eid,))
         try:
-            return [x[0].decode('utf-8') for x in self.__cur.fetchall()]
+            return self.__cur.fetchall()
         except Exception as e:
             logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
-            return []
+            return None
 
     def get_event_children(self, eid):
         data_key = ["child_id", "child_owner", "child_year", "child_start", "child_end", "child_location", "child_details", "skip_year"]
@@ -224,10 +224,10 @@ class ConnectionInstance:
               "AND deleted = 0"
         self.__cur.execute(sql, (eid,))
         try:
-            return self.__cur.fetchall()
+            return [dict(zip(data_key, child)) for child in self.__cur.fetchall()]
         except Exception as e:
             logging.debug('{}\nWhile fetching event children for event with id: {}'.format(e, eid))
-            return ()
+            return None
 
     # def db_get_cal_admin(self, cid=None, eid=None):
     #     # Fetches a list of admins for a calendar

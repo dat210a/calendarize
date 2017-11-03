@@ -26,6 +26,7 @@ $("#addCalendarForm").click(function(){
 });
 
 $("#addEventForm").click(function(){
+    hide_all_forms()
     selector = $('#calendarID');
     selector.empty()
     d3.selectAll('.group').each(function(d){
@@ -33,7 +34,6 @@ $("#addEventForm").click(function(){
     })
     selector.material_select();
 
-    hide_all_forms()
     $("#eventForm").show(700)
 });
 

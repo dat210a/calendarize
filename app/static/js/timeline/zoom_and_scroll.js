@@ -81,20 +81,28 @@ function rescale() {
     if (!d3.selectAll('.data').empty()){  
         //Update data points positions if there are any
         d3.selectAll(".data").selectAll('.points')
-            .attr('width', function(d){
-                return radius*2 + d.length*k;
-            })
             .each(function(d, i){
                 var startDate = new Date(d.event_start)
                 d.x = timeRescaled(startDate)
                 if (d.event_recurring == 1){
                     d.event_year = d3.timeFormat('%Y')(startDate)
                     d.event_year -= Math.floor(d.x / Math.round(width*k))
-                    startDate.setFullYear(d.event_year)
-                    d.x = timeRescaled(startDate)
+                    var child = d.children.filter(c => d.event_year == c.child_year)
+                    if (child.length > 0){
+                        startDate = new Date(child[0].child_start)
+                        startDate.setFullYear(d.event_year) // TODO delete this after testing
+                        d.x = timeRescaled(startDate)
+                        d.length = timeRescaled(new Date(startDate)) - d.x // TODO change to child[0].child_end
+                    }
+                    else{
+                        startDate.setFullYear(d.event_year)
+                        d.x = timeRescaled(startDate)
+                    }
                     // TODO make duplicate if need to display more on same screen
-                    d.x = d.x + d.length*k >= 0 ? d.x : d.x = d.x + width*k;
                 }
+            })
+            .attr('width', function(d){
+                return radius*2 + d.length*k;
             })
 
         d3.selectAll('.data').selectAll('.datapoints').sort(function(x, y){
