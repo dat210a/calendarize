@@ -334,8 +334,8 @@ def get_data():
 # helper function, should be moved
 def type_handler(x):
     if isinstance(x, (date, datetime)):
-        # TODO if desired timezone set use this lines:
-        # x = pytz.utc.localize(x)
+        x = pytz.utc.localize(x)
+        # TODO if desired timezone set use this line:
         # x = x.astimezone(tz)
         return x.isoformat()
     elif isinstance(x, bytearray):
@@ -418,7 +418,7 @@ def add_event():
             except:
                 return json.dumps({'success' : 'false', 'message': 'date'})
             try:
-                data['endDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)
+                data['endDate'] = datetime.utcfromtimestamp(int(data['endDate'])/1000.0)
                 if data['endDate'] < data['startDate']:
                     data['endDate'] = data['startDate']
             except:

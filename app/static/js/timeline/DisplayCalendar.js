@@ -14,7 +14,7 @@ var tresholdNumPoints = 8;
 var k = 1;
 
 var time = d3.scaleTime()
-                .domain([new Date('1/1/2000'), new Date('1/1/2001')])
+                .domain([new Date('1/1/1999'), d3.timeMillisecond.offset(new Date('1/1/2000'), 20930400)])
                 .range([0, width]);
 
 var axis = d3.axisBottom(time)

@@ -10,10 +10,11 @@ d3.select('svg')
         .on("dblclick.zoom", null);
 
 function resetView() {
+    console.log(d3.timeMillisecond.offset(new Date, 20930400))
     //adjust view to today
-    var today = time(new Date());
-    d3.select('svg').call(zoom.scaleTo, 12);
-    d3.select('svg').call(zoom.translateTo, today+xPadding/12);
+    var today = time(new Date);
+    d3.select('svg').call(zoom.scaleTo, 10);
+    d3.select('svg').call(zoom.translateTo, today+xPadding/10);
 
     //set next event
     d3.selectAll('.datapoints')
@@ -84,12 +85,17 @@ function rescale() {
             })
             .attr("x", function(d, i){
                 var startDate = new Date(d.event_start)
-                d.event_year = d3.timeFormat('%Y')(startDate)
                 d.x = timeRescaled(startDate)
                 if (d.event_recurring == 1){
+                    d.event_year = d3.timeFormat('%Y')(startDate)
                     d.event_year -= Math.floor(d.x / Math.round(width*k))
-                    d.x = d.x % Math.round(width*k);
+                    startDate.setFullYear(d.event_year)
+                    d.x = timeRescaled(startDate)
+                    // TODO make duplicate if need to display more on same screen
                     return d.x + d.length*k >= 0 ? d.x : d.x = d.x + width*k;
+                }
+                else {
+                    return d.x
                 }
             })
 
