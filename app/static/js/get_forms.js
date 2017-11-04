@@ -1,6 +1,6 @@
 
 var form_div_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"];
-var colors = ['f57c00', 'd32f2f', 'c2185b', '7b1fa2', '512da8', '1976d2', '0097a7', '689f38'];
+var colors = ['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38'];
 
 var slider = document.getElementById("zoomSlider");
 
@@ -26,9 +26,10 @@ $("#addCalendarForm").click(function(){
     selector = $('#setCalendarColor');
     selector.empty()
     colors.forEach(function(color){
-        selector.append("<option value=" + color + ">" + d.calendar_name + "</option>");
+        selector.append("<option value=" + color + " style='background-color: " + color + "'>Test</option>");
     })
     selector.material_select();
+    Materialize.updateTextFields();
     $("#calendarForm").show(700)
 });
 

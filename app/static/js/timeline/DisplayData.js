@@ -23,6 +23,7 @@ function ready(error, allData){
     
     // set colors for all calendars that don't have one yet
     groups.forEach(function(d){
+                d.calendar_color = '#' + d.calendar_color;
                 i = colors.length - 1
                 while (i >= 0){
                     if (d.calendar_color == colors[i]) {

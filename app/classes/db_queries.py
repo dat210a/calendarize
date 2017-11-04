@@ -175,7 +175,7 @@ class ConnectionInstance:
             return None
 
     def get_calendars_details(self, cids):
-        cal_keys = ["calendar_id", "calendar_name"]
+        cal_keys = ["calendar_id", "calendar_name", "calendar_color"]
         sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
               "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
               "AND deleted = 0"
@@ -296,14 +296,15 @@ class ConnectionInstance:
             self.__con.rollback()
             return None
 
-    def add_calendar(self, created, owner, cal_name="Default"):
+    def add_calendar(self, created, owner, cal_name="Default", cal_color="f57c00"):
         sql = "INSERT INTO calendars " \
-              "(calendar_name, calendar_date_created, calendar_owner) " \
-              "VALUES (?, ?, ?)"
+              "(calendar_name, calendar_date_created, calendar_owner, calendar_color) " \
+              "VALUES (?, ?, ?, ?)"
         self.__cur.execute(sql, [
             cal_name,
             created,
             owner,
+            cal_color
         ])
         calendar_id = self.get_last_ID()
         sql = "INSERT INTO user_calendars (user_id, calendar_id, role) VALUES (?, ?, ?)"
