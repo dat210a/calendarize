@@ -282,7 +282,7 @@ class ConnectionInstance:
 #######################################################################################
         # Insertion
 
-    def add_user(self, created, email, hashedpass,verify_key):
+    def add_user(self, created, email, hashedpass, verify_key):
         query = 'INSERT INTO users (user_date_created, user_email, user_password,verify_key,expires) VALUES (?,?,?,?, now()+ INTERVAL 24 HOUR);'
         user_data = [created, email, hashedpass, verify_key]
         self.__cur.execute(query, user_data)

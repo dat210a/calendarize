@@ -1,0 +1,100 @@
+<div class="edit_event_container" id="editEventForm">
+    <form class="editEvent" id="editEvent">
+        <div class="row neweventfixedheader accentgrey-dark z-depth-1">
+            <div class="col s12">
+                <h4 class="left-align grey-text text-lighten-5">Edit event</h4>
+            </div>
+        </div>
+        <button id="btnEditEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
+        <div style="padding-top: 5em">
+            <div class="row">
+                <div class="col s12 input-field">
+                    <input id="editEventName" Name="editEventName" type="text" class="" required>
+                    <label for="editEventName">Name of event</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <select id="calendarID" Name="calendarID">
+                    </select>
+                    <label>Calendar</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <label for="startDate">Start date</label>
+                    <input id="startDate" Name="startDate" type="text" class="datepicker">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <label for="endDate">End date</label>
+                    <input id="endDate" Name="endDate" type="text" class="datepicker" placeholder="Optional">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s4">
+                    <input type="checkbox" id="repeatEvent" name="recurring" />
+                    <label for="repeatEvent">Recurring</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 input-field">
+                    <input placeholder="Optional" id="first_name2" type="text">
+                    <label class="active" for="first_name2">Location</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2 input-field">
+                    <input value="0" id="first_name2" type="text" class="center">
+                    <label>Notification</label>
+                </div>
+                <div class="col s10 input-field">
+                    <select>
+                        <option value="1">None</option>
+                        <option value="2">Minutes in advance</option>
+                        <option value="3">Hours in advance</option>
+                        <option value="4">Days in advance</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <select multiple>
+                        <option value="1">Person 1</option>
+                        <option value="2">Person 2</option>
+                        <option value="3">Person 3</option>
+                    </select>
+                    <label>Add Members</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <select multiple>
+                        <option value="1">Person 1</option>
+                        <option value="2">Person 2</option>
+                        <option value="3">Person 3</option>
+                    </select>
+                    <label>Delete Members</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                    <label for="textarea1">Notes</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="file-field input-field col s12">
+                    <div class="btn">
+                        <span>File</span>
+                        <input type="file" name="file" multiple>
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

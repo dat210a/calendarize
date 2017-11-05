@@ -17,7 +17,7 @@ import pytz
 from pytz import timezone
 from datetime import datetime, date
 from classes import db_queries as db
-from flask import Flask, flash, render_template, session, g, request, url_for, redirect
+from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
@@ -318,13 +318,13 @@ def calendar(template):
     displayed_name = current_user.email if current_user.name is None else current_user.name
     return render_template(template, name=displayed_name)
 
-@app.route('/add_event_form')
+@app.route('/side/<path>')
 # @mobile_template('/{mobile/}add_event.html')
 @login_required
-def add_event_form():
+def load_sidebar(path):
+    safe_path = safe_join('sidebar', path+'.html')
     log_basic()
-    print('loading')
-    return render_template('/forms/add_event.html')
+    return render_template(safe_path)
 
 @app.route('/get_data')
 @login_required

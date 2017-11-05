@@ -26,14 +26,14 @@ $("#addCalendarForm").click(function(){
 });
 
 $("#addEventForm").click(function(){
-    $('#sidebar').load("/add_event_form", function(){
+    $('#sidebar').load("/side/add_event", function(){
         $("#eventForm").hide(0)
-        init()
         selector = $('#calendarID');
         selector.empty()
         d3.selectAll('.group').each(function(d){
             selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
         })
+        $('select').material_select();
         Materialize.updateTextFields();
         $("#eventForm").show(700)
         
