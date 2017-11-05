@@ -37,8 +37,9 @@ CREATE TABLE `users` (
   `verify_key` varchar(15) DEFAULT NULL,    
   `resetkey` varchar(80) DEFAULT NULL,  
   `expires` datetime DEFAULT NULL,  
-  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `active` tinyint(1) NOT NULL DEFAULT '0', 
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `user_date_deleted` datetime DEFAULT NULL, 
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -69,6 +70,7 @@ CREATE TABLE `calendars` (
   `calendar_details` varchar(45) DEFAULT NULL,
   `calendar_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `calendar_date_deleted` datetime DEFAULT NULL, 
   PRIMARY KEY (`calendar_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -102,6 +104,7 @@ CREATE TABLE `events` (
   `event_details` varchar(1000) DEFAULT NULL,
   `event_extra` varchar(45) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `event_date_deleted` datetime DEFAULT NULL, 
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -135,6 +138,7 @@ CREATE TABLE `event_children` (
   `child_extra` varchar(45) DEFAULT NULL,
   `skip_year` tinyint(1) NOT NULL DEFAULT '0',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',  
+  `child_date_deleted` datetime DEFAULT NULL, 
   PRIMARY KEY (`child_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -246,6 +250,30 @@ CREATE TABLE `event_files` (
 LOCK TABLES `event_files` WRITE;
 /*!40000 ALTER TABLE `event_files` DISABLE KEYS */;
 /*!40000 ALTER TABLE `event_files` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `child_files`
+--
+
+DROP TABLE IF EXISTS `child_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `child_files` (
+  `child_id` int NOT NULL,
+  `file_name` varchar(160) NOT NULL,
+  `unique_id` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`unique_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `child_files`
+--
+
+LOCK TABLES `child_files` WRITE;
+/*!40000 ALTER TABLE `child_files` DISABLE KEYS */;
+/*!40000 ALTER TABLE `child_files` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

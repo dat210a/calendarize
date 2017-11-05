@@ -1,5 +1,6 @@
 
 var timer = 0;
+var firstAvailColor = 0;
 
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
 
@@ -18,22 +19,12 @@ function ready(error, allData){
         console.log("Can't load the data")
         return;
     }
+
     datapoints = allData[1]
     groups = allData[0]
     
-    // set colors for all calendars that don't have one yet
-    groups.forEach(function(d){
-                d.calendar_color = '#' + d.calendar_color;
-                i = colors.length - 1
-                while (i >= 0){
-                    if (d.calendar_color == colors[i]) {
-                        colors.push(colors[i]);
-                        colors.splice(i, 1);
-                        break;
-                    }
-                    i--;
-                }
-            })
+    // fix color tag
+    groups.forEach(function(d){d.calendar_color = '#' + d.calendar_color;})
 
     // add groups / calendars
     AddGroupButtons(groups)

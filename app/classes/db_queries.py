@@ -409,25 +409,42 @@ class ConnectionInstance:
             # Deletion
 
     def db_del_user(self, uid):
-        self.__cur.execute("UPDATE users SET deleted = 1 WHERE ? = user_id", [uid])
+        self.__cur.execute("UPDATE users SET deleted=1, user_date_deleted = NOW() + INTERVAL 6 MONTH WHERE ? = user_id", [uid])
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile trying to delete user: {}'.format(e, uid))
             self.__con.rollback()
-
-    def db_del_event(self, eid):
-        self.__cur.execute("UPDATE events SET deleted=1 WHERE ? = event_id", [eid])
-        try:
-            self.__con.commit()
-        except Exception as e:
-            logging.debug('{}\nWhile trying to delete event: {}'.format(e, eid))
-            self.__con.rollback()
+            return False
 
     def db_del_cal(self, cid):
-        self.__cur.execute("UPDATE calendars SET deleted=1 WHERE ? = calendar_id", [cid])
+        self.__cur.execute("UPDATE calendars SET deleted=1, calendar_date_deleted = NOW() + INTERVAL 1 MONTH WHERE ? = calendar_id", [cid])
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile trying to delete calendar: {}'.format(e, cid))
             self.__con.rollback()
+            return False
+
+    def db_del_event(self, eid):
+        self.__cur.execute("UPDATE events SET deleted=1, event_date_deleted = NOW() + INTERVAL 1 MONTH WHERE ? = event_id", [eid])
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile trying to delete event: {}'.format(e, eid))
+            self.__con.rollback()
+            return False
+
+    def db_del_child(self, chid):
+        self.__cur.execute("UPDATE events SET deleted=1, child_date_deleted = NOW() + INTERVAL 1 MONTH WHERE ? = event_id", [chid])
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile trying to delete event: {}'.format(e, chid))
+            self.__con.rollback()
+            return False
+

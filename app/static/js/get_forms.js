@@ -26,9 +26,24 @@ $("#addCalendarForm").click(function(){
     selector = $('#setCalendarColor');
     selector.empty()
     colors.forEach(function(color){
-        selector.append("<option value=" + color + " style='background-color: " + color + "'>Test</option>");
+        selector.append("<option value=" + color + "></option>");
     })
-    selector.material_select();
+    selector.material_select(); 
+    $.each(colors, function(i, color){
+        if (d3.selectAll(".group").filter(d => d.calendar_color == color).empty()){
+            $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + color)    
+            return false;
+        } 
+        if (i == colors.length-1){
+            $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + colors[0])} 
+    });
+    $(".setColorContainer").find("li").each(function(i){
+        $(this).empty().addClass("valign-wrapper")
+               .append("<div></div>").children("div").addClass("coloredLine").css("background-color", colors[i])
+    })
+    selector.on("change", function(){
+        $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
+    })
     Materialize.updateTextFields();
     $("#calendarForm").show(700)
 });
