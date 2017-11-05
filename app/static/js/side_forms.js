@@ -38,6 +38,9 @@ $("#openProfile").click(function(){
     $('#sidebar').load("/side/display_profile")
 });
 
+function editProfile(){
+    $('#sidebar').load("/side/edit_profile")
+}
 //
 
 ////////////////////////////////////////////////////////////////////////

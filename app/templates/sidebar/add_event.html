@@ -97,7 +97,6 @@
         selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
     })
     init();
-    Materialize.updateTextFields();
 
     $("#startDate").change(function(){
         var $input = $('#endDate').pickadate()
@@ -122,7 +121,7 @@
             success: function(response) {
                 r = JSON.parse(response)
                 if (r.success == 'true') {
-                    $("#eventForm").hide()
+                    $("#sidebar").empty();
                     current_event_id = r.id;
                     load_data()
                 }

@@ -64,8 +64,7 @@
 </div>
 <script>
     $("#calendarForm").hide(0)        
-    $('select').material_select();
-    Materialize.updateTextFields();
+    init();
     $("#addCalendar").submit(function(e){
         e.preventDefault()
         $.ajax({
@@ -74,8 +73,7 @@
             type: 'POST',
             success: function(response) {
                 if (response == 'true') {
-                    $("#calendarForm").hide();
-                    current_event_id = null;
+                    $("#sidebar").empty();
                     load_data();
                 }
                 else {

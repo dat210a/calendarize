@@ -64,5 +64,26 @@
 </div>
 <script>
     $("#editCalendarForm").hide(0)
+    init();
+    $("#editCalendar").submit(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '/edit_calendar',
+            data: $(this).serialize(), 
+            type: 'POST',
+            success: function(response) {
+                if (response == 'true') {
+                    $("#sidebar").empty();
+                    load_data();
+                }
+                else {
+                    console.log ('could not create new calendar')
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
     $("#editCalendarForm").show(700)
 </script>

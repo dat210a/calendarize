@@ -1,6 +1,11 @@
 function init(){
+    Materialize.updateTextFields();
     $('select').material_select();
-    
+}
+
+function initWithDate(){
+    inti();
+
     $('.dropdown-button').dropdown({
         inDuration: 300,
         outDuration: 225,
@@ -23,7 +28,7 @@ function init(){
 
 (function($) {
     $(function() {
-        $('select').material_select();
+        init();
         load_data();
     });
 
