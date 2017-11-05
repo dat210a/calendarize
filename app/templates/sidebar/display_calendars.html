@@ -81,5 +81,26 @@ $(document).ready(function(){
     })
     $("#calAccord").append("<li><div class='collapsible-header accentgrey-dark'>Add new calendar</div><div class='collapsible-body'></div></li>")
     $('.collapsible').collapsible();
+    // $('#delete_calendar').click(function(e){
+    //     e.preventDefault()
+    //     $.ajax({
+    //         url: '/delete_calendar',
+    //         type: 'POST',
+    //         data: {'calendar_id': calendar_id}, // TODO
+    //         success: function(response) {
+    //             if (response == 'true') {
+    //                 $("#eventDisplay").hide()
+    //                 current_event = null;
+    //                 load_data();
+    //             }
+    //             else {
+    //                 console.log (response, 'could not delete this calendar')
+    //             }
+    //         },
+    //         error: function(error) {
+    //             console.log(error);
+    //         }
+    //     });
+    // });
   });
 </script>

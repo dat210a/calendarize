@@ -4,7 +4,7 @@ function init(){
 }
 
 function initWithDate(){
-    inti();
+    init();
 
     $('.dropdown-button').dropdown({
         inDuration: 300,
