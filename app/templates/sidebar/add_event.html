@@ -98,6 +98,12 @@
     })
     init();
     Materialize.updateTextFields();
+
+    $("#startDate").change(function(){
+        var $input = $('#endDate').pickadate()
+        var picker = $input.pickadate('picker')
+        picker.set('min', $(this).val())
+    });
     
     $("#addEvent").submit(function(e){
         e.preventDefault()

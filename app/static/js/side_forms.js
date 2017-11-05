@@ -26,28 +26,19 @@ $("#calendarsSettings").click(function(){
     $('#sidebar').load("/side/display_calendars")
 });
 
-$("#editEvent").click(function(){
-    $("#editEventForm").show(700)
-});
+function editEvent(){
+    $('#sidebar').load("/side/edit_event")
+}
 
 function display(){
     $('#sidebar').load("/side/display_event")
 }
 
-function populate_edit_form(){
-
-}
-
 $("#openProfile").click(function(){
-    $("#profileDisplay").show(700)
+    $('#sidebar').load("/side/display_profile")
 });
 
 //
-$("#startDate").change(function(){
-    var $input = $('#uniqueendDate').pickadate()
-    var picker = $input.pickadate('picker')
-    picker.set('min', $(this).val())
-});
 
 ////////////////////////////////////////////////////////////////////////
 //                           Add new data

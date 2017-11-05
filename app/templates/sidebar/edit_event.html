@@ -98,3 +98,13 @@
         </div>
     </form>
 </div>
+<script>
+    $("#editEventForm").hide(0)
+    init();
+    $("#startDate").change(function(){
+        var $input = $('#endDate').pickadate()
+        var picker = $input.pickadate('picker')
+        picker.set('min', $(this).val())
+    });
+    $("#editEventForm").show(700)
+</script>

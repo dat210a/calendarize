@@ -23,8 +23,7 @@ function init(){
 
 (function($) {
     $(function() {
-
-        init();
+        $('select').material_select();
         load_data();
     });
 
