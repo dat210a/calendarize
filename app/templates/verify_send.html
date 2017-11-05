@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}calendarize.verify{% endblock %}
 {% block content %}
-<label>The account verification link has been send to: {{ email }}. Please verify your account</label><br/>
+<label>The account verification link has been send to: {{ email }}. Please verify your account.<br/>You can close this window or return to our homepage:</label><br/>
 <button><a href="{{ url_for('index') }}">Return to homepage</a></button>
 
 {% endblock %}

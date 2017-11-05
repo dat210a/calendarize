@@ -62,3 +62,30 @@
         </div>
     </form>
 </div>
+<script>
+    $("#calendarForm").hide(0)        
+    $('select').material_select();
+    Materialize.updateTextFields();
+    $("#addCalendar").submit(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '/add_calendar',
+            data: $(this).serialize(), 
+            type: 'POST',
+            success: function(response) {
+                if (response == 'true') {
+                    $("#calendarForm").hide();
+                    current_event_id = null;
+                    load_data();
+                }
+                else {
+                    console.log ('could not create new calendar')
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    $("#calendarForm").show(700)
+</script>

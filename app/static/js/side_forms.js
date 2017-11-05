@@ -1,15 +1,9 @@
 
 var form_div_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"];
+var current_event_id = null
 
 var slider = document.getElementById("zoomSlider");
 
-function hide_all_forms(){
-    form_div_ids.forEach (function(form_parent){
-        $(form_parent).hide()
-        form = $(form_parent).children('form')[0]
-        if (typeof form != 'undefined') form.reset()
-    });
-};
 
 $("#resetToToday" ).click(function() {
     resetView(new Date);
@@ -21,72 +15,64 @@ slider.onchange = function (){
 
 // load forms
 $("#addCalendarForm").click(function(){
-    hide_all_forms()
-    $("#calendarForm").show(700)
+    $('#sidebar').load("/side/add_calendar")
 });
 
 $("#addEventForm").click(function(){
-    $('#sidebar').load("/side/add_event", function(){
-        $("#eventForm").hide(0)
-        selector = $('#calendarID');
-        selector.empty()
-        d3.selectAll('.group').each(function(d){
-            selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
-        })
-        $('select').material_select();
-        Materialize.updateTextFields();
-        $("#eventForm").show(700)
-        
-        $("#addEvent").submit(function(e){
-            e.preventDefault()
-            var form = $(this)[0];
-            oData = new FormData(form);
-            oData.set('startDate', new Date(oData.get('startDate')).getTime())
-            if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
-            $.ajax({
-                url: '/add_event',
-                type: 'POST',
-                data: oData, 
-                encType: "multipart/form-data",
-                processData: false,
-                contentType: false,
-                cache: false,
-                success: function(response) {
-                    r = JSON.parse(response)
-                    if (r.success == 'true') {
-                        $("#eventForm").hide()
-                        current_event_id = r.id;
-                        load_data()
-                    }
-                    else {
-                        if (r.message == 'date'){
-                            $('#startDate').addClass("validate invalid")
-                                            .blur(function(){
-                                                $(this).removeClass('validate invalid');
-                                            });
-                        }
-                        else{
-                            console.log ('Cannot create new event at this time')
-                        }
-                    }
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        });
-    })
+    $('#sidebar').load("/side/add_event")
 });
 
-// $("#editCalendarForm").click(function(){
-//     hide_all_forms()
-//     $("#calendarForm").show(700)
-// });
+$("#calendarsSettings").click(function(){
+    $('#sidebar').load("/side/display_calendars")
+});
 
 $("#editEvent").click(function(){
     hide_all_forms()
     $("#editEventForm").show(700)
 });
+
+
+//id,date,duration,group,recurring
+var current_event_id = null
+
+
+function display(data){
+    $("#eventDisplay").hide(0)
+    current_event_id = data.event_id;
+    if (+data.event_recurring == 1) var format = d3.timeFormat('%d %B, ' + data.event_year)
+    else var format = d3.timeFormat('%d %B, %Y')
+
+    $('.eventdetailsfixedheader').css('background-color', data.color);
+    $('.eventdetailsheaderBtn').css('background-color', data.color);
+
+    $('.eventName').text(data.event_name)
+    $('#event_owner').text("Created by: "+data.event_owner)
+    $('.eventDateStart').text(format(new Date(data.event_start)))
+    $('.eventDateEnd').text(format(new Date(data.event_end)))
+    $('.eventGroup').text(() => d3.selectAll('.group').filter(d => d.calendar_id == data.event_calendar_id).data()[0].calendar_name)
+    $('.eventRecur').text(() => +data.event_recurring == 1 ? 'YES' : 'NO')
+    
+    $('#event_notes').empty()
+    if (data.event_details == '') $('#event_notes').text("No notes added")
+    else $('#event_notes').text(data.event_details)
+
+    $('#eventFiles').empty()
+    if (data.files.length > 0){
+        data.files.forEach (function(filename){
+            $('#eventFiles').append("<a href='/uploads/"+ filename +"?id="+ data.event_id +"' download='"+ filename +"'>"+ filename +"</a><br>")
+        })
+    }
+    else{
+        $('#eventFiles').append("<span>No files added</span>")
+    }
+
+    hide_all_forms()
+    $("#eventDisplay").show(700)
+}
+
+function populate_edit_form(){
+
+}
 
 $("#openProfile").click(function(){
     hide_all_forms()
@@ -103,66 +89,7 @@ $("#startDate").change(function(){
 ////////////////////////////////////////////////////////////////////////
 //                           Add new data
 
-$("#addCalendar").submit(function(e){
-    e.preventDefault()
-    $.ajax({
-        url: '/add_calendar',
-        data: $(this).serialize(), 
-        type: 'POST',
-        success: function(response) {
-            if (response == 'true') {
-                $("#calendarForm").hide();
-                current_event_id = null;
-                load_data();
-            }
-            else {
-                console.log ('could not create new calendar')
-            }
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
-});
 
-$("#addEvent").submit(function(e){
-    e.preventDefault()
-    var form = $(this)[0];
-    oData = new FormData(form);
-    oData.set('startDate', new Date(oData.get('startDate')).getTime())
-    if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
-    $.ajax({
-        url: '/add_event',
-        type: 'POST',
-        data: oData, 
-        encType: "multipart/form-data",
-        processData: false,
-        contentType: false,
-        cache: false,
-        success: function(response) {
-            r = JSON.parse(response)
-            if (r.success == 'true') {
-                $("#eventForm").hide()
-                current_event_id = r.id;
-                load_data()
-            }
-            else {
-                if (r.message == 'date'){
-                    $('#startDate').addClass("validate invalid")
-                                    .blur(function(){
-                                        $(this).removeClass('validate invalid');
-                                    });
-                }
-                else{
-                    console.log ('Cannot create new event at this time')
-                }
-            }
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
-});
 
 // $('#addFiles').click(function(e){
 //     e.preventDefault()
