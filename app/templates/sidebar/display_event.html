@@ -9,76 +9,196 @@
     <div style="padding-top: 7em">
         <div class="row">
             <div class="col s12">
-                <span class="infotitle"><strong>Group</strong></span>
-                <br>
-                <span class="eventGroup">NaN</span>
+                <ul class="tabs">
+                    <li class="tab col s6"><a href="#event">General info</a></li>
+                    <li class="tab col s6"><a class="active" href="#child">This year</a></li>
+                </ul>
             </div>
         </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Date</strong></span>
-                <br>
-                <span>From: </span><span class="eventDateStart">Nan</span>
-                <br>
-                <span> To: </span><span class="eventDateEnd"></span>
-                <br>
-                <span class="sub">Recurring: </span><span class="sub eventRecur">NaN</span>
+        <div id="event" class="col s12">
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Group</strong></span>
+                    <br>
+                    <span class="eventGroup">NaN</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Location</strong></span>
-                <br>
-                <span>TBD</span>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Date</strong></span>
+                    <br>
+                    <span>From: </span><span class="eventDateStart">Nan</span>
+                    <br>
+                    <span> To: </span><span class="eventDateEnd"></span>
+                    <br>
+                    <span class="sub">Recurring: </span><span class="sub eventRecur">NaN</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Notifications</strong></span>
-                <br>
-                <span>TBD</span>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Location</strong></span>
+                    <br>
+                    <span>TBD</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Members</strong></span>
-                <div class="row">
-                    <div class="col s5" style="padding:0">
-                        <ul>
-                            <li>TBD</li>
-                            <li>TBD</li>
-                            <li>TBD</li>
-                            <li><a href="#">See more</a></li>
-                        </ul>
-                    </div>
-                    <div class="col 5">
-                        <ul>
-                            <li>TBD</li>
-                            <li>TBD</li>
-                            <li>TBD</li>
-                        </ul>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Notifications</strong></span>
+                    <br>
+                    <span>TBD</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Members</strong></span>
+                    <div class="row">
+                        <div class="col s5" style="padding:0">
+                            <ul>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li><a href="#">See more</a></li>
+                            </ul>
+                        </div>
+                        <div class="col 5">
+                            <ul>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Notes</strong></span>
-                <br>
-                <span id="event_notes"></span>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Notes</strong></span>
+                    <br>
+                    <span id="event_notes"></span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <span class="infotitle"><strong>Attachments</strong></span>
-                <br>
-                <div  id="eventFiles"></div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Attachments</strong></span>
+                    <br>
+                    <div  id="eventFiles"></div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <a id="delete_event" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete event</a>
+            <div class="row">
+                <div class="col s12">
+                    <a id="delete_event" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete event</a>
+                </div>
             </div>
-        </div>
+       </div>
+       <div id="child" class="col s12">
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Group</strong></span>
+                    <br>
+                    <span class="eventGroup">NaN</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Date</strong></span>
+                    <br>
+                    <span>From: </span><span class="eventDateStart">Nan</span>
+                    <br>
+                    <span> To: </span><span class="eventDateEnd"></span>
+                    <br>
+                    <span class="sub">Recurring: </span><span class="sub eventRecur">NaN</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Location</strong></span>
+                    <br>
+                    <span>TBD</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Notifications</strong></span>
+                    <br>
+                    <span>TBD</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Members</strong></span>
+                    <div class="row">
+                        <div class="col s5" style="padding:0">
+                            <ul>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li><a href="#">See more</a></li>
+                            </ul>
+                        </div>
+                        <div class="col 5">
+                            <ul>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                                <li>TBD</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Notes</strong></span>
+                    <br>
+                    <span id="event_notes"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Attachments</strong></span>
+                    <br>
+                    <div  id="eventFiles"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <a id="delete_event" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete event</a>
+                </div>
+            </div>
+       </div>
     </div>
 </div>
+<script>
+    $("#eventDisplay").hide(0)
+    $(document).ready(function(){
+        if (+current_event.event_recurring == 1) var format = d3.timeFormat('%d %B, ' + current_event.event_year)
+        else var format = d3.timeFormat('%d %B, %Y')
+
+        $('.eventdetailsfixedheader').css('background-color', current_event.color);
+        $('.eventdetailsheaderBtn').css('background-color', current_event.color);
+
+        $('.eventName').text(current_event.event_name)
+        $('#event_owner').text("Created by: "+current_event.event_owner)
+        $('.eventDateStart').text(format(new Date(current_event.event_start)))
+        $('.eventDateEnd').text(format(new Date(current_event.event_end)))
+        $('.eventGroup').text(() => d3.selectAll('.group').filter(d => d.calendar_id == current_event.event_calendar_id).data()[0].calendar_name)
+        $('.eventRecur').text(() => +current_event.event_recurring == 1 ? 'YES' : 'NO')
+        
+        $('#event_notes').empty()
+        if (current_event.event_details == '') $('#event_notes').text("No notes added")
+        else $('#event_notes').text(current_event.event_details)
+
+        $('#eventFiles').empty()
+        if (current_event.files.length > 0){
+            current_event.files.forEach (function(filename){
+                $('#eventFiles').append("<a href='/uploads/"+ filename +"?id="+ current_event.event_id +"' download='"+ filename +"'>"+ filename +"</a><br>")
+            })
+        }
+        else{
+            $('#eventFiles').append("<span>No files added</span>")
+        }
+
+        $("#eventDisplay").show(700, function(){
+            $('ul.tabs').tabs();
+        })
+    })
+</script>

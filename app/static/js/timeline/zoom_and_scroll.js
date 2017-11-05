@@ -26,7 +26,8 @@ function resetView(date) {
     //         return i == j.length-1;
     //     })
     //     .each(function(d){
-    //         display(d)
+    //         current_event = d
+    //         display()
     //     })
 }
 

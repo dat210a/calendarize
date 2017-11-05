@@ -1,6 +1,6 @@
 
 var form_div_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"];
-var current_event_id = null
+var current_event = null
 
 var slider = document.getElementById("zoomSlider");
 
@@ -27,47 +27,11 @@ $("#calendarsSettings").click(function(){
 });
 
 $("#editEvent").click(function(){
-    hide_all_forms()
     $("#editEventForm").show(700)
 });
 
-
-//id,date,duration,group,recurring
-var current_event_id = null
-
-
-function display(data){
-    $("#eventDisplay").hide(0)
-    current_event_id = data.event_id;
-    if (+data.event_recurring == 1) var format = d3.timeFormat('%d %B, ' + data.event_year)
-    else var format = d3.timeFormat('%d %B, %Y')
-
-    $('.eventdetailsfixedheader').css('background-color', data.color);
-    $('.eventdetailsheaderBtn').css('background-color', data.color);
-
-    $('.eventName').text(data.event_name)
-    $('#event_owner').text("Created by: "+data.event_owner)
-    $('.eventDateStart').text(format(new Date(data.event_start)))
-    $('.eventDateEnd').text(format(new Date(data.event_end)))
-    $('.eventGroup').text(() => d3.selectAll('.group').filter(d => d.calendar_id == data.event_calendar_id).data()[0].calendar_name)
-    $('.eventRecur').text(() => +data.event_recurring == 1 ? 'YES' : 'NO')
-    
-    $('#event_notes').empty()
-    if (data.event_details == '') $('#event_notes').text("No notes added")
-    else $('#event_notes').text(data.event_details)
-
-    $('#eventFiles').empty()
-    if (data.files.length > 0){
-        data.files.forEach (function(filename){
-            $('#eventFiles').append("<a href='/uploads/"+ filename +"?id="+ data.event_id +"' download='"+ filename +"'>"+ filename +"</a><br>")
-        })
-    }
-    else{
-        $('#eventFiles').append("<span>No files added</span>")
-    }
-
-    hide_all_forms()
-    $("#eventDisplay").show(700)
+function display(){
+    $('#sidebar').load("/side/display_event")
 }
 
 function populate_edit_form(){
@@ -75,7 +39,6 @@ function populate_edit_form(){
 }
 
 $("#openProfile").click(function(){
-    hide_all_forms()
     $("#profileDisplay").show(700)
 });
 
@@ -95,7 +58,7 @@ $("#startDate").change(function(){
 //     e.preventDefault()
 //     var form = $('#formFiles');
 //     oData = new FormData(form[0]);
-//     oData.append("event_id", current_event_id)
+//     oData.append("event_id", current_event.event_id)
 //     $.ajax({
 //         url: '/add_files',
 //         type: 'POST',
@@ -130,11 +93,11 @@ $('#delete_event').click(function(e){
     $.ajax({
         url: '/delete_event',
         type: 'POST',
-        data: {'event_id': current_event_id},
+        data: {'event_id': current_event.event_id},
         success: function(response) {
             if (response == 'true') {
                 $("#eventDisplay").hide()
-                current_event_id = null;
+                current_event = null;
                 load_data();
             }
             else {
@@ -156,7 +119,7 @@ $('#delete_calendar').click(function(e){
         success: function(response) {
             if (response == 'true') {
                 $("#eventDisplay").hide()
-                current_event_id = null;
+                current_event = null;
                 load_data();
             }
             else {

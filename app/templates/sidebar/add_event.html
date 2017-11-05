@@ -91,12 +91,12 @@
 </div>
 <script>
     $("#eventForm").hide(0)
-    init();
     selector = $('#calendarID');
     selector.empty()
     d3.selectAll('.group').each(function(d){
         selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
     })
+    init();
     Materialize.updateTextFields();
     
     $("#addEvent").submit(function(e){

@@ -95,7 +95,8 @@ var connections = dataGroup
                                 return radius*2 + d.length;
                             })
                             .on('click', function (d, i) {
-                                display(d);
+                                current_event = d
+                                display();
                             });
 
 
@@ -126,7 +127,8 @@ var connections = dataGroup
     detailContainer 
         .data(detailsPoints)
         .on('click', function (d, i) {
-            display(this.parentNode.__data__);
+            current_event = this.parentNode.__data__
+            display();
         });
 
     
@@ -176,11 +178,12 @@ var connections = dataGroup
                 .style('fill', function(){return data.color;});
         });
     
-    if (current_event_id == null) svg.call(zoom.translateBy, 0)
+    if (current_event == null) svg.call(zoom.translateBy, 0)
     else{
         svg.call(zoom.translateBy, 0) // TODO center to event
-        event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event_id).data()[0]
-        display(event_data)
+        event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]
+        current_event = event_data
+        display()
         resetView(new Date(event_data.event_start))
     }
 };
