@@ -15,7 +15,7 @@ function resize(){
     time.range([0, width]);
 
     //frames
-    // $('.side_tab').css("min-height", totalHeight + "px" )
+    // $('#sidebar').css("min-height", totalHeight + "px" )
     //               .css("max-height", totalHeight + "px" );
 
     //background elements

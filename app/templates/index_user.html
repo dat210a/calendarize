@@ -1,7 +1,7 @@
 {% extends 'nav_user.html' %}
 
 {% block content %}
-<link href="static/css/index_user.css" type="text/css" rel="stylesheet" media="screen,projection" />
+<link href="{{ url_for('static', filename='css/index_user.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
 <div class="body_valign center">
     <div>
         <p>Welcome back!</p>
@@ -10,4 +10,11 @@
         <a href='/calendar' class="waves-effect waves-light btn-large">To the calendar</a>
     </div>
 </div>
+<script>
+(function($) {
+    $(function() {
+        $('select').material_select();
+    });
+})(jQuery);
+</script>
 {% endblock %}

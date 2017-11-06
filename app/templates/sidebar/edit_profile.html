@@ -1,0 +1,37 @@
+<div class="edit_profile_container" id="editProfileForm">
+    <form class="editProfile" id="editProfile">
+        <div class="row neweventfixedheader accentgrey-dark z-depth-1">
+            <div class="col s12">
+                <h4 class="left-align grey-text text-lighten-5">Edit profile</h4>
+            </div>
+        </div>
+        <button id="btnEditProfile" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
+        <div style="padding-top: 5em">
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $("#editProfileForm").hide(0)
+    init();
+    $("#editProfile").submit(function(e){
+        e.preventDefault();
+        $.ajax({
+            url: '/update_profile',
+            type: 'POST',
+            success: function(response) {
+                console.log('success')
+            }
+        })
+    })
+    $("#editProfileForm").show(700)
+</script>
