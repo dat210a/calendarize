@@ -12,9 +12,9 @@ in the GitHub repository README.md
 
 """
 import logging
-import json, string, random
+import json, string, re, random
 import pytz
-from pytz import timezone
+# from pytz import timezone
 from datetime import datetime, date
 from classes import db_queries as db
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join
@@ -364,14 +364,21 @@ def uploaded_file(filename):
 @app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
 def add_calendar():
-    print(request.form)
+    print(request.form.to_dict())
     if request.method == "POST":
         cal_name = request.form.get('newCalendarName', None)
         cal_color = request.form.get('color', None)
-        if cal_name and cal_color:
+        if cal_name and cal_color and len(cal_name) < 45 and len(cal_color) == 7:
             with db.ConnectionInstance() as queries:
-                created = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name, cal_color[1:])
-                if created:
+                new_cal_id = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name, cal_color[1:])
+                if new_cal_id:
+                    # parse 'invites' string and send invites
+                    invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
+                    invites = re.split(',| |;', invites)
+                    for email in invites:
+                        if '@' in email:
+                            role = 2
+                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role)
                     return 'true'
     return 'false'
 

@@ -311,7 +311,7 @@ class ConnectionInstance:
         self.__cur.execute(sql, [owner, calendar_id, 0])
         try:
             self.__con.commit()
-            return self.get_last_ID()
+            return calendar_id
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_name)))
             self.__con.rollback()

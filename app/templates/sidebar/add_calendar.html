@@ -40,12 +40,12 @@
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <textarea id="calInvites" name="invites[]" class="materialize-textarea"></textarea>
+                    <textarea id="calInvites" name="invites" class="materialize-textarea"></textarea>
                     <label for="calInvites">Share</label>
                 </div>
             </div>
             <div class="row">
-                <div class="col s12 input-field">
+                <div class="col s12 input-field" id="setColorContainer">
                     <select id="setCalendarColor" name="color">
                     </select>
                     <label>Color</label>
@@ -64,25 +64,26 @@
         selector.append("<option value=" + color + "></option>");
     })
     selector.on("change", function(){
-        $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
+        $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
     });
+    init();
     $.each(colors, function(i, color){
         if (d3.selectAll(".group").filter(d => d.calendar_color == color).empty()){
-            // $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + color)   
+            $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + color)   
             selector.val(color) 
             return false;
         } 
         if (i == colors.length-1){
-            // $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + colors[0])
+            $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + colors[0])
             selector.val(colors[0]); 
         } 
     });
-    $(".setColorContainer").find("li").each(function(i){
+    $("#setColorContainer").find("li").each(function(i){
         $(this).empty().addClass("valign-wrapper")
                .append("<div></div>").children("div").addClass("coloredLine").css("background-color", colors[i])
     })
     // end of color picker
-    init();
+
     $("#addCalendar").submit(function(e){
         e.preventDefault()
         $.ajax({
