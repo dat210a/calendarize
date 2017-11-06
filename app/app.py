@@ -98,6 +98,14 @@ def end_logging(log):
         log.removeHandler(hdlr)
 
 
+logger = setup_logging()
+
+
+@app.before_request
+def prequest():
+    log_basic()
+
+
 def request_data(req):
     """
     """
@@ -145,7 +153,6 @@ def user_exists(email):
 def index(template):
     """
     """
-    log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
 #        with ShardTestingClass(app) as st:
@@ -163,7 +170,6 @@ def index(template):
 def index_user(template):
     """
     """
-    log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
 #        with ShardTestingClass(app) as st:
@@ -314,7 +320,6 @@ def reset(resetkey):
 def calendar(template):
     """
     """
-    log_basic()
     displayed_name = current_user.email if current_user.name is None else current_user.name
     return render_template(template, name=displayed_name)
 
@@ -324,7 +329,6 @@ def calendar(template):
 def get_data():
     """
     """
-    log_basic()
     with db.ConnectionInstance() as queries:
         calendar_ids = queries.get_calendars(current_user.user_id)
         cal_details = queries.get_calendars_details(calendar_ids)
@@ -471,7 +475,6 @@ def add_files():
 @mobile_template('{mobile/}template.html')
 @login_required
 def settings(template):
-    log_basic()
     # TODO load user's settings, then render a template with the settings
     return render_template(template)
 
@@ -564,13 +567,14 @@ def verifyoption():
         return render_template("verify_send.html", email=email)
 
 
+def start():
+    app.run()
+
+    end_logging(logger)
+
+
 ##################################################################
 
 
 if __name__ == '__main__':
-
-    logger = setup_logging()
-
-    app.run()
-
-    end_logging(logger)
+    start()
