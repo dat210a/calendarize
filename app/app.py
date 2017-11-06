@@ -315,16 +315,25 @@ def calendar(template):
     """
     """
     log_basic()
+    with db.ConnectionInstance() as queries:
+        invites = queries.get_user_invites(current_user.user_id)
+        invites = len(invites) if invites else 0
     displayed_name = current_user.email if current_user.name is None else current_user.name
-    return render_template(template, name=displayed_name)
+    return render_template(template, name=displayed_name, notifier=invites)
+
 
 @app.route('/side/<path>')
 # @mobile_template('/{mobile/}add_event.html')
 @login_required
 def load_sidebar(path):
-    safe_path = safe_join('sidebar', path+'.html')
+    safe_path = safe_join('sidebar', path + '.html')
     log_basic()
+    if path == 'notifications':
+        with db.ConnectionInstance() as queries:
+            invites = queries.get_user_invites(current_user.user_id)
+            return render_template(safe_path, notifications=invites)
     return render_template(safe_path)
+
 
 @app.route('/get_data')
 @login_required
@@ -338,6 +347,7 @@ def get_data():
         event_details = queries.get_events_details(calendar_ids)
     return json.dumps([cal_details, event_details], default=type_handler)
 
+
 # helper function, should be moved
 def type_handler(x):
     if isinstance(x, (date, datetime)):
@@ -348,6 +358,7 @@ def type_handler(x):
     elif isinstance(x, bytearray):
         return x.decode('utf-8')
     raise TypeError("Unknown type")
+
 
 @app.route('/uploads/<filename>')
 @login_required
@@ -364,7 +375,6 @@ def uploaded_file(filename):
 @app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
 def add_calendar():
-    print(request.form.to_dict())
     if request.method == "POST":
         cal_name = request.form.get('newCalendarName', None)
         cal_color = request.form.get('color', None)
@@ -377,7 +387,7 @@ def add_calendar():
                     invites = re.split(',| |;', invites)
                     for email in invites:
                         if '@' in email:
-                            role = 2
+                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
                             queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role)
                     return 'true'
     return 'false'
@@ -395,6 +405,17 @@ def join_calander():
                 return 'true'
     return 'false'
 
+
+@app.route('/decline_calander', methods=['POST', 'GET'])
+@login_required
+def join_calander():
+    if request.method == 'POST':
+        id = request.form.get("calendar_id", None)
+        role = request.form.get("role", None)
+        with db.ConnectionInstance() as q:
+            if q.check_invite(current_user.user_id, id, role) == True:
+                return 'true'
+    return 'false'
 
 
 @app.route('/invite_calendar', methods=['POST', 'GET'])

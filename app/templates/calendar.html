@@ -88,5 +88,16 @@
 <script src="/static/js/timeline/zoom_and_scroll.js"></script>
 <script src="/static/js/timeline/resize_timeline.js"></script>
 <script src="/static/js/side_forms.js"></script>
-<script src="/static/js/init.js"></script>
+<script>
+(function($) {
+    $(function() {
+        init_forms();
+        load_data();
+    });
+
+    jQuery(window).on('load', function(){
+        $('#preloader').fadeOut('slow',function(){$(this).remove();});
+    });
+})(jQuery);
+</script>
 {% endblock %}

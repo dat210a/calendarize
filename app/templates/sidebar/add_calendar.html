@@ -40,7 +40,7 @@
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <textarea id="calInvites" name="invites" class="materialize-textarea"></textarea>
+                    <textarea placeholder="Add emails" id="calInvites" name="invites" class="materialize-textarea"></textarea>
                     <label for="calInvites">Share</label>
                 </div>
             </div>
@@ -66,7 +66,7 @@
     selector.on("change", function(){
         $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
     });
-    init();
+    init_forms();
     $.each(colors, function(i, color){
         if (d3.selectAll(".group").filter(d => d.calendar_color == color).empty()){
             $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + color)   

@@ -69,6 +69,15 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
+    def get_user_invites(self, uid):
+        sql = "SELECT sender_user_id, calendar_id, role FROM calendar_invites WHERE invited_user_id = ?"
+        self.__cur.execute(sql, (uid,))
+        try:
+            return [dict(zip(('sender', 'calendar_id', 'role'), role)) for role in self.__cur.fetchall()]
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, uid))
+            return None
+
     def join_calander(self, calender_id, user_id, role):
         self.__cur.execute("SELECT unique_id from user_calendars ORDER BY unique_id DESC LIMIT 1")
         unique_id = self.__cur.fetchone()
@@ -104,7 +113,6 @@ class ConnectionInstance:
         if res == None:
             return False
         if (res[0] == user_id) and (res[1] == int(calendar_id)) and (res[2] == int(role)):
-            print("test")
             self.remove_invite(int(res[3]))
             return True
         return False

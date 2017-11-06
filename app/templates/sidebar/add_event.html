@@ -96,7 +96,7 @@
     d3.selectAll('.group').each(function(d){
         selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
     })
-    initWithDate();
+    init_date();
 
     $("#startDate").change(function(){
         var $input = $('#endDate').pickadate()
