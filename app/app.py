@@ -408,7 +408,7 @@ def join_calander():
 
 @app.route('/decline_calander', methods=['POST', 'GET'])
 @login_required
-def join_calander():
+def decline_calander():
     if request.method == 'POST':
         id = request.form.get("calendar_id", None)
         role = request.form.get("role", None)
