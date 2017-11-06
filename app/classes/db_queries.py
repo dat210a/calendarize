@@ -124,24 +124,24 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
 
-    def get_user_name(self, email):
+    def get_user_name(self, uid):
         sql = "SELECT user_name FROM users WHERE user_id = ?"
-        self.__cur.execute(sql, [email])
+        self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
             return None
 
-    def get_user_email(self, email):
+    def get_user_email(self, uid):
         sql = "SELECT user_email FROM users WHERE user_id = ?"
-        self.__cur.execute(sql, [email])
+        self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
             return None
 
     def get_calendars(self, uid):
