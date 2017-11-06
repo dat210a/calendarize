@@ -364,12 +364,13 @@ def uploaded_file(filename):
 @app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
 def add_calendar():
+    print(request.form)
     if request.method == "POST":
         cal_name = request.form.get('newCalendarName', None)
-        cal_color = request.form.get('calendar_color', None)
+        cal_color = request.form.get('color', None)
         if cal_name and cal_color:
             with db.ConnectionInstance() as queries:
-                created = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name, cal_color)
+                created = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name, cal_color[1:])
                 if created:
                     return 'true'
     return 'false'

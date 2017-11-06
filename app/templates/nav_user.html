@@ -4,7 +4,7 @@
 <link href="static/css/nav_user.css" type="text/css" rel="stylesheet" media="screen,projection" />
 <ul id='settings_dropdown' class='dropdown-content accentgrey-dark accentgrey-light-text'>
     <li><a href="{{ url_for('index') }}">Homepage</a></li>
-    <li><a href="#!" onclick="Materialize.toast('Not yet implemented', 4000)">Friends</a></li>
+    <li><a href="#!" id="showFriends">Friends</a></li>
     <li><a href="#!" id="calendarsSettings">Calendars</a></li>
     <li><a href="#!" id="openProfile">Profile<i class="material-icons right">settings</i></a></li>
     <li class="divider"></li>
@@ -16,8 +16,8 @@
     <div class="nav-wrapper hide-on-med-and-down">
         <a href="#"><img src="static/images/logo_nav.png" class="placeholderimg"></a>
         <ul class="right">
-            <li><a href="#" class="notifier" onclick="Materialize.toast('Not yet implemented', 4000)">
-                <ul><li><i class="material-icons">notifications</i></li><li><span class="new badge">4</span></li></ul></a>
+            <li><a href="#!" id="showNotifications">
+                <ul><li><i class="material-icons">notifications</i></li><li><span class="new badge"></span></li></ul></a>
             </li>
             <li><a class="dropdown-button" href="#!" data-activates="settings_dropdown">{{name}}<i class="material-icons right">arrow_drop_down</i></a></li>
         </ul>

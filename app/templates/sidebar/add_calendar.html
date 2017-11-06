@@ -9,52 +9,44 @@
         <div style="padding-top: 5em">
             <div class="row">
                 <div class="col s12 input-field">
-                    <input value="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
+                    <input placeholder="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
                     <label for="newCalendarName">Name of group</label>
                 </div>
             </div>
             <div class="row">
                 <div class="col s2 input-field">
-                    <input value="0" id="first_name2" type="text" class="center">
+                    <input value="0" id="first_name2" type="text" name="reminderNum" class="center">
                     <label>Notification</label>
                 </div>
                 <div class="col s10 input-field">
-                    <select>
-                        <option value="1">None</option>
-                        <option value="2">Minutes in advance</option>
-                        <option value="3">Hours in advance</option>
-                        <option value="4">Days in advance</option>
+                    <select name="reminderType">
+                        <option value="1" selected>None</option>
+                        <option value="2">Hours in advance</option>
+                        <option value="3">Days in advance</option>
+                        <option value="4">Weeks in advance</option>
+                        <option value="5">Months in advance</option>
                     </select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <select multiple>
-                        <option value="1">Person 1</option>
-                        <option value="2">Person 2</option>
-                        <option value="3">Person 3</option>
-                    </select>
-                    <label>Add Members</label>
                 </div>
             </div>
             <div class="row">
                 <div class="col s12 input-field">
-                    <select>
-                        <option value="1">Everyone</option>
-                        <option value="2">Users only</option>
-                        <option value="3">Invite only</option>
-                        <option value="4">Private</option>
+                    <select name="calAccess">
+                        <option value="1" selected>Private</option>
+                        <option value="2">Invite only</option>
+                        <option value="3">Everyone</option>
                     </select>
                     <label>Accessibility</label>
                 </div>
             </div>
             <div class="row">
+                <div class="input-field col s12">
+                    <textarea id="calInvites" name="invites[]" class="materialize-textarea"></textarea>
+                    <label for="calInvites">Share</label>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col s12 input-field">
-                    <select>
-                        <option value="1">Red</option>
-                        <option value="2">Blue</option>
-                        <option value="3">Purple</option>
-                        <option value="4">Yellow</option>
+                    <select id="setCalendarColor" name="color">
                     </select>
                     <label>Color</label>
                 </div>
@@ -64,27 +56,32 @@
 </div>
 <script>
     $("#calendarForm").hide(0) 
+
+    // color picker
     selector = $('#setCalendarColor');
     selector.empty()
     colors.forEach(function(color){
         selector.append("<option value=" + color + "></option>");
     })
-    selector.material_select(); 
+    selector.on("change", function(){
+        $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
+    });
     $.each(colors, function(i, color){
         if (d3.selectAll(".group").filter(d => d.calendar_color == color).empty()){
-            $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + color)    
+            // $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + color)   
+            selector.val(color) 
             return false;
         } 
         if (i == colors.length-1){
-            $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + colors[0])} 
+            // $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + colors[0])
+            selector.val(colors[0]); 
+        } 
     });
     $(".setColorContainer").find("li").each(function(i){
         $(this).empty().addClass("valign-wrapper")
                .append("<div></div>").children("div").addClass("coloredLine").css("background-color", colors[i])
     })
-    selector.on("change", function(){
-        $(".setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
-    });
+    // end of color picker
     init();
     $("#addCalendar").submit(function(e){
         e.preventDefault()

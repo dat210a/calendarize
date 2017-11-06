@@ -42,3 +42,11 @@ $("#openProfile").click(function(){
 function editProfile(){
     $('#sidebar').load("/side/edit_profile")
 }
+
+$("#showNotifications").click(function(){
+    $('#sidebar').load("/side/notifications")
+})
+
+$("#showFriends").click(function(){
+    $('#sidebar').load("/side/friends")
+})
