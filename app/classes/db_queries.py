@@ -108,6 +108,18 @@ class ConnectionInstance:
             return True
         return False
 
+    def check_for_invite(self, email, calendar_id):
+        sql_invite = "SELECT * from calendar_invites where email = ? and calendar_id = ?"
+        self.__cur.execute(sql_invite, [email, calendar_id])
+        invite = self.__cur.fetchone()
+        sql_invite = "SELECT * from user_calendars where email = ? and calendar_id = ?"
+        self.__cur.execute(sql_invite, [self.get_user_id(email), calendar_id])
+        calendar = self.__cur.fetchone()
+        if calendar[0] == None and invite[0] == None:
+            return True
+        return False
+
+
     def remove_invite(self, unique_id):
         sql = "DELETE FROM calendar_invites WHERE unique_id = ?"
         self.__cur.execute(sql, [unique_id])
