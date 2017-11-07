@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}calendarize.verify{% endblock %}
 {% block content %}
-<h1>Your account has been successfully verified. You are now logged in</h1>
+<h2>Your account has been successfully verified. You will be automaticaly redirected to your homepage in a few moments or you can optionally click on the link below</h2>
 <button><a href="{{ url_for('index') }}">Return to Homepage</a></button>
-
+<script>setInterval(function(){ window.location.replace("{{ url_for('index') }}"); }, 5000);</script>
 {% endblock %}

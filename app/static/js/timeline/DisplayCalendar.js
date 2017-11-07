@@ -14,7 +14,7 @@ var tresholdNumPoints = 8;
 var k = 1;
 
 var time = d3.scaleTime()
-                .domain([new Date('1/1/2020'), new Date('1/1/2021')])
+                .domain([new Date('1/1/1999'), d3.timeMillisecond.offset(new Date('1/1/2000'), 20930400)])
                 .range([0, width]);
 
 var axis = d3.axisBottom(time)
@@ -28,6 +28,9 @@ var svg = d3.select('svg')
                     .attr('width', totalWidth)
                     .attr('height', height)
                     .attr("transform", "translate(" + 0 + "," + 0 + ")")
+
+svg.append('path')
+        .attr('d', 'M515,-14L597,-395L617,-395')
 
 //year display
 svg.append('g')

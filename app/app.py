@@ -12,12 +12,12 @@ in the GitHub repository README.md
 
 """
 import logging
-import json, string, random
+import json, string, re, random
 import pytz
-from pytz import timezone
+# from pytz import timezone
 from datetime import datetime, date
 from classes import db_queries as db
-from flask import Flask, flash, render_template, session, g, request, url_for, redirect
+from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
@@ -281,8 +281,29 @@ def calendar(template):
     """
     """
     log_basic()
+    with db.ConnectionInstance() as queries:
+        invites = queries.get_user_invites(current_user.user_id)
+        invites = len(invites) if invites else 0
     displayed_name = current_user.email if current_user.name is None else current_user.name
-    return render_template(template, name=displayed_name)
+    return render_template(template, name=displayed_name, notifier=invites)
+
+
+@app.route('/side/<path>')
+# @mobile_template('/{mobile/}add_event.html')
+@login_required
+def load_sidebar(path):
+    safe_path = safe_join('sidebar', path + '.html')
+    log_basic()
+    if path == 'notifications':
+        with db.ConnectionInstance() as queries:
+            invites = queries.get_user_invites(current_user.user_id)
+            return render_template(safe_path, notifications=invites)
+    if path == 'display_profile':
+        with db.ConnectionInstance() as queries:
+            phone = queries.get_user_data(current_user.user_id)
+            name = current_user.name if current_user.name else current_user.email
+        return render_template(safe_path, name=name, email=current_user.email, phone=phone)
+    return render_template(safe_path)
 
 
 @app.route('/get_data')
@@ -297,16 +318,18 @@ def get_data():
         event_details = queries.get_events_details(calendar_ids)
     return json.dumps([cal_details, event_details], default=type_handler)
 
+
 # helper function, should be moved
 def type_handler(x):
     if isinstance(x, (date, datetime)):
-        # TODO if desired timezone set use this lines:
-        # x = pytz.utc.localize(x)
+        x = pytz.utc.localize(x)
+        # TODO if desired timezone set use this line:
         # x = x.astimezone(tz)
         return x.isoformat()
     elif isinstance(x, bytearray):
         return x.decode('utf-8')
     raise TypeError("Unknown type")
+
 
 @app.route('/uploads/<filename>')
 @login_required
@@ -319,38 +342,24 @@ def uploaded_file(filename):
             return load_file(filename, eid)
     # return redirect(url_for('error'))
 
-# @app.route('/view/<calendar_id>')
-# @mobile_template('{mobile/}calendar.html')
-# def view(template, calendar_id):
-
-#     log_basic()
-
-#     with db.ConnectionInstance() as q:
-
-#         cals = q.get_calendars()
-#         if calendar_id in cals:
-#             members = q.get_calendar_members(calendar_id)
-#             if get_user_id() in members:
-#                 # TODO create template
-#                 return render_template(template)
-#             else:
-#                 # return redirect(url_for(error))
-#                 pass
-#         else:
-#             # return redirect(url_for(error))
-#             # TODO create error route, uncomment above lines
-#             pass
-
 
 @app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
 def add_calendar():
     if request.method == "POST":
-        cal_name = request.form['newCalendarName']
-        if cal_name:
+        cal_name = request.form.get('newCalendarName', None)
+        cal_color = request.form.get('color', None)
+        if cal_name and cal_color and len(cal_name) < 45 and len(cal_color) == 7:
             with db.ConnectionInstance() as queries:
-                created = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name)
-                if created:
+                new_cal_id = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name, cal_color[1:])
+                if new_cal_id:
+                    # parse 'invites' string and send invites
+                    invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
+                    invites = re.split(',| |;', invites)
+                    for email in invites:
+                        if '@' in email:
+                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
+                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role)
                     return 'true'
     return 'false'
 
@@ -367,6 +376,17 @@ def join_calander():
                 return 'true'
     return 'false'
 
+
+@app.route('/decline_calander', methods=['POST', 'GET'])
+@login_required
+def decline_calander():
+    if request.method == 'POST':
+        id = request.form.get("calendar_id", None)
+        role = request.form.get("role", None)
+        with db.ConnectionInstance() as q:
+            if q.check_invite(current_user.user_id, id, role) == True:
+                return 'true'
+    return 'false'
 
 
 @app.route('/invite_calendar', methods=['POST', 'GET'])
@@ -408,7 +428,7 @@ def add_event():
             except:
                 return json.dumps({'success' : 'false', 'message': 'date'})
             try:
-                data['endDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)
+                data['endDate'] = datetime.utcfromtimestamp(int(data['endDate'])/1000.0)
                 if data['endDate'] < data['startDate']:
                     data['endDate'] = data['startDate']
             except:
@@ -435,20 +455,22 @@ def add_files():
     return 'true'
 
 
-@app.route('/settings')
-@mobile_template('{mobile/}template.html')
+@app.route('/update_profile', methods=['POST'])
 @login_required
-def settings(template):
+def settings():
     log_basic()
-    # TODO load user's settings, then render a template with the settings
-    return render_template(template)
-
-
-@app.route('/settings/save', methods=['POST'])  # <- could be done with AJAX?
-def save_settings():
-    # val = request.form.get(name_of_form_field, None) <- Syntax for getting form data
-    # TODO extract settings from form and store in db
-    return redirect(url_for(settings))  # reloads the settings page to show the new settings
+    if request.method == "POST":
+        name = request.form.get('name', None)
+        name = current_user.name if name == '' or name == None else name
+        try: 
+            phone = int(request.form['phone'])
+        except:
+            phone = None
+        if name and len(name) < 45 or phone:
+            with db.ConnectionInstance() as queries:
+                if queries.update_user(current_user.user_id, name, phone):
+                    return 'true'
+    return 'false'
 
 
 ##################################################################

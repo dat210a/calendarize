@@ -1,8 +1,8 @@
 
 var timer = 0;
+var firstAvailColor = 0;
 
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
-var color = d3.scaleOrdinal(['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38']);
 
 var detailHeight = 80,
     detailWidth = 200;
@@ -19,12 +19,18 @@ function ready(error, allData){
         console.log("Can't load the data")
         return;
     }
+
     datapoints = allData[1]
     groups = allData[0]
     
-    groups.forEach(function(d, i){d.color = color(i)})
+    // fix color tag
+    groups.forEach(function(d){d.calendar_color = '#' + d.calendar_color;})
+
+    // add groups / calendars
     AddGroupButtons(groups)
 
+    // clear data before assigning new one
+    // TODO figure out whether it's possible to do with update() enter() exit()
     d3.selectAll('.data').remove()
     if (datapoints.length == 0) return
 
@@ -74,15 +80,17 @@ var connections = dataGroup
                             .attr('class', 'points shadow')
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
-                                d.color = groups.filter(function(gr){
+                                d.calendar_color = groups.filter(function(gr){
                                     return gr.calendar_id == d.event_calendar_id
-                                })[0].color
-                                return d.color
+                                })[0].calendar_color
+                                return d.calendar_color
                             })
                             .attr("height", radius*2)
                             .attr("rx", radius)
                             .attr("x", function(d){
-                                return d.x = time(new Date(d.event_start))
+                                var startDate = new Date(d.event_start)
+                                d.event_year = d3.timeFormat('%Y')(startDate)
+                                return d.x = time(startDate)
                             })
                             .attr("y", function(d){
                                 d.y = 0;
@@ -93,7 +101,8 @@ var connections = dataGroup
                                 return radius*2 + d.length;
                             })
                             .on('click', function (d, i) {
-                                display(d);
+                                current_event = d
+                                display();
                             });
 
 
@@ -124,7 +133,8 @@ var connections = dataGroup
     detailContainer 
         .data(detailsPoints)
         .on('click', function (d, i) {
-            display(this.parentNode.__data__);
+            current_event = this.parentNode.__data__
+            display();
         });
 
     
@@ -171,10 +181,17 @@ var connections = dataGroup
     dataGroup
         .each(function(data){
             d3.select(this).selectAll('.detailBox')
-                .style('fill', function(){return data.color;});
+                .style('fill', function(){return data.calendar_color;});
         });
     
-    d3.select('svg').call(zoom.translateBy, 0)
+    if (current_event == null) svg.call(zoom.translateBy, 0)
+    else{
+        svg.call(zoom.translateBy, 0) // TODO center to event
+        event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]
+        current_event = event_data
+        display()
+        resetView(new Date(event_data.event_start))
+    }
 };
 
 //update data position after forces have taken effect
@@ -191,7 +208,7 @@ function ticked() {
 
     selection.selectAll('.points')
         .attr("x", function (d) {
-            return d.x;
+            return d.x - radius;
         })
         .attr("y", function (d) {
             d.y = d.y > 0 ? 0 : d.y;
@@ -266,7 +283,7 @@ function showDetails(){
 
 //draw lines data-details
 function link(target, source) {
-    var x1 = Math.round(source.x + source.length*k/2 + radius);
+    var x1 = Math.round(source.x + source.length*k/2);
     var y1 = Math.round(source.y);
     var x2 = Math.round(target.x);
     var y2 = Math.round(target.y);

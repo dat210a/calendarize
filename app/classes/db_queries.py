@@ -69,6 +69,15 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
+    def get_user_invites(self, uid):
+        sql = "SELECT sender_user_id, calendar_id, role FROM calendar_invites WHERE invited_user_id = ?"
+        self.__cur.execute(sql, (uid,))
+        try:
+            return [dict(zip(('sender', 'calendar_id', 'role'), role)) for role in self.__cur.fetchall()]
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, uid))
+            return None
+
     def join_calander(self, calender_id, user_id, role):
         self.__cur.execute("SELECT unique_id from user_calendars ORDER BY unique_id DESC LIMIT 1")
         unique_id = self.__cur.fetchone()
@@ -104,7 +113,6 @@ class ConnectionInstance:
         if res == None:
             return False
         if (res[0] == user_id) and (res[1] == int(calendar_id)) and (res[2] == int(role)):
-            print("test")
             self.remove_invite(int(res[3]))
             return True
         return False
@@ -124,24 +132,35 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving password hash for user with email:\n{}'.format(e, email))
             return None
 
-    def get_user_name(self, email):
+    def get_user_name(self, uid):
         sql = "SELECT user_name FROM users WHERE user_id = ?"
-        self.__cur.execute(sql, [email])
+        self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
             return None
 
-    def get_user_email(self, email):
+    def get_user_email(self, uid):
         sql = "SELECT user_email FROM users WHERE user_id = ?"
-        self.__cur.execute(sql, [email])
+        self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchone()
             return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, email))
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
+            return None
+
+    def get_user_data(self, uid):
+        user_data = ['user_phone']
+        sql = "SELECT user_phone FROM users WHERE user_id = ?"
+        self.__cur.execute(sql, [uid])
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
             return None
 
     def get_calendars(self, uid):
@@ -184,7 +203,7 @@ class ConnectionInstance:
             return None
 
     def get_calendars_details(self, cids):
-        cal_keys = ["calendar_id", "calendar_name"]
+        cal_keys = ["calendar_id", "calendar_name", "calendar_color"]
         sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
               "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
               "AND deleted = 0"
@@ -221,10 +240,10 @@ class ConnectionInstance:
         sql = "SELECT file_name FROM event_files WHERE event_id = ?"
         self.__cur.execute(sql, (eid,))
         try:
-            return [x[0].decode('utf-8') for x in self.__cur.fetchall()]
+            return self.__cur.fetchall()
         except Exception as e:
             logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
-            return []
+            return None
 
     def get_event_children(self, eid):
         data_key = ["child_id", "child_owner", "child_year", "child_start", "child_end", "child_location", "child_details", "skip_year"]
@@ -233,10 +252,10 @@ class ConnectionInstance:
               "AND deleted = 0"
         self.__cur.execute(sql, (eid,))
         try:
-            return self.__cur.fetchall()
+            return [dict(zip(data_key, child)) for child in self.__cur.fetchall()]
         except Exception as e:
             logging.debug('{}\nWhile fetching event children for event with id: {}'.format(e, eid))
-            return ()
+            return None
 
     # def db_get_cal_admin(self, cid=None, eid=None):
     #     # Fetches a list of admins for a calendar
@@ -291,7 +310,7 @@ class ConnectionInstance:
 #######################################################################################
         # Insertion
 
-    def add_user(self, created, email, hashedpass,verify_key):
+    def add_user(self, created, email, hashedpass, verify_key):
         query = 'INSERT INTO users (user_date_created, user_email, user_password,verify_key,expires) VALUES (?,?,?,?, now()+ INTERVAL 24 HOUR);'
         user_data = [created, email, hashedpass, verify_key]
         self.__cur.execute(query, user_data)
@@ -305,21 +324,22 @@ class ConnectionInstance:
             self.__con.rollback()
             return None
 
-    def add_calendar(self, created, owner, cal_name="Default"):
+    def add_calendar(self, created, owner, cal_name="Default", cal_color="f57c00"):
         sql = "INSERT INTO calendars " \
-              "(calendar_name, calendar_date_created, calendar_owner) " \
-              "VALUES (?, ?, ?)"
+              "(calendar_name, calendar_date_created, calendar_owner, calendar_color) " \
+              "VALUES (?, ?, ?, ?)"
         self.__cur.execute(sql, [
             cal_name,
             created,
             owner,
+            cal_color
         ])
         calendar_id = self.get_last_ID()
         sql = "INSERT INTO user_calendars (user_id, calendar_id, role) VALUES (?, ?, ?)"
         self.__cur.execute(sql, [owner, calendar_id, 0])
         try:
             self.__con.commit()
-            return self.get_last_ID()
+            return calendar_id
         except Exception as e:
             logging.debug('{}\nOccurred while trying to insert calendar with data:\n{}'.format(e, pp.pformat(cal_name)))
             self.__con.rollback()
@@ -403,8 +423,16 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             self.__con.rollback()
 
-    def update_user(self, user_data):
-        #TODO
+    def update_user(self, uid, name, phone):
+        sql = "UPDATE users SET user_name = ?, user_phone=? WHERE user_id = ?"
+        self.__cur.execute(sql, (name, phone, uid))
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile updating user with id:\n{}'.format(e, uid))
+            self.__con.rollback()
+            return False
         pass
 
     def update_calendar(self, calendar_data):
@@ -424,25 +452,42 @@ class ConnectionInstance:
             # Deletion
 
     def db_del_user(self, uid):
-        self.__cur.execute("UPDATE users SET deleted = 1 WHERE ? = user_id", [uid])
+        self.__cur.execute("UPDATE users SET deleted=1, user_date_deleted = NOW() + INTERVAL 6 MONTH WHERE ? = user_id", [uid])
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile trying to delete user: {}'.format(e, uid))
             self.__con.rollback()
-
-    def db_del_event(self, eid):
-        self.__cur.execute("UPDATE events SET deleted=1 WHERE ? = event_id", [eid])
-        try:
-            self.__con.commit()
-        except Exception as e:
-            logging.debug('{}\nWhile trying to delete event: {}'.format(e, eid))
-            self.__con.rollback()
+            return False
 
     def db_del_cal(self, cid):
-        self.__cur.execute("UPDATE calendars SET deleted=1 WHERE ? = calendar_id", [cid])
+        self.__cur.execute("UPDATE calendars SET deleted=1, calendar_date_deleted = NOW() + INTERVAL 1 MONTH WHERE ? = calendar_id", [cid])
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile trying to delete calendar: {}'.format(e, cid))
             self.__con.rollback()
+            return False
+
+    def db_del_event(self, eid):
+        self.__cur.execute("UPDATE events SET deleted=1, event_date_deleted = NOW() + INTERVAL 1 MONTH WHERE ? = event_id", [eid])
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile trying to delete event: {}'.format(e, eid))
+            self.__con.rollback()
+            return False
+
+    def db_del_child(self, chid):
+        self.__cur.execute("UPDATE events SET deleted=1, child_date_deleted = NOW() + INTERVAL 1 MONTH WHERE ? = event_id", [chid])
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile trying to delete event: {}'.format(e, chid))
+            self.__con.rollback()
+            return False
+
