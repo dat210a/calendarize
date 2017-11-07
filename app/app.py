@@ -493,6 +493,7 @@ def settings():
     log_basic()
     if request.method == "POST":
         name = request.form.get('name', None)
+        name = current_user.name if name == '' or name == None else name
         try:
             phone = int(request.form['phone'])
         except:
