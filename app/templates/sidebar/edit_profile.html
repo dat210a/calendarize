@@ -39,7 +39,10 @@
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
-                console.log(response)
+                var new_name = $('#name').val()
+                if (new_name != ''){
+                    refresh_name(new_name);
+                }
                 $('#sidebar').load("/side/display_profile")
             },
             error: function(error){
