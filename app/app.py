@@ -389,9 +389,9 @@ def add_calendar():
                     invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
                     invites = re.split(',| |;', invites)
                     for email in invites:
-                        if '@' in email:
+                        if '@' in email and queries.check_invite(email, new_cal_id):
                             role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
-                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role)
+                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role, email)
                     return 'true'
     return 'false'
 
@@ -405,7 +405,7 @@ def request_calandar():
             with db.ConnectionInstance() as queries:
                 role = queries.get_calendar_role(current_user.user_id, cal_id)
                 if role is not None:
-                    cal_data = queries.get_calendars_details(cal_id)[0]
+                    cal_data = queries.get_calendars_details((cal_id,))[0]
                     return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
     return json.dumps({'success' : 'false'})
 
@@ -441,7 +441,7 @@ def invite_calander():
     if request.method == 'POST':
         email = request.form.get("email", None)
         if len(email) > 45:
-            return False
+            return 'false'
         calendar_id = request.form.get("calendar_id", None)
         role = request.form.get("role", None)
         with db.ConnectionInstance() as q:

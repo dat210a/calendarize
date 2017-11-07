@@ -47,7 +47,7 @@ $(document).ready(function(){
     for (i = 0; i < notifications.length; i++){
         var data = JSON.stringify(notifications[i])
         var invite_card =  `<div class='card-content'> \
-                                <p> ${notifications[i]['sender']} invited you to join ${notifications[i]['calendar_id']} calendar as ${notifications[i]['role']} </p> \
+                                <p> <strong>${notifications[i]['sender']}</strong> invited you to join <strong style='display: inline-block'>${notifications[i]['calendar_name']}</strong> calendar </p> \
                             </div>\
                             <div class='card-action right'> \
                                 <a href='#!' onclick='decline(${data})' style='color:#ffab40; margin-right:5px'>Decline</a> \

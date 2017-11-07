@@ -188,10 +188,10 @@ DROP TABLE IF EXISTS `calendar_invites`;
 CREATE TABLE IF NOT EXISTS `calendar_invites` (
   `unique_id` INT NOT NULL,
   `calendar_id` INT NOT NULL,
-  `invited_user_id` INT,
+  `invited_user_id` INT DEFAULT NULL,
+  `email` varchar(45) NOT NULL,
   `sender_user_id` INT NOT NULL,
   `role` INT NOT NULL DEFAULT '0',
-  `email` varchar(45) NOT NULL,
   PRIMARY KEY (`unique_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -73,9 +73,26 @@ class ConnectionInstance:
         sql = "SELECT sender_user_id, calendar_id, role FROM calendar_invites WHERE invited_user_id = ?"
         self.__cur.execute(sql, (uid,))
         try:
-            return [dict(zip(('sender', 'calendar_id', 'role'), role)) for role in self.__cur.fetchall()]
+            res = self.__cur.fetchall()
+            roles = []
+            for role in res:
+                role = list(role)
+                role[0] = self.get_user_repr(role[0])
+                calendar_name = self.get_calendar_name(role[1])
+                roles.append(role + [calendar_name])
+            return [dict(zip(('sender', 'calendar_id', 'role', 'calendar_name'), role)) for role in roles]
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, uid))
+            return None
+
+    def get_calendar_name(self, cid):
+        sql = "SELECT calendar_name FROM calendars WHERE ? = calendar_id "
+        self.__cur.execute(sql, [cid])
+        try:
+            res = self.__cur.fetchone()
+            return res[0].decode('utf-8')
+        except Exception as e:
+            logging.debug('{}\nWhile retrieving calendar name:\n{}'.format(e, cid))
             return None
 
     def join_calander(self, calender_id, user_id, role):
@@ -96,24 +113,24 @@ class ConnectionInstance:
         self.__con.commit()
 
     def send_invite(self, calender_id, user_id, sender_id, role, email):
-        sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?,+)"
+        sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?,?)"
         self.__cur.execute("SELECT unique_id from calendar_invites ORDER BY unique_id DESC LIMIT 1")
         unique_id = self.__cur.fetchone()
         if unique_id == None:
             unique_id = 1
         else:
             unique_id = unique_id[0] + 1
-        self.__cur.execute(sql, [unique_id, calender_id, user_id, sender_id, role, email])
+        self.__cur.execute(sql, [unique_id, calender_id, user_id, email, sender_id, role])
         self.__con.commit()
 
     def check_invite(self, email, calendar_id):
         sql_invite = "SELECT * from calendar_invites where email = ? and calendar_id = ?"
         self.__cur.execute(sql_invite, [email, calendar_id])
         invite = self.__cur.fetchone()
-        sql_invite = "SELECT * from user_calendars where email = ? and calendar_id = ?"
+        sql_invite = "SELECT * from user_calendars where user_id = ? and calendar_id = ?"
         self.__cur.execute(sql_invite, [self.get_user_id(email), calendar_id])
         calendar = self.__cur.fetchone()
-        if calendar[0] == None and invite[0] == None:
+        if calendar == None and invite == None:
             return True
         return False
 
@@ -128,7 +145,6 @@ class ConnectionInstance:
             self.remove_invite(int(res[3]))
             return True
         return False
-
 
     def remove_invite(self, unique_id):
         sql = "DELETE FROM calendar_invites WHERE unique_id = ?"
@@ -196,6 +212,16 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, cid))
             return []
 
+    def get_calendar_pending(self, cid):
+        sql = "SELECT email FROM calendar_invites WHERE calendar_id = ?"
+        self.__cur.execute(sql, [cid])
+        try:
+            res = self.__cur.fetchall()
+            return [r[0] for r in res]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, cid))
+            return []
+
     def get_event_calendar_id(self, eid):
         sql = "SELECT event_calendar_id FROM events WHERE event_id = ?"
         self.__cur.execute(sql, [eid])
@@ -226,13 +252,14 @@ class ConnectionInstance:
             calendars = []
             for calendar in self.__cur.fetchall():
                 calendar = list(calendar)
-                mem = self.get_calendar_users(calendar[0])
+                member_ids = self.get_calendar_users(calendar[0])
                 members = []
-                for member in mem:
-                    members.append(self.get_user_email(member))
-                # pending = self.
-                calendars.append(calendar+[members])
-            return [dict(zip(cal_keys+['members'], calendar)) for calendar in calendars]
+                for member in member_ids:
+                    members.append(self.get_user_repr(member))
+                pending = self.get_calendar_pending(calendar[0])
+                calendar[3] = self.get_user_repr(calendar[3])
+                calendars.append(calendar+[members]+[pending])
+            return [dict(zip(cal_keys+['members']+['pending'], calendar)) for calendar in calendars]
         except Exception as e:
             logging.debug('{}\nWhile fetching calendar(s) details for user: {}'.format(e, cids))
             return None
@@ -250,15 +277,18 @@ class ConnectionInstance:
                 event = list(event)
                 files = self.get_event_files(event[0])
                 children = self.get_event_children(event[0])
-                owner = self.get_user_name(event[1])
-                if not owner:
-                    owner = self.get_user_email(event[1])
-                event[1] = owner
+                event[1] = self.get_user_repr(event[1])
                 events.append(event+[children]+[files])
             return [dict(zip(data_key+['children']+['files'], e)) for e in events]
         except Exception as e:
             logging.debug('{}\nWhile fetching event(s) details for calendar(s): {}'.format(e, cids))
             return None
+
+    def get_user_repr(self, id):
+        name = self.get_user_name(id)
+        if not name:
+            name = self.get_user_email(id)
+        return name
 
     def get_event_files(self, eid):
         sql = "SELECT file_name FROM event_files WHERE event_id = ?"
