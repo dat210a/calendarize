@@ -108,7 +108,7 @@ class ConnectionInstance:
             return True
         return False
 
-    def check_for_invite(self, email, calendar_id):
+    def check_for_invite(self, user_id, calendar_id, role):
         sql = "SELECT invited_user_id, calendar_id, role, unique_id FROM calendar_invites WHERE invited_user_id = ? AND calendar_id = ?"
         self.__cur.execute(sql, [user_id, calendar_id])
         res = self.__cur.fetchone()
