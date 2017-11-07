@@ -96,7 +96,7 @@ class ConnectionInstance:
         self.__con.commit()
 
     def send_invite(self, calender_id, user_id, sender_id, role, email):
-        sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?,+)"
+        sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?)"
         self.__cur.execute("SELECT unique_id from calendar_invites ORDER BY unique_id DESC LIMIT 1")
         unique_id = self.__cur.fetchone()
         if unique_id == None:
@@ -193,11 +193,11 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
     def get_calendar_name(self, calender_id):
-        sql = "SELECT calender_name FROM calendars WHERE calendar_id = ?"
+        sql = "SELECT calendar_name FROM calendars WHERE calendar_id = ?"
         self.__cur.execute(sql, [calender_id])
         try:
             res = self.__cur.fetchone()
-            return res[0]
+            return res[0].decode("utf-8")
         except Exception as e:
             logging.debug('{}\nWhile fetching calendar name: {}'.format(e, uid))
             return None
@@ -490,4 +490,3 @@ class ConnectionInstance:
             logging.debug('{}\nWhile trying to delete event: {}'.format(e, chid))
             self.__con.rollback()
             return False
-

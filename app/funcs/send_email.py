@@ -39,8 +39,8 @@ def send_recover(email):
     mail.send(msg)
     return None
 
-def send_invite(sender_name,invited_email,calender_name):
-    msg = Message("Invitation to join"+ calendar_name + ".",sender=sender,recipients=[ invited_email ])
-    msg.body = sender_name + " has invite you to join" + calender_name +". Please click the link below to join:\n" + "Some Invitation link"
+def send_invite(sender_name,invited_email,calendar_name):
+    msg = Message("Invitation to join "+ calendar_name + ".",sender=sender,recipients=[ invited_email ])
+    msg.body = sender_name + " has invite you to join " + calendar_name +".\nVisit our webpage: http://localhost:5000"
     mail.send(msg)
     return None
