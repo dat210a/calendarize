@@ -109,13 +109,14 @@ class ConnectionInstance:
         return False
 
     def check_for_invite(self, email, calendar_id):
-        sql_invite = "SELECT * from calendar_invites where email = ? and calendar_id = ?"
-        self.__cur.execute(sql_invite, [email, calendar_id])
-        invite = self.__cur.fetchone()
-        sql_invite = "SELECT * from user_calendars where email = ? and calendar_id = ?"
-        self.__cur.execute(sql_invite, [self.get_user_id(email), calendar_id])
-        calendar = self.__cur.fetchone()
-        if calendar[0] == None and invite[0] == None:
+        sql = "SELECT invited_user_id, calendar_id, role, unique_id FROM calendar_invites WHERE invited_user_id = ? AND calendar_id = ?"
+        self.__cur.execute(sql, [user_id, calendar_id])
+        res = self.__cur.fetchone()
+        if res == None:
+            return False
+        if (res[0] == user_id) and (res[1] == int(calendar_id)) and (res[2] == int(role)):
+            print("test")
+            self.remove_invite(int(res[3]))
             return True
         return False
 
