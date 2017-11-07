@@ -17,7 +17,7 @@ import pytz
 # from pytz import timezone
 from datetime import datetime, date
 from classes import db_queries as db
-from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join
+from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join, abort
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
@@ -493,11 +493,12 @@ def settings():
     log_basic()
     if request.method == "POST":
         name = request.form.get('name', None)
-        try:
+        name = current_user.name if name == '' or name == None else name
+        try: 
             phone = int(request.form['phone'])
         except:
             phone = None
-        if name and len(name) < 45:
+        if name and len(name) < 45 or phone:
             with db.ConnectionInstance() as queries:
                 if queries.update_user(current_user.user_id, name, phone):
                     return 'true'
