@@ -419,6 +419,7 @@ def join_calander():
         with db.ConnectionInstance() as q:
             if q.check_invite(current_user.user_id, id, role) == True:
                 q.join_calander(id, current_user.user_id, role)
+                q.remove_invite(current_user.user_id, id)
                 return 'true'
     return 'false'
 

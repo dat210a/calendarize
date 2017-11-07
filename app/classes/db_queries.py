@@ -117,9 +117,9 @@ class ConnectionInstance:
             return True
         return False
 
-    def remove_invite(self, unique_id):
-        sql = "DELETE FROM calendar_invites WHERE unique_id = ?"
-        self.__cur.execute(sql, [unique_id])
+    def remove_invite(self, uid, cid):
+        sql = "DELETE FROM calendar_invites WHERE user_id = ? AND calendar_id = ? "
+        self.__cur.execute(sql, [uid, cid])
         self.__con.commit()
 
     def get_pass_hash(self, email):
