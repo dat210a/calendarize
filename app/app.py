@@ -113,12 +113,7 @@ def log_basic():
         logger.info(request_data(request))
 
 
-@app.before_request
-def csrf_protect():
-    if request.method == "POST":
-        token = session.pop('_csrf_token', None)
-        if not token or token != request.form.get('_csrf_token'):
-            abort(403)
+some_random_string = lambda: ''.join([random.choice(string.ascii_lowercase) for i in range(random.randint(2, 10))])
 
 
 def generate_csrf_token():
@@ -127,10 +122,15 @@ def generate_csrf_token():
     return session['_csrf_token']
 
 
-some_random_string = lambda: ''.join([random.choice(string.ascii_lowercase) for i in range(random.randint(1, 10))])
+app.jinja_env.globals['csrf_token'] = generate_csrf_token()
 
 
-app.jinja_env.globals['csrf_token'] = generate_csrf_token
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = session.pop('_csrf_token', None)
+        if not token or token != request.form.get('_csrf_token'):
+            abort(403)
 
 
 # def get_user_id():
