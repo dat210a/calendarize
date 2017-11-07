@@ -26,6 +26,15 @@ function toggle(){
     $('#myModal').toggle();
 }
 
+var csrf_token = "{{ csrf_token() }}";
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrf_token);
+        }
+    }
+});
+
 // check for credentials at login
 $('#btnLogin').click(function(e){
     e.preventDefault()
@@ -60,6 +69,14 @@ $('#btnLogin').click(function(e){
 // check for existing user based on email when registering
 $('#registerEmail').bind('blur keyup', function(e){
     if (e.type == 'blur' || e.keyCode == '13'){
+        var csrf_token = "{{ csrf_token() }}";
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                }
+            }
+        });
         $.ajax({
             url: '/user_availability',
             data: {'inputEmail': $('#registerEmail')[0].value},

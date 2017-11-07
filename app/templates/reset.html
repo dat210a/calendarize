@@ -25,6 +25,7 @@
 								<a class="btn waves-effect waves-light left" href="{{ url_for('index') }}">Cancel</a>
 								<button class="btn waves-effect waves-light right" type="submit">Submit</button>
 							</div>
+							<input name=_csrf_token type=hidden value="{{ csrf_token() }}">
 						</form>
 					</div>
 				</div>
