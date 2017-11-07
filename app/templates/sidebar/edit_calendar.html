@@ -6,6 +6,7 @@
             </div>
         </div>
         <button id="btnEditCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
+        <button id="btnCancelEditCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn cancel accentgrey-dark"><i class="material-icons">close</i></button>
         <div style="padding-top: 5em">
             <div class="row">
                 <div class="col s12 input-field">
@@ -69,7 +70,7 @@
         e.preventDefault()
         $.ajax({
             url: '/edit_calendar',
-            data: $(this).serialize(), 
+            data: $(this).serialize(),
             type: 'POST',
             success: function(response) {
                 if (response == 'true') {
