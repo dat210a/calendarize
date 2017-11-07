@@ -95,25 +95,25 @@ class ConnectionInstance:
         self.__cur.execute(sql, [user_id, calender_id])
         self.__con.commit()
 
-    def send_invite(self, calender_id, user_id, sender_id, role):
-        sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?)"
+    def send_invite(self, calender_id, user_id, sender_id, role, email):
+        sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?,+)"
         self.__cur.execute("SELECT unique_id from calendar_invites ORDER BY unique_id DESC LIMIT 1")
         unique_id = self.__cur.fetchone()
         if unique_id == None:
             unique_id = 1
         else:
             unique_id = unique_id[0] + 1
-        self.__cur.execute(sql, [unique_id, calender_id, user_id, sender_id, role])
+        self.__cur.execute(sql, [unique_id, calender_id, user_id, sender_id, role, email])
         self.__con.commit()
 
-    def check_invite(self, user_id, calendar_id, role):
-        sql = "SELECT invited_user_id, calendar_id, role, unique_id FROM calendar_invites WHERE invited_user_id = ? AND calendar_id = ?"
-        self.__cur.execute(sql, [user_id, calendar_id])
-        res = self.__cur.fetchone()
-        if res == None:
-            return False
-        if (res[0] == user_id) and (res[1] == int(calendar_id)) and (res[2] == int(role)):
-            self.remove_invite(int(res[3]))
+    def check_invite(self, email, calendar_id):
+        sql_invite = "SELECT * from calendar_invites where email = ? and calendar_id = ?"
+        self.__cur.execute(sql_invite, [email, calendar_id])
+        invite = self.__cur.fetchone()
+        sql_invite = "SELECT * from user_calendars where email = ? and calendar_id = ?"
+        self.__cur.execute(sql_invite, [self.get_user_id(email), calendar_id])
+        calendar = self.__cur.fetchone()
+        if calendar[0] == None and invite[0] == None:
             return True
         return False
 

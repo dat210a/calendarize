@@ -98,6 +98,14 @@ def end_logging(log):
         log.removeHandler(hdlr)
 
 
+logger = setup_logging()
+
+
+@app.before_request
+def prequest():
+    log_basic()
+
+
 def request_data(req):
     """
     """
@@ -138,7 +146,6 @@ def user_exists(email):
 def index(template):
     """
     """
-    log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
 #        with ShardTestingClass(app) as st:
@@ -156,7 +163,6 @@ def index(template):
 def index_user(template):
     """
     """
-    log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
 #        with ShardTestingClass(app) as st:
@@ -338,7 +344,6 @@ def load_sidebar(path):
 def get_data():
     """
     """
-    log_basic()
     with db.ConnectionInstance() as queries:
         calendar_ids = queries.get_calendars(current_user.user_id)
         cal_details = queries.get_calendars_details(calendar_ids)
@@ -435,11 +440,13 @@ def decline_calander():
 def invite_calander():
     if request.method == 'POST':
         email = request.form.get("email", None)
+        if len(email) > 45:
+            return False
         calendar_id = request.form.get("calendar_id", None)
         role = request.form.get("role", None)
         with db.ConnectionInstance() as q:
-            if q.get_calendar_role(current_user.user_id, calendar_id) == 0:
-                q.send_invite(calendar_id, q.get_user_id(email), current_user.user_id, role)
+            if q.get_calendar_role(current_user.user_id, calendar_id) == 0 and q.check_invite(email, calendar_id):
+                q.send_invite(calendar_id, q.get_user_id(email), current_user.user_id, role, email)
                 return 'true'
     return 'false'
 
@@ -496,7 +503,7 @@ def add_files():
 
 @app.route('/update_profile', methods=['POST'])
 @login_required
-def settings():
+def update_profile():
     log_basic()
     if request.method == "POST":
         name = request.form.get('name', None)
@@ -593,17 +600,17 @@ def verifyoption():
         return render_template("verify_send.html", email=email)
 
 
-##################################################################
+def start():
+    app.run()
 
 @app.route("/verifytesting")
 def vtest():
     return render_template("verify.html", email='thisisemail')
 
 
+
+##################################################################
+
+
 if __name__ == '__main__':
-
-    logger = setup_logging()
-
-    app.run()
-
-    end_logging(logger)
+    start()
