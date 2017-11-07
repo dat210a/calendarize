@@ -417,7 +417,7 @@ def join_calander():
         id = request.form.get("calendar_id", None)
         role = request.form.get("role", None)
         with db.ConnectionInstance() as q:
-            if q.check_invite(current_user.user_id, id, role) == True:
+            if q.check_invite(current_user.user_id, id) == True:
                 q.join_calander(id, current_user.user_id, role)
                 q.remove_invite(current_user.user_id, id)
                 return 'true'

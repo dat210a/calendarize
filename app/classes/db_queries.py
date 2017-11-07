@@ -114,8 +114,8 @@ class ConnectionInstance:
         self.__cur.execute(sql_invite, [self.get_user_id(email), calendar_id])
         calendar = self.__cur.fetchone()
         if calendar[0] == None and invite[0] == None:
-            return True
-        return False
+            return False
+        return True
 
     def remove_invite(self, uid, cid):
         sql = "DELETE FROM calendar_invites WHERE user_id = ? AND calendar_id = ? "
@@ -174,7 +174,7 @@ class ConnectionInstance:
             return []
 
     def get_calendar_users(self, cid):
-        sql = "SELECT calendar_id FROM user_calendars WHERE calendar_id = ?"
+        sql = "SELECT user_id FROM user_calendars WHERE calendar_id = ?"
         self.__cur.execute(sql, [cid])
         try:
             res = self.__cur.fetchall()
@@ -203,22 +203,26 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-    # def get_calendars_details(self, cids):
-    #     cal_keys = ["calendar_id", "calendar_name", "calendar_color", "calendar_owner"]
-    #     sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
-    #           "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
-    #           "AND deleted = 0"
-    #     self.__cur.execute(sql, cids)
-    #     try:
-    #         calendars = []
-    #         for calendar in self.__cur.fetchall():
-    #             calendar = list(calendar)
-    #             members = self.get_calendar_users(calendar[0])
-    #             pending = self.
-    #         return [dict(zip(cal_keys+['members']+['pending'], calendar)) for calendar in calendars]
-    #     except Exception as e:
-    #         logging.debug('{}\nWhile fetching calendar(s) details for user: {}'.format(e, cids))
-    #         return None
+    def get_calendars_details(self, cids):
+        cal_keys = ["calendar_id", "calendar_name", "calendar_color", "calendar_owner"]
+        sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
+              "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
+              "AND deleted = 0"
+        self.__cur.execute(sql, cids)
+        try:
+            calendars = []
+            for calendar in self.__cur.fetchall():
+                calendar = list(calendar)
+                mem = self.get_calendar_users(calendar[0])
+                members = []
+                for member in mem:
+                    members.append(self.get_user_email(member))
+                # pending = self.
+                calendars.append(calendar+[members])
+            return [dict(zip(cal_keys+['members'], calendar)) for calendar in calendars]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendar(s) details for user: {}'.format(e, cids))
+            return None
 
 
     def get_events_details(self, cids):

@@ -31,7 +31,7 @@ CREATE TABLE `users` (
   `user_password` varchar(80) NOT NULL,
   `user_name` varchar(45) DEFAULT NULL,
   `user_type` int DEFAULT NULL,
-  `user_phone` int DEFAULT NULL,
+  `user_phone` varchar(15) DEFAULT NULL,
   `user_record` varchar(45) DEFAULT NULL,
   `user_extra` varchar(45) DEFAULT NULL,
   `verify_key` varchar(15) DEFAULT NULL,    
