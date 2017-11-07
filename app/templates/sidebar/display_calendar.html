@@ -110,28 +110,27 @@ function populate(data){
     $(".calendardetailsheaderBtn").on('click', function(){
         
     })
-}
 
-$('#delete_calendar').click(function(e){
-    e.preventDefault()
-    $.ajax({
-        url: '/delete_calendar',
-        type: 'POST',
-        data: {'calendar_id': data.calendar_id}, 
-        success: function(response) {
-            if (response == 'true') {
-                $("#eventDisplay").hide()
-                current_event = null;
-                load_data();
+    $('#delete_calendar').click(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '/delete_calendar',
+            type: 'POST',
+            data: {'calendar_id': data.calendar_id}, 
+            success: function(response) {
+                if (response == 'true') {
+                    load_data();
+                    calendars_list();
+                }
+                else {
+                    console.log (response, 'could not delete this calendar')
+                }
+            },
+            error: function(error) {
+                console.log(error);
             }
-            else {
-                console.log (response, 'could not delete this calendar')
-            }
-        },
-        error: function(error) {
-            console.log(error);
-        }
+        });
     });
-});
+}
 
 </script>

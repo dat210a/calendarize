@@ -23,9 +23,9 @@ $("#addEventForm").click(function(){
     $('#sidebar').load("/side/add_event")
 });
 
-$("#calendarsSettings").click(function(){
+function calendars_list(){
     $('#sidebar').load("/side/calendars_list")
-});
+};
 
 function display_calendar(calendar_data){
     $('#sidebar').load("/side/display_calendar", function(){
