@@ -141,7 +141,6 @@ class ConnectionInstance:
         if res == None:
             return False
         if (res[0] == user_id) and (res[1] == int(calendar_id)) and (res[2] == int(role)):
-            print("test")
             self.remove_invite(int(res[3]))
             return True
         return False

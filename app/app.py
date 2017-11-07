@@ -288,7 +288,6 @@ def calendar(template):
 
 
 @app.route('/side/<path>')
-# @mobile_template('/{mobile/}add_event.html')
 @login_required
 def load_sidebar(path):
     safe_path = safe_join('sidebar', path + '.html')

@@ -54,37 +54,38 @@
       <div id="switchNotfixed">
         <div class="row">
           <div class="col s12 input-field">
-            <select>
-                          <option value="1">January</option>
-                          <option value="2">February</option>
-                          <option value="3">March</option>
-                          <option value="4">April</option>
-                          <option value="5">May</option>
-                          <option value="6">June</option>
-                          <option value="7">July</option>
-                          <option value="8">August</option>
-                          <option value="9">September</option>
-                          <option value="10">October</option>
-                          <option value="11">November</option>
-                          <option value="12">December</option>
-                      </select>
+            <select id="month">
+                  <option value="0">January</option>
+                  <option value="1">February</option>
+                  <option value="2">March</option>
+                  <option value="3">April</option>
+                  <option value="4">May</option>
+                  <option value="5">June</option>
+                  <option value="6">July</option>
+                  <option value="7">August</option>
+                  <option value="8">September</option>
+                  <option value="9">October</option>
+                  <option value="10">November</option>
+                  <option value="11">December</option>
+              </select>
             <label>Month</label>
           </div>
         </div>
         <div class="row">
           <div class="col s12 input-field">
-            <select>
-                          <option value="1">Beginning</option>
-                          <option value="2">Middle</option>
-                          <option value="3">End</option>
-                      </select>
-            <label>Part</label>
+            <select id="whenInMonth">
+                  <option value="0" selected>Unspecified</option>
+                  <option value="1">Beginning</option>
+                  <option value="2">Middle</option>
+                  <option value="3">End</option>
+              </select>
+            <label>Part of Month</label>
           </div>
         </div>
         <div class="row">
           <div class="col s6">
             <div class="input-field">
-              <input value="1" id="duration" type="text" class="center">
+              <input placeholder="Optional" id="duration" type="number" class="center">
               <label>Duration in days</label>
             </div>
           </div>
@@ -97,12 +98,12 @@
           <label for="repeatEvent">Recurring</label>
         </div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col s12 input-field">
           <input placeholder="Optional" id="first_name2" type="text">
           <label class="active" for="first_name2">Location</label>
         </div>
-      </div>
+      </div> -->
       <div class="row">
         <div class="col s2 input-field">
           <input value="0" id="first_name2" type="text" class="center">
@@ -117,7 +118,7 @@
                     </select>
         </div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="input-field col s12">
           <select multiple>
                         <option value="0" selected disabled>None</option>
@@ -127,7 +128,7 @@
                     </select>
           <label>Add Members</label>
         </div>
-      </div>
+      </div> -->
       <div class="row">
         <div class="input-field col s12">
           <textarea id="textarea1" name="event_details" placeholder="Optional" class="materialize-textarea"></textarea>
@@ -156,6 +157,17 @@
     selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
   })
   init_date();
+  $("#switchNotfixed").hide(0)
+  $("input[name=fixedSwitch]").change(function(){
+    if (this.id == 'checkNotfixed'){
+      $("#switchNotfixed").show(500)
+      $("#switchFixed").hide(0)
+    }
+    else {
+      $("#switchNotfixed").hide(0)
+      $("#switchFixed").show(500)
+    }
+  })
 
   $("#startDate").change(function() {
     var $input = $('#endDate').pickadate()
@@ -167,8 +179,30 @@
     e.preventDefault()
     var form = $(this)[0];
     oData = new FormData(form);
-    oData.set('startDate', new Date(oData.get('startDate')).getTime())
-    if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
+    if ($("#checkFixed").prop( "checked" )){
+      oData.set('startDate', new Date(oData.get('startDate')).getTime())
+      if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
+    }
+    else{
+      var startDate = new Date()
+      startDate.setMonth($("#month").val())
+      startDate.setHours(0, 0, 0, 0)
+      if ($("#whenInMonth").val() == 1){
+        startDate.setDate(1)
+      }
+      else if ($("#whenInMonth").val() == 3){
+        startDate.setDate(22)
+      }
+      else{
+        startDate.setDate(14)
+      }
+      if ($("#duration").val() != ''){
+        endDate = new Date(startDate)
+        endDate.setDate(startDate.getDate() + parseInt($("#duration").val()))
+        oData.set('endDate', endDate.getTime())
+      }
+      oData.set('startDate', startDate.getTime())
+    }
     $.ajax({
       url: '/add_event',
       type: 'POST',
