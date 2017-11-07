@@ -117,9 +117,22 @@ class ConnectionInstance:
             return False
         return True
 
-    def remove_invite(self, uid, cid):
-        sql = "DELETE FROM calendar_invites WHERE user_id = ? AND calendar_id = ? "
-        self.__cur.execute(sql, [uid, cid])
+    def check_for_invite(self, user_id, calendar_id, role):
+        sql = "SELECT invited_user_id, calendar_id, role, unique_id FROM calendar_invites WHERE invited_user_id = ? AND calendar_id = ?"
+        self.__cur.execute(sql, [user_id, calendar_id])
+        res = self.__cur.fetchone()
+        if res == None:
+            return False
+        if (res[0] == user_id) and (res[1] == int(calendar_id)) and (res[2] == int(role)):
+            print("test")
+            self.remove_invite(int(res[3]))
+            return True
+        return False
+
+
+    def remove_invite(self, unique_id):
+        sql = "DELETE FROM calendar_invites WHERE unique_id = ?"
+        self.__cur.execute(sql, [unique_id])
         self.__con.commit()
 
     def get_pass_hash(self, email):
