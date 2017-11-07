@@ -30,6 +30,8 @@
 </div>
 <script>
     $("#editProfileForm").hide(0)
+    $("#name").val(user['name'])
+    $("#telephone").val(user['phone'])
     init_forms();
     $("#editProfile").submit(function(e){
         e.preventDefault();
@@ -39,7 +41,11 @@
             data: $(this).serialize(),
             success: function(response) {
                 console.log(response)
-                $('#sidebar').load("/side/display_profile")
+                var new_name = $("#name").val()
+                if (new_name != ''){
+                    update_name(new_name);
+                }
+                $('#sidebar').load("/side/display_profile");
             },
             error: function(error){
                 console.log(error)
