@@ -9,9 +9,10 @@ function accept(data){
         url: '/join_calander',
         method: 'POST',
         dataType: 'json',
-        data: JSON.parse(data),
+        data: data,
         success: function(response){
             load_notifications();
+            load_data()
         },
         error: function(error) {
             console.log(error);
