@@ -412,6 +412,8 @@ def join_calander():
 def invite_calander():
     if request.method == 'POST':
         email = request.form.get("email", None)
+        if len(email) > 45:
+            return False
         calendar_id = request.form.get("calendar_id", None)
         role = request.form.get("role", None)
         with db.ConnectionInstance() as q:
