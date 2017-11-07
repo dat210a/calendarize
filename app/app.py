@@ -493,7 +493,7 @@ def settings():
     log_basic()
     if request.method == "POST":
         name = request.form.get('name', None)
-        try: 
+        try:
             phone = int(request.form['phone'])
         except:
             phone = None
@@ -586,6 +586,10 @@ def verifyoption():
 
 
 ##################################################################
+
+@app.route("/verifytesting")
+def vtest():
+    return render_template("verify.html", email='thisisemail')
 
 
 if __name__ == '__main__':

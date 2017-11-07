@@ -1,8 +1,22 @@
 {% extends "base.html" %}
 {% block title %}calendarize.verify{% endblock %}
 {% block content %}
-<h1>Please click the button below to verify your account</h1>
-<form action="" method="POST">
-<button type="submit">Verify</button>
-</form>
+
+<link href="{{ url_for('static', filename='css/verify.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+
+<div class="container">
+  <div class="row">
+    <div class="col s12 m6 offset-m3">
+      <div class="card-panel white center-align">
+        <span class="accentgrey-dark-text">Please click the button below to verify your account</span><br><br>
+        <form action="" method="POST">
+        <button class="btn waves-effect waves-light" type="submit">Verify</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 {% endblock %}
