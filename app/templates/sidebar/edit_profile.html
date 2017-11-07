@@ -8,8 +8,16 @@
         <button id="btnEditProfile" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
         <div style="padding-top: 5em">
             <div class="row">
+                <div class="input-field col s12">
+                    <input id="name" type="text" name="name">
+                    <label for="name">Name</label>
+                </div>
             </div>
             <div class="row">
+                <div class="input-field col s12">
+                    <input id="telephone" type="tel" name="phone">
+                    <label for="telephone">Telephone</label>
+                </div>
             </div>
             <div class="row">
             </div>
@@ -28,8 +36,13 @@
         $.ajax({
             url: '/update_profile',
             type: 'POST',
+            data: $(this).serialize(),
             success: function(response) {
-                console.log('success')
+                console.log(response)
+                $('#sidebar').load("/side/display_profile")
+            },
+            error: function(error){
+                console.log(error)
             }
         })
     })

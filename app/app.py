@@ -332,6 +332,11 @@ def load_sidebar(path):
         with db.ConnectionInstance() as queries:
             invites = queries.get_user_invites(current_user.user_id)
             return render_template(safe_path, notifications=invites)
+    if path == 'display_profile':
+        with db.ConnectionInstance() as queries:
+            phone = queries.get_user_data(current_user.user_id)
+            name = current_user.name if current_user.name else current_user.email
+        return render_template(safe_path, name=name, email=current_user.email, phone=phone)
     return render_template(safe_path)
 
 
@@ -482,20 +487,21 @@ def add_files():
     return 'true'
 
 
-@app.route('/settings')
-@mobile_template('{mobile/}template.html')
+@app.route('/update_profile', methods=['POST'])
 @login_required
-def settings(template):
+def settings():
     log_basic()
-    # TODO load user's settings, then render a template with the settings
-    return render_template(template)
-
-
-@app.route('/settings/save', methods=['POST'])  # <- could be done with AJAX?
-def save_settings():
-    # val = request.form.get(name_of_form_field, None) <- Syntax for getting form data
-    # TODO extract settings from form and store in db
-    return redirect(url_for(settings))  # reloads the settings page to show the new settings
+    if request.method == "POST":
+        name = request.form.get('name', None)
+        try: 
+            phone = int(request.form['phone'])
+        except:
+            phone = None
+        if name and len(name) < 45:
+            with db.ConnectionInstance() as queries:
+                if queries.update_user(current_user.user_id, name, phone):
+                    return 'true'
+    return 'false'
 
 
 ##################################################################

@@ -152,6 +152,17 @@ class ConnectionInstance:
             logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
             return None
 
+    def get_user_data(self, uid):
+        user_data = ['user_phone']
+        sql = "SELECT user_phone FROM users WHERE user_id = ?"
+        self.__cur.execute(sql, [uid])
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
+            return None
+
     def get_calendars(self, uid):
         sql = "SELECT calendar_id FROM user_calendars WHERE user_id = ?"
         self.__cur.execute(sql, [uid])
@@ -396,8 +407,16 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             self.__con.rollback()
 
-    def update_user(self, user_data):
-        #TODO
+    def update_user(self, uid, name, phone):
+        sql = "UPDATE users SET user_name = ?, user_phone=? WHERE user_id = ?"
+        self.__cur.execute(sql, (name, phone, uid))
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile updating user with id:\n{}'.format(e, uid))
+            self.__con.rollback()
+            return False
         pass
 
     def update_calendar(self, calendar_data):
