@@ -17,7 +17,7 @@ import pytz
 # from pytz import timezone
 from datetime import datetime, date
 from classes import db_queries as db
-from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join
+from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join, abort
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
@@ -111,6 +111,26 @@ def log_basic():
     # This handles logging of basic data that should be logged for all requests
     if logger:
         logger.info(request_data(request))
+
+
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = session.pop('_csrf_token', None)
+        if not token or token != request.form.get('_csrf_token'):
+            abort(403)
+
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = some_random_string()
+    return session['_csrf_token']
+
+
+some_random_string = lambda: ''.join([random.choice(string.ascii_lowercase) for i in range(random.randint(1, 10))])
+
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 
 # def get_user_id():
