@@ -360,6 +360,7 @@ def add_calendar():
                         if '@' in email:
                             role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
                             queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role)
+                            # send email to email
                     return 'true'
     return 'false'
 
@@ -462,7 +463,7 @@ def settings():
     if request.method == "POST":
         name = request.form.get('name', None)
         name = current_user.name if name == '' or name == None else name
-        try: 
+        try:
             phone = int(request.form['phone'])
         except:
             phone = None
