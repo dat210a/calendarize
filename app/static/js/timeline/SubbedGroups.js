@@ -56,7 +56,6 @@ function AddGroupButtons(groups){
             .attr("y", 120)
             .style("font-size", 30)
             .text(function(d){
-                console.log(d.calendar_name)
                 return d.calendar_name})
             .each(function(){
                 short_text(d3.select(this), groupBoxDim, 30)
