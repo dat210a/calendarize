@@ -24,8 +24,18 @@ $("#addEventForm").click(function(){
 });
 
 $("#calendarsSettings").click(function(){
-    $('#sidebar').load("/side/display_calendars")
+    $('#sidebar').load("/side/calendars_list")
 });
+
+function display_calendar(calendar_data){
+    $('#sidebar').load("/side/display_calendar", function(){
+        populate(calendar_data)
+    })
+}
+
+function edit_calendar(){
+    
+}
 
 function editEvent(){
     $('#sidebar').load("/side/edit_event")
@@ -43,10 +53,10 @@ function editProfile(){
     $('#sidebar').load("/side/edit_profile")
 }
 
-$("#showNotifications").click(function(){
+function load_notifications(){
     $('#sidebar').load("/side/notifications")
-})
+}
 
 $("#showFriends").click(function(){
     $('#sidebar').load("/side/friends")
-})
+});

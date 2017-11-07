@@ -16,7 +16,7 @@
     <div class="nav-wrapper hide-on-med-and-down">
         <a href="#"><img src="static/images/logo_nav.png" class="placeholderimg"></a>
         <ul class="right">
-            <li><a href="#!" id="showNotifications">
+            <li><a href="#!" onclick="load_notifications()" id="showNotifications">
                 <ul><li><i class="material-icons">notifications</i></li><li id="newNotifications"></li></ul></a>
             </li>
             <li><a id="nav_username" class="dropdown-button" href="#!" data-activates="settings_dropdown">{{name}}<i class="material-icons right">arrow_drop_down</i></a></li>
@@ -24,10 +24,10 @@
     </div>
 </nav>
 <script>
-function update_notifier(){
+function update_notifier(numNot){
     $("#newNotifications").empty();
-    if (numNotifications != 0)
-        $("#newNotifications").append("<span class='new badge'>" + numNotifications + "</span>")
+    if (numNot != 0)
+        $("#newNotifications").append("<span class='new badge'>" + numNot + "</span>")
 }
 var numNotifications = '{{notifier}}'
 
@@ -36,7 +36,7 @@ function update_name(name){
 }
 
 $(document).ready(function(){
-    update_notifier();
+    update_notifier(numNotifications);
 })
 </script>
 {% endblock %}

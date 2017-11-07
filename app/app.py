@@ -113,13 +113,6 @@ def log_basic():
         logger.info(request_data(request))
 
 
-# def get_user_id():
-#     """
-#     """
-#     if 'user' in session:
-#         return session['user']['id']
-#     return None
-
 # It should be moved to a separate file if there
 # ends up being more functions like this one
 def user_exists(email):
@@ -170,7 +163,7 @@ def index_user(template):
 #            print(app.config['shards'])
 #            st.work()
 #        print(app.config['shards'])
-    displayed_name = current_user.email if current_user.name is None else current_user.name
+    displayed_name = current_user.name if current_user.name else current_user.email
     return render_template(template, name=displayed_name)
 
 
@@ -396,6 +389,20 @@ def add_calendar():
                             queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role)
                     return 'true'
     return 'false'
+
+
+@app.route('/request_calandar', methods=['POST', 'GET'])
+@login_required
+def request_calandar():
+    if request.method == "POST":
+        cal_id = request.form.get('cal_id', None)
+        if cal_id:
+            with db.ConnectionInstance() as queries:
+                role = queries.get_calendar_role(current_user.user_id, cal_id)
+                if role is not None:
+                    cal_data = queries.get_calendars_details(cal_id)[0]
+                    return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
+    return json.dumps({'success' : 'false'})
 
 
 @app.route('/join_calander', methods=['POST', 'GET'])

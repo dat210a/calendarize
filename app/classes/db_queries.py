@@ -173,6 +173,16 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return []
 
+    def get_calendar_users(self, cid):
+        sql = "SELECT calendar_id FROM user_calendars WHERE calendar_id = ?"
+        self.__cur.execute(sql, [cid])
+        try:
+            res = self.__cur.fetchall()
+            return [r[0] for r in res]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, cid))
+            return []
+
     def get_event_calendar_id(self, eid):
         sql = "SELECT event_calendar_id FROM events WHERE event_id = ?"
         self.__cur.execute(sql, [eid])
@@ -193,17 +203,23 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
 
-    def get_calendars_details(self, cids):
-        cal_keys = ["calendar_id", "calendar_name", "calendar_color"]
-        sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
-              "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
-              "AND deleted = 0"
-        self.__cur.execute(sql, cids)
-        try:
-            return [dict(zip(cal_keys, calendar)) for calendar in self.__cur.fetchall()]
-        except Exception as e:
-            logging.debug('{}\nWhile fetching calendar(s) details for user: {}'.format(e, cids))
-            return None
+    # def get_calendars_details(self, cids):
+    #     cal_keys = ["calendar_id", "calendar_name", "calendar_color", "calendar_owner"]
+    #     sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
+    #           "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
+    #           "AND deleted = 0"
+    #     self.__cur.execute(sql, cids)
+    #     try:
+    #         calendars = []
+    #         for calendar in self.__cur.fetchall():
+    #             calendar = list(calendar)
+    #             members = self.get_calendar_users(calendar[0])
+    #             pending = self.
+    #         return [dict(zip(cal_keys+['members']+['pending'], calendar)) for calendar in calendars]
+    #     except Exception as e:
+    #         logging.debug('{}\nWhile fetching calendar(s) details for user: {}'.format(e, cids))
+    #         return None
+
 
     def get_events_details(self, cids):
         data_key = ["event_id", "event_owner", "event_calendar_id", "event_name", "event_start", "event_end", "event_recurring", "event_details"]
@@ -247,26 +263,6 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile fetching event children for event with id: {}'.format(e, eid))
             return None
-
-    # def db_get_cal_admin(self, cid=None, eid=None):
-    #     # Fetches a list of admins for a calendar
-    #     if cid:
-    #         sql = "SELECT calendar_admins FROM calendars WHERE calendar_id = %s"
-    #         self.__cur.execute(sql, [cid])
-    #     elif eid and not cid:
-    #         sql = "SELECT calendar_admins " \
-    #               "FROM calendars WHERE calendar_id = (SELECT event_belongs_to FROM events WHERE event_id = %s)"
-    #         self.__cur.execute(sql, [eid])
-    #     else:
-    #         return None
-    #     try:
-    #         payload = ([x[0] for x in self.__cur.fetchall()])
-    #         logging.debug('Result of calendar admin db request: {}'.format(payload))
-    #         return payload
-    #     except Exception as e:
-    #         logging.debug('{}\nWhile trying to retrieve admins for calendar.\n'
-    #                       'Input parameters: cid={} eid={}'.format(e, cid, eid))
-    #         return None
 
     def get_reset_info(self, resetkey):
         sql ="SELECT user_email FROM users WHERE resetkey=? and expires > now()"

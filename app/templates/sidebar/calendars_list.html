@@ -1,0 +1,30 @@
+<ul class="collection with-header">
+    <li class="collection-header"><h4>Calendars</h4></li>
+</ul>
+        
+<script>
+function request_calendar(cal_id){
+    $.ajax({
+        url: '/request_calandar',
+        method: 'POST',
+        dataType: 'json',
+        data: {"cal_id": cal_id},
+        success: function(r){
+            if (r.success == 'true'){
+                display_calendar(JSON.parse(r.data));
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    });
+};
+
+$(document).ready(function(){
+
+    d3.selectAll('.group').each(function(d, i){
+        var item = `<li class='collection-item' style="background-color: ${ d.calendar_color }"><div>${ d.calendar_name }<a href='#!' onclick="request_calendar(${ d.calendar_id })" class='secondary-content'><i class='material-icons'>edit</i></a></div></li>`
+        $(".collection").append(item)
+    })
+  });
+</script>

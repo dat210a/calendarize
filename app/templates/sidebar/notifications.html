@@ -4,65 +4,59 @@
     </ul>
 </div>
 <script>
-function load_notifications(){
-    update_notifier();
+function accept(data){
+    $.ajax({
+        url: '/join_calander',
+        method: 'POST',
+        dataType: 'json',
+        data: JSON.parse(data),
+        success: function(response){
+            load_notifications();
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    })
+}
+
+function decline(data){
+    $.ajax({
+        url: '/decline_calander',
+        method: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function(response){
+            load_notifications();
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    })
+}
+
+$(document).ready(function(){
     var notifications = JSON.parse('{{ notifications|tojson|safe }}')
-    
+    update_notifier(notifications.length);
+
     var accord_li = "<li class='notificationAccordianInstance'> \
                     <div class='collapsible-header accentgrey-dark accentgrey-light-text'></div> \
                     <div class='collapsible-body accentgrey-light'></div> \
                 </li>"
-
-    for (i = 0; i < numNotifications; i++){
+    
+    $("#notificationAccordian").empty()
+    for (i = 0; i < notifications.length; i++){
+        var data = JSON.stringify(notifications[i])
         var invite_card =  `<div class='card-content'> \
                                 <p> ${notifications[i]['sender']} invited you to join ${notifications[i]['calendar_id']} calendar as ${notifications[i]['role']} </p> \
                             </div>\
                             <div class='card-action right'> \
-                                <a href='#!' class="declineCalInvite" style='color:#ffab40; margin-right:5px'>Decline</a> \
-                                <a href='#!' class="acceptCalInvite" style='color:#ffab40'>Accept</a> \
+                                <a href='#!' onclick='decline(${data})' style='color:#ffab40; margin-right:5px'>Decline</a> \
+                                <a href='#!' onclick='accept(${data})' style='color:#ffab40'>Accept</a> \
                             </div>`
 
         $("#notificationAccordian").append(accord_li).find(".collapsible-header:last").text('New calendar invite')
         $("#notificationAccordian").find(".collapsible-body:last").append(invite_card)
     }
     $('.collapsible').collapsible();
-    $(".acceptCalInvite").on('click', function(e){
-        e.preventDefault()
-        var index = $(this).closest('.notificationAccordianInstance').index()
-        $.ajax({
-            url: '/join_calander',
-            method: 'POST',
-            dataType: 'json',
-            data: notifications[index],
-            success: function(response){
-                console.log(response)
-                load_notifications();
-            },
-            error: function(error) {
-                console.log(error);
-            },
-        })
-    })
-    $(".declineCalInvite").on('click', function(e){
-        e.preventDefault()
-        var index = $(this).closest('.notificationAccordianInstance').index()
-        $.ajax({
-            url: '/decline_calander',
-            method: 'POST',
-            dataType: 'json',
-            data: notifications[index],
-            success: function(response){
-                console.log(response)
-                load_notifications();
-            },
-            error: function(error) {
-                console.log(error);
-            },
-        })
-    })
-}
-
-$(document).ready(function(){
-    load_notifications();
 })
 </script>
