@@ -109,3 +109,6 @@ app/files/
 
 app/classes/.DS_Store
 .DS_Store
+
+# images
+app/static/images
