@@ -162,7 +162,7 @@ class ConnectionInstance:
             return res[0]
         except Exception as e:
             logging.debug('{}\nWhile fetching parent calendar for event: {}'.format(e, eid))
-            return None   
+            return None
 
     def get_calendar_role(self, uid, cid):
         sql = "SELECT role FROM user_calendars WHERE user_id = ? AND calendar_id = ?"
@@ -172,6 +172,15 @@ class ConnectionInstance:
             return res[0]
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
+            return None
+    def get_calendar_name(self, calender_id):
+        sql = "SELECT calender_name FROM calendars WHERE calendar_id = ?"
+        self.__cur.execute(sql, [calender_id])
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching calendar name: {}'.format(e, uid))
             return None
 
     def get_calendars_details(self, cids):
@@ -359,6 +368,13 @@ class ConnectionInstance:
 
 #######################################################################################
             # Update
+    def make_verifykey(self, user_id, verify_key):
+        sql ="UPDATE users SET verify_key=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_id=?"
+        self.__cur.execute(sql, (verify_key,user_id))
+        try:
+            self.__con.commit()
+        except Exception as e:
+            logging.debug('{}\nWhile setting new verify key:\n{}'.format(e, email))
 
     def make_resetkey(self, email, resetkey):
         sql ="UPDATE users SET resetkey=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_email=?"

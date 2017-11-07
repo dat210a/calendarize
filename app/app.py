@@ -28,6 +28,8 @@ from funcs.logIn import login_func
 from funcs import file_tools
 from flask_mail import Mail, Message
 from funcs.file_tools import load_file
+from funcs.send_email import *
+from funcs.reset import *
 
 # app initialization
 app = Flask(__name__)
@@ -38,19 +40,6 @@ app.config['DEBUG'] = True  # Testing only
 
 # needed for session cookies
 app.secret_key = 'hella secret'
-
-#Mail setup
-conf_file = "cfg/mail.json"
-
-with open(conf_file, 'r') as cf:
-    # Loads mail configuration from file for security
-    data = json.load(cf)
-    app.config["MAIL_SERVER"] = data['server']
-    app.config["MAIL_PORT"] = data['PORT']
-    app.config["MAIL_USE_SSL"] = data['ssl']
-    app.config['MAIL_USE_TLS'] = data['tls']
-    app.config["MAIL_USERNAME"] = data['username']
-    app.config["MAIL_PASSWORD"] = data['password']
 mail = Mail(app)
 
 # initialization of login manager
@@ -132,6 +121,7 @@ def user_exists(email):
         return True
 
 
+
 ##################################################################
 
 # Some of the routes below might warrant moving out and
@@ -197,8 +187,7 @@ def register():
         # validate received values
         if email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
-                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-                key = x + email[:5]
+                key = random_key(10) + email[:5]
                 # TODO delete or merge previously created user if exists
                 #adds new user to the database
                 added = queries.add_user(datetime.utcnow(), email, hash_password(password),key)
@@ -207,9 +196,7 @@ def register():
                     #adds default calendar to that user
                     queries.add_calendar(datetime.utcnow(), user.user_id)
                     #send verfication email
-                    msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
-                    msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
-                    mail.send(msg)
+                    send_verification(email,key)
                     return render_template("verify_send.html", email=email)
     # reload if something not right
     # TODO maybe some error messages
@@ -267,46 +254,25 @@ def recover():
         if not email:
             flash("You need to fill out an email!")
             return redirect(url_for('recover'))
-        if not user_exists(email):
-            flash("Unregistered Email")
+        if user_exists(email):
+            send_recover(email)
+            return render_template("recoverconfirm.html",email=email)
         else:
-            #Generate random unique string for resetkey, store in database and send it along with the email.
-            x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-            with db.ConnectionInstance() as queries:
-                key = x + str(queries.get_user_id(email))
-                queries.make_resetkey(email,key)
-            msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-            msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
-            mail.send(msg)
             return render_template("recoverconfirm.html",email=email)
     return render_template("recover.html")
 
 
 @app.route("/reset/<resetkey>", methods=["GET", "POST"])
 def reset(resetkey):
-    with db.ConnectionInstance() as queries:
+    with ConnectionInstance() as queries:
         email = queries.get_reset_info(resetkey)
     if email:
-        if request.method=="POST":
-            new_password = request.form.get("new_password", None)
-            repeat_password = request.form.get("repeat_password", None)
-            if not new_password or not repeat_password:
-                flash("Please fill in both fields")
-            elif len(new_password) < 6:
-                flash("Minimum 6 characters.")
-            elif new_password == repeat_password:
-                if check_password(new_password, email):
-                    flash("You cannot use the old password.")
-                else:
-                    with db.ConnectionInstance() as queries:
-                        queries.set_new_password(email,hash_password(new_password))
-                        return render_template("resetsuccess.html")
-            else:
-                flash("Your password do not match")
+        if request.method =="POST":
+            if reset_password(email):
+                return render_template("resetsuccess.html")
         return render_template("reset.html")
     else:
         return render_template("invalidlink.html")
-
 
 @app.route('/calendar')
 @mobile_template('/{mobile/}calendar.html')
@@ -413,6 +379,8 @@ def invite_calander():
         with db.ConnectionInstance() as q:
             if q.get_calendar_role(current_user.user_id, calendar_id) == 0:
                 q.send_invite(calendar_id, q.get_user_id(email), current_user.user_id, role)
+                #send invitation email?
+                #send_invite(get_user_name(current_user.user_id),email, get_calendar_name(calendar_id))
                 return 'true'
     return 'false'
 
@@ -536,31 +504,24 @@ def verify(verify_key):
     with db.ConnectionInstance() as queries:
         email = queries.get_verify_info(verify_key)
     if email:
-        if request.method=="POST":
-                with db.ConnectionInstance() as queries:
-                    queries.activate_user(email)
-                    user = load_user(email)
-                    login_user(user)
-                    return render_template("verify_confirm.html")
-        return render_template("verify.html")
+        with db.ConnectionInstance() as queries:
+            queries.activate_user(email)
+            user = load_user(email)
+            login_user(user)
+        return render_template("verify_confirm.html")
     else:
         return ("Your account has been already verified or the link has been expired")
 
 
 @app.route("/verifyoption", methods=["GET", "POST"])
 def verifyoption():
-    action = request.form.get("action", None)
     email = request.form.get("email", None)
     user = load_user(email)
-    if action == "do_1":
-        x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-
+    if email:
+        key = random_key(10) + email[:5]
         with db.ConnectionInstance() as queries:
-            key = x + email[:5]
             queries.make_verifykey(user.user_id,key)
-        msg = Message("Verify your account",sender="dat210groupea@gmail.com",recipients=[ email ])
-        msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
-        mail.send(msg)
+        send_verification(email,key)
         return render_template("verify_send.html", email=email)
 
 
