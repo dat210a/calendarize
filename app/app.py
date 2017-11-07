@@ -493,11 +493,12 @@ def settings():
     log_basic()
     if request.method == "POST":
         name = request.form.get('name', None)
+        name = current_user.name if name == '' or name == None else name
         try: 
             phone = int(request.form['phone'])
         except:
             phone = None
-        if name and len(name) < 45:
+        if name and len(name) < 45 or phone:
             with db.ConnectionInstance() as queries:
                 if queries.update_user(current_user.user_id, name, phone):
                     return 'true'
