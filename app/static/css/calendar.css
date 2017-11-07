@@ -1,13 +1,13 @@
 
-#preloader { 
-    position: fixed; 
-    left: 0; 
-    top: 0; 
-    z-index: 999; 
-    width: 100%; 
-    height: 100%; 
-    overflow: visible; 
-    background: white; 
+#preloader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    background: white;
 }
 
 svg {
@@ -34,9 +34,9 @@ line {
 }
 
 .calendarToolbox{
-    position: absolute; 
-    width:100%; 
-    bottom: 180px; 
+    position: absolute;
+    width:100%;
+    bottom: 180px;
     height: 45px;
 }
 
@@ -145,8 +145,11 @@ span.infotitle {
     z-index: 10;
 }
 
+label,
 form label,
-form .input-field.col label {
+form .input-field.col label,
+form .input-field label,
+.input-field label:not(.label-icon).active {
     color: black;
     font-size: 1rem;
 }
