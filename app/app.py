@@ -415,7 +415,7 @@ def invite_calander():
         calendar_id = request.form.get("calendar_id", None)
         role = request.form.get("role", None)
         with db.ConnectionInstance() as q:
-            if q.get_calendar_role(current_user.user_id, calendar_id) == 0:
+            if q.get_calendar_role(current_user.user_id, calendar_id) == 0 and q.check_invite(email, calendar_id):
                 q.send_invite(calendar_id, q.get_user_id(email), current_user.user_id, role, email)
                 return 'true'
     return 'false'
