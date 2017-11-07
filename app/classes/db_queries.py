@@ -104,7 +104,7 @@ class ConnectionInstance:
         sql_invite = "SELECT * from user_calendars where email = ? and calendar_id = ?"
         self.__cur.execute(sql_invite, [self.get_user_id(email), calendar_id])
         calendar = self.__cur.fetchone()
-        if calendar == None and invite == None:
+        if calendar[0] == None and invite[0] == None:
             return True
         return False
 
