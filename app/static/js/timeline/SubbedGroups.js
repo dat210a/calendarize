@@ -3,7 +3,7 @@ var groupBoxDim = 150;
 
 var padding = 20;
 
-//create bottom bar 
+//create bottom bar
 var bottomMenu = svg.append('g')
                         .attr("class", "bottomMenu")
                         .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
@@ -31,7 +31,7 @@ function AddGroupButtons(groups){
                                     .attr('transform', function(d, i){
                                         return "translate("+((groupBoxDim+padding)*i + padding)+","+((bottomBarHeight - groupBoxDim)/2)+")"
                                     })
-                                    
+
     //add subscribed calendar boxes and click event handler
     agendasContainer
         .append("rect")
@@ -44,8 +44,8 @@ function AddGroupButtons(groups){
             })
             .on('click', function (d) {
                 ToggleAgenda(d.calendar_color)
-                if (d3.select(this).style("fill") == "darkgrey") { 
-                    d3.select(this).style("fill", function (d) {return d.calendar_color;}) 
+                if (d3.select(this).style("fill") == "darkgrey") {
+                    d3.select(this).style("fill", function (d) {return d.calendar_color;})
                 }
                 else { d3.select(this).style("fill", "darkgrey") }
             });
@@ -56,7 +56,6 @@ function AddGroupButtons(groups){
             .attr("y", 120)
             .style("font-size", 30)
             .text(function(d){
-                console.log(d.calendar_name)
                 return d.calendar_name})
             .each(function(){
                 short_text(d3.select(this), groupBoxDim, 30)
@@ -72,7 +71,7 @@ function short_text(self, textWidth, endTextBuffer) {
         self.text(text + '...');
         textLength = self.node().getComputedTextLength();
     }
-} 
+}
 
 //toggle up/down
 function ToggleAgendaMenu(){
@@ -114,6 +113,6 @@ function ToggleAgenda(data) {
             d3.select(this.parentNode).style("display", function(){
                     return d3.select(this).style("display") == 'inline' ? 'none' : 'inline';
                 })
-            })      
+            })
     showDetails();
 };
