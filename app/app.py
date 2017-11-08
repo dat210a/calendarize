@@ -263,7 +263,7 @@ def recover():
 
 @app.route("/reset/<resetkey>", methods=["GET", "POST"])
 def reset(resetkey):
-    with ConnectionInstance() as queries:
+    with db.ConnectionInstance() as queries:
         email = queries.get_reset_info(resetkey)
     if email:
         if request.method =="POST":
@@ -357,10 +357,7 @@ def add_calendar():
                         if '@' in email and queries.check_invite(email, new_cal_id):
                             role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
                             queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role,email)
-                            if current_user.name:
-                                sender = current_user.name
-                            else:
-                                sender = current_user.email
+                            sender = current_user.name if current_user.name else current_user.email
                             # send email to email
                             send_invite(sender,email,cal_name)
                     return 'true'

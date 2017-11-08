@@ -11,11 +11,11 @@ def reset_password(email):
         flash("Minimum 6 characters.")
     elif new_password == repeat_password:
         if check_password(new_password, email):
-            flash("You cannot use the old password.")
+            flash("You cannot use your old password.")
         else:
             with ConnectionInstance() as queries:
                 queries.set_new_password(email,hash_password(new_password))
                 return True
     else:
-        flash("Your password do not match")
+        flash("Your inputs do not match")
     return False

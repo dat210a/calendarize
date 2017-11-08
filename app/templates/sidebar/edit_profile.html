@@ -15,7 +15,7 @@
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <input id="telephone" type="tel" name="phone">
+                    <input placeholder="Optional" id="telephone" type="tel" name="phone">
                     <label for="telephone">Telephone</label>
                 </div>
             </div>
@@ -31,7 +31,10 @@
 <script>
     $("#editProfileForm").hide(0)
     $("#name").val(user['name'])
-    $("#telephone").val(user['phone'])
+    $("#telephone").val(function (){
+        if (user['phone'] == 'None') return ''
+        else return user['phone']
+    })
     init_forms();
     $("#editProfile").submit(function(e){
         e.preventDefault();
