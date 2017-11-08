@@ -1,5 +1,18 @@
-{% extends "layout.html" %}
-{% block inner %}
-<h1>Your password has been successfully updated</h1>
-<button class="btn waves-effect waves-light"><a href="{{ url_for('index') }}">Return to login</a></button>
+{% extends "base.html" %}
+{% block content %}
+
+<link href="{{ url_for('static', filename='css/verify.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+
+<div class="container">
+  <div class="row">
+    <div class="col s12 m6 offset-m3">
+      <div class="card-panel white center-align">
+        <h3 class="accentgrey-dark-text">Your password has been successfully updated</h3>
+        <br>
+        <a class="btn waves-effect waves-light" href="{{ url_for('index') }}">Return to login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

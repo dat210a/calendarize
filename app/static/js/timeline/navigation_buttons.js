@@ -2,38 +2,38 @@ var left_timeline_button = leftSideBar.append('g')
                                         .attr('class', 'left_timeline_button')
                                         .attr('opacity', 0)
 
-left_timeline_button.append("rect")
-                        .attr('width', xPadding)
-                        .attr('height', height)
-                        .attr('x', -xPadding)
-                        .attr('y', -midScreen)
-                        .style("fill", "url(#left_linear_gradient)")
-
 left_timeline_button.append('text')
-        .attr('font-family', 'Material Icons')
+        .style('font-family', 'Material Icons')
         .attr('font-size', '50px')
         .attr('fill', 'lightgrey')
         .text('chevron_left')
         .attr('x', -70)
         .attr('y', 25)
 
+left_timeline_button.append("rect")
+        .attr('width', xPadding)
+        .attr('height', height)
+        .attr('x', -xPadding)
+        .attr('y', -midScreen)
+        .style("fill", "url(#left_linear_gradient)")
+
 var right_timeline_button = rightSideBar.append('g')
                                         .attr('class', 'right_timeline_button')
                                         .attr('opacity', 0)
+
+right_timeline_button.append('text')
+    .style('font-family', 'Material Icons')
+    .attr('font-size', '50px')
+    .attr('fill', 'lightgrey')
+    .text('chevron_right')
+    .attr('x', 20)
+    .attr('y', 25)
 
 right_timeline_button.append("rect")
     .attr('width', xPadding)
     .attr('height', height)
     .attr('y', -midScreen)
     .style("fill", "url(#right_linear_gradient)")
-
-right_timeline_button.append('text')
-    .attr('font-family', 'Material Icons')
-    .attr('font-size', '50px')
-    .attr('fill', 'lightgrey')
-    .text('chevron_right')
-    .attr('x', 20)
-    .attr('y', 25)
 
 
 var defsLeft = left_timeline_button.append("defs");
@@ -74,22 +74,30 @@ rightLinearGradient.append("stop")
 
     leftSideBar
     .on('mouseover', function(d){
-        left_timeline_button.attr('opacity', 1)
+        left_timeline_button.transition()
+                            .duration(200)
+                            .attr('opacity', 1)
     })
     .on('mouseout', function(d){
-        left_timeline_button.attr('opacity', 0)
+        left_timeline_button.transition()
+                            .duration(200)
+                            .attr('opacity', 0)
     })
     .on('click', function(){
-        d3.select('.scrollArea').call(zoom.translateBy, width/k)
+        svg.call(zoom.translateBy, width/k)
     })
 
 right_timeline_button
     .on('mouseover', function(d){
-        right_timeline_button.attr('opacity', 1)
+        right_timeline_button.transition()
+                             .duration(200)
+                             .attr('opacity', 1)
     })
     .on('mouseout', function(d){
-        right_timeline_button.attr('opacity', 0)
+        right_timeline_button.transition()
+                             .duration(200)
+                             .attr('opacity', 0)
     })
     .on('click', function(){
-        d3.select('.scrollArea').call(zoom.translateBy, -width/k)
+        svg.call(zoom.translateBy, -width/k)
     })

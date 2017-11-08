@@ -1,45 +1,50 @@
 
 var timer = 0;
+var firstAvailColor = 0;
 
 var xOffset = d3.scaleLinear().domain([0, midScreen-60]).range([20, 70]);
-var color = d3.scaleOrdinal(['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38']);
 
-var detailHeight = 100,
+var detailHeight = 80,
     detailWidth = 200;
 
 //load data async
 function load_data(){
     d3.queue()
-        .defer(d3.json, '/get_data')
+        .defer(d3.json, '/get_data') //  /tz?tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone)
         .await(ready);
 }
 
 function ready(error, allData){
-    if (error){
+    if (error || allData == null){
         console.log("Can't load the data")
         return;
     }
-    d3.selectAll('.data').remove()
+
     datapoints = allData[1]
     groups = allData[0]
     
-    groups.forEach(function(d, i){d.color = color(i)})
+    // fix color tag
+    groups.forEach(function(d){d.calendar_color = '#' + d.calendar_color;})
+
+    // add groups / calendars
     AddGroupButtons(groups)
 
+    // clear data before assigning new one
+    // TODO figure out whether it's possible to do with update() enter() exit()
+    d3.selectAll('.data').remove()
     if (datapoints.length == 0) return
 
     //sort data so its displayed from right to left
     //due to overlap
     var myData = datapoints.sort(function(x, y){
-        return d3.descending(+x.start_date, +y.start_date);
+        return d3.descending(+x.event_start, +y.event_start);
     })
 
     //objects whith coordinates for detail boxes
     var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
-        detailsPoints[i] = {'name': myData[i].name, 'date': myData[i].start_date};
+        detailsPoints[i] = {'name': myData[i].event_name, 'start': myData[i].event_start, 'end': myData[i].event_end};
     }
-
 
     //setup simulation based on data
     nodes = myData.concat(detailsPoints);
@@ -58,43 +63,48 @@ function ready(error, allData){
                             .data(myData)
                             .enter()
                                 .append("g")
-                                    .attr("class", function(d){return 'datapoints ' + d.id;})
+                                    .attr("class", function(d, i){return 'datapoints ' + i;})
                                     .style('display', 'inline')
+
+    //initialize lines connecting point on timeline and detail boxes
+var connections = dataGroup
+                    .append('path')
+                        .attr('class', 'connector shadow')
+                        .attr('opacity', '0.99')
+                        .style("stroke-width", '2')
+                        .style("stroke", '#3D4148')
+                        .style("fill", 'none')
+                        .style('display', 'none');
                             
     var points = dataGroup.append("rect")
-                            .attr('class', 'points')
+                            .attr('class', 'points shadow')
                             .style('pointer-events', 'visible')
                             .style("fill", function (d) {
-                                d.color = groups.filter(function(gr){
-                                    return gr.id == d.group
-                                })[0].color
-                                return d.color
+                                d.calendar_color = groups.filter(function(gr){
+                                    return gr.calendar_id == d.event_calendar_id
+                                })[0].calendar_color
+                                return d.calendar_color
                             })
                             .attr("height", radius*2)
                             .attr("rx", radius)
                             .attr("x", function(d){
-                                return d.x = time(parse(d.start_date))
+                                var startDate = new Date(d.event_start)
+                                d.event_year = d3.timeFormat('%Y')(startDate)
+                                return d.x = time(startDate)
                             })
                             .attr("y", function(d){
                                 d.y = 0;
                                 return d.y - radius;
                             })
                             .attr("width", function(d){
-                                d.length = time(parse(d.end_date)) - d.x
+                                d.length = time(new Date(d.event_end)) - d.x
                                 return radius*2 + d.length;
                             })
                             .on('click', function (d, i) {
-                                display(d);
+                                current_event = d
+                                display();
                             });
 
-
-    //initialize lines connecting point on timeline and detail boxes
-    var connections = dataGroup
-                        .append('path')
-                            .attr('class', 'connector')
-                            .attr("stroke", 'darkgrey')
-                            .style("fill", 'none')
-                            .style('display', 'none');
 
     //initialize detail boxes
     var detailContainer = dataGroup
@@ -105,9 +115,11 @@ function ready(error, allData){
 
     detailContainer      
         .append("rect")
-            .attr('class', 'detailBox')
+            .attr('class', 'detailBox shadow')
             .attr("width", detailWidth)
             .attr("height", detailHeight)
+            .attr("rx", 2)
+            .attr("ry", 2)
 
 
     //bind data (locations) to lines
@@ -121,7 +133,8 @@ function ready(error, allData){
     detailContainer 
         .data(detailsPoints)
         .on('click', function (d, i) {
-            display(this.parentNode.__data__);
+            current_event = this.parentNode.__data__
+            display();
         });
 
     
@@ -130,42 +143,60 @@ function ready(error, allData){
             .attr('class', 'miniID')
             .attr('x', 15)
             .attr('y', 30)
-            .style("font-size", 20)
-            .text(function(){
-                return this.parentNode.__data__.name;
+            .style("font-size", 30)
+            .style('fill', '#F1F0F0')
+            .text(function(d){
+                return d.name;
+            })
+            .each(function(){
+                short_text(d3.select(this), detailWidth, 25)
             });
 
     detailContainer
         .append('line')
-            .attr('x1', 5)
+            .attr('x1', 10)
             .attr('x2', detailWidth - 10)
-            .attr('y1', detailHeight/2 - 10)
-            .attr('y2', detailHeight/2 - 10)
-            .attr('stroke-width', 2)
-            .attr('stroke', 'black');
+            .attr('y1', detailHeight/2)
+            .attr('y2', detailHeight/2)
+            .attr('stroke-width', 1)
+            .style('stroke', '#F1F0F0');
                 
     detailContainer
         .append('text')
             .attr('class', 'miniDate')
             .attr('x', 15)
             .attr('y', detailHeight/2 + 30)
-            .style("font-size", 30)
-            .text(function(){
-                return d3.timeFormat('%d / %m')(parse(this.parentNode.__data__.date));
+            .style("font-size", 25)
+            .style('fill', '#F1F0F0')
+            .text(function(data){
+                if (data.start == data.end){
+                    return d3.timeFormat('%d / %m')(new Date(this.parentNode.__data__.start));
+                }
+                else{
+                    return d3.timeFormat('%d/%m')(new Date(this.parentNode.__data__.start)) + '  -  ' 
+                         + d3.timeFormat('%d/%m')(new Date(this.parentNode.__data__.end));
+                }
             });
 
     dataGroup
         .each(function(data){
             d3.select(this).selectAll('.detailBox')
-                .style('fill', function(){return data.color;});
+                .style('fill', function(){return data.calendar_color;});
         });
     
-    d3.select('.scrollArea').call(zoom.translateBy, 0)
+    if (current_event == null) svg.call(zoom.translateBy, 0)
+    else{
+        svg.call(zoom.translateBy, 0) // TODO center to event
+        event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]
+        current_event = event_data
+        display()
+        resetView(new Date(event_data.event_start))
+    }
 };
 
 //update data position after forces have taken effect
 function ticked() {
-    // if (timer == 1) {            //for debuging purposes - only allows one tick 
+    // if (timer == 0) {            //for debuging purposes - only allows one tick 
     //     simulation.stop()
     // }
     // timer++;
@@ -177,7 +208,7 @@ function ticked() {
 
     selection.selectAll('.points')
         .attr("x", function (d) {
-            return d.x;
+            return d.x - radius;
         })
         .attr("y", function (d) {
             d.y = d.y > 0 ? 0 : d.y;
@@ -252,7 +283,7 @@ function showDetails(){
 
 //draw lines data-details
 function link(target, source) {
-    var x1 = Math.round(source.x + source.length*k/2 + radius);
+    var x1 = Math.round(source.x + source.length*k/2);
     var y1 = Math.round(source.y);
     var x2 = Math.round(target.x);
     var y2 = Math.round(target.y);

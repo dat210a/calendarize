@@ -1,0 +1,11 @@
+.card-panel {
+  top: 50vh;
+  transform: translateY(-50%);
+  position: relative;
+  padding: 2em;
+}
+
+.card-panel .row {
+  margin-top: 1.5em;
+  margin-bottom: 0;
+}

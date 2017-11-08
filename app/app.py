@@ -12,10 +12,12 @@ in the GitHub repository README.md
 
 """
 import logging
-import json, datetime
-import string, random
+import json, string, re, random
+import pytz
+# from pytz import timezone
+from datetime import datetime, date
 from classes import db_queries as db
-from flask import Flask, flash, render_template, session, g, request, url_for, redirect
+from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
@@ -25,6 +27,9 @@ from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
 from funcs import file_tools
 from flask_mail import Mail, Message
+from funcs.file_tools import load_file
+from funcs.send_email import *
+from funcs.reset import *
 
 # app initialization
 app = Flask(__name__)
@@ -35,19 +40,6 @@ app.config['DEBUG'] = True  # Testing only
 
 # needed for session cookies
 app.secret_key = 'hella secret'
-
-#Mail setup
-conf_file = "cfg/mail.json"
-
-with open(conf_file, 'r') as cf:
-    # Loads mail configuration from file for security
-    data = json.load(cf)
-    app.config["MAIL_SERVER"] = data['server']
-    app.config["MAIL_PORT"] = data['PORT']
-    app.config["MAIL_USE_SSL"] = data['ssl']
-    app.config['MAIL_USE_TLS'] = data['tls']
-    app.config["MAIL_USERNAME"] = data['username']
-    app.config["MAIL_PASSWORD"] = data['password']
 mail = Mail(app)
 
 # initialization of login manager
@@ -95,6 +87,14 @@ def end_logging(log):
         log.removeHandler(hdlr)
 
 
+logger = setup_logging()
+
+
+@app.before_request
+def prequest():
+    log_basic()
+
+
 def request_data(req):
     """
     """
@@ -110,13 +110,6 @@ def log_basic():
         logger.info(request_data(request))
 
 
-def get_user_id():
-    """
-    """
-    if 'user' in session:
-        return session['user']['id']
-    return None
-
 # It should be moved to a separate file if there
 # ends up being more functions like this one
 def user_exists(email):
@@ -124,9 +117,10 @@ def user_exists(email):
        otherwise False
     """
     with db.ConnectionInstance() as queries:
-        if queries.get_username(email) is None:
+        if queries.get_user_id(email) is None:
             return False
         return True
+
 
 
 ##################################################################
@@ -142,7 +136,6 @@ def user_exists(email):
 def index(template):
     """
     """
-    log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
 #        with ShardTestingClass(app) as st:
@@ -160,14 +153,14 @@ def index(template):
 def index_user(template):
     """
     """
-    log_basic()
 #    from classes.dummy_classes import ShardTestingClass
 #    for i in range(0, 5):
 #        with ShardTestingClass(app) as st:
 #            print(app.config['shards'])
 #            st.work()
 #        print(app.config['shards'])
-    return render_template(template, name=current_user.username)
+    displayed_name = current_user.name if current_user.name else current_user.email
+    return render_template(template, name=displayed_name)
 
 
 @app.route('/user_availability', methods=['GET', 'POST'])
@@ -188,20 +181,22 @@ def register():
     """
     if request.method == "POST":
         # read the posted values from the UI
-        name = request.form['inputUsername']
-        email = request.form['inputEmail']
-        password = request.form['inputPassword']
+        email = request.form.get('inputEmail', None)
+        password = request.form.get('inputPassword', None)
         # validate received values
-        if name and email and password and not user_exists(email):
+        if email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
+                key = random_key(10) + email[:5]
+                # TODO delete or merge previously created user if exists
                 #adds new user to the database
-                added = queries.add_user(name, email, hash_password(password))
+                added = queries.add_user(datetime.utcnow(), email, hash_password(password),key)
                 if (added):
                     user = User(email)
-                    login_user(user)
                     #adds default calendar to that user
-                    queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id)
-                    return redirect('/calendar')
+                    queries.add_calendar(datetime.utcnow(), user.user_id)
+                    #send verfication email
+                    send_verification(email,key)
+                    return render_template("verify_send.html", email=email)
     # reload if something not right
     # TODO maybe some error messages
     return redirect('/')
@@ -229,7 +224,9 @@ def login():
         email = request.form["inputEmail"]
         user = load_user(email)
         if user is not None:
-            if check_password(password, email):
+            if not user.is_active():
+                return render_template("verify_option.html", email=email)
+            if check_password(password, email) and user.is_active():
                 if 'remember' in request.form and request.form["remember"] == 'on':
                     remember_me = True
                 else:
@@ -245,8 +242,36 @@ def logout():
     """ Logs user out and redirects to main page
     """
     logout_user()
+    # TODO redirect to: you have been successfully logged out
     return redirect('/')
 
+
+@app.route("/recover/", methods=["GET", "POST"])
+def recover():
+    if request.method=="POST":
+        email = request.form.get("email", None)
+        if not email:
+            flash("You need to fill out an email!")
+            return redirect(url_for('recover'))
+        if user_exists(email):
+            send_recover(email)
+            return render_template("recoverconfirm.html",email=email)
+        else:
+            return render_template("recoverconfirm.html",email=email)
+    return render_template("recover.html")
+
+
+@app.route("/reset/<resetkey>", methods=["GET", "POST"])
+def reset(resetkey):
+    with db.ConnectionInstance() as queries:
+        email = queries.get_reset_info(resetkey)
+    if email:
+        if request.method =="POST":
+            if reset_password(email):
+                return render_template("resetsuccess.html")
+        return render_template("reset.html")
+    else:
+        return render_template("invalidlink.html")
 
 @app.route('/calendar')
 @mobile_template('/{mobile/}calendar.html')
@@ -255,7 +280,28 @@ def calendar(template):
     """
     """
     log_basic()
-    return render_template(template, name=current_user.username)
+    with db.ConnectionInstance() as queries:
+        invites = queries.get_user_invites(current_user.user_id)
+        invites = len(invites) if invites else 0
+    displayed_name = current_user.email if current_user.name is None else current_user.name
+    return render_template(template, name=displayed_name, notifier=invites)
+
+
+@app.route('/side/<path>')
+@login_required
+def load_sidebar(path):
+    safe_path = safe_join('sidebar', path + '.html')
+    log_basic()
+    if path == 'notifications':
+        with db.ConnectionInstance() as queries:
+            invites = queries.get_user_invites(current_user.user_id)
+            return render_template(safe_path, notifications=invites)
+    if path == 'display_profile':
+        with db.ConnectionInstance() as queries:
+            phone = queries.get_user_data(current_user.user_id)
+            name = current_user.name if current_user.name else current_user.email
+        return render_template(safe_path, name=name, email=current_user.email, phone=phone)
+    return render_template(safe_path)
 
 
 @app.route('/get_data')
@@ -263,71 +309,152 @@ def calendar(template):
 def get_data():
     """
     """
-    log_basic()
     with db.ConnectionInstance() as queries:
-        results = queries.fetch_data_for_display(current_user.user_id)
-    return json.dumps(results, default=type_handler)
+        calendar_ids = queries.get_calendars(current_user.user_id)
+        cal_details = queries.get_calendars_details(calendar_ids)
+        event_details = queries.get_events_details(calendar_ids)
+    return json.dumps([cal_details, event_details], default=type_handler)
 
 
-# should be moved to funcs/helper.py
+# helper function, should be moved
 def type_handler(x):
-    if isinstance(x, datetime.date):
-        # TODO change date into clients time zone
+    if isinstance(x, (date, datetime)):
+        x = pytz.utc.localize(x)
+        # TODO if desired timezone set use this line:
+        # x = x.astimezone(tz)
         return x.isoformat()
     elif isinstance(x, bytearray):
         return x.decode('utf-8')
     raise TypeError("Unknown type")
 
 
-@app.route('/view/<calendar_id>')
-@mobile_template('{mobile/}calendar.html')
-def view(template, calendar_id):
-
-    log_basic()
-
-    with db.ConnectionInstance() as q:
-
-        cals = q.get_calendars()
-        if calendar_id in cals:
-            members = q.get_calendar_members(calendar_id)
-            if get_user_id() in members:
-                # TODO create template
-                return render_template(template)
-            else:
-                # return redirect(url_for(error))
-                pass
-        else:
-            # return redirect(url_for(error))
-            # TODO create error route, uncomment above lines
-            pass
+@app.route('/uploads/<filename>')
+@login_required
+def uploaded_file(filename):
+    eid = request.args.get('id')
+    with db.ConnectionInstance() as queries:
+        cal = queries.get_event_calendar_id(eid)
+        role = queries.get_calendar_role(current_user.user_id, cal)
+        if role is not None:
+            return load_file(filename, eid)
+    # return redirect(url_for('error'))
 
 
 @app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
 def add_calendar():
     if request.method == "POST":
-        cal_name = request.form['newCalendarName']
-        if cal_name:
+        cal_name = request.form.get('newCalendarName', None)
+        cal_color = request.form.get('color', None)
+        if cal_name and cal_color and len(cal_name) < 45 and len(cal_color) == 7:
             with db.ConnectionInstance() as queries:
-                created = queries.add_calendar(datetime.datetime.utcnow(), current_user.user_id, cal_name)
-                if created:
+                new_cal_id = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name, cal_color[1:])
+                if new_cal_id:
+                    # parse 'invites' string and send invites
+                    invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
+                    invites = re.split(',| |;', invites)
+                    for email in invites:
+                        if '@' in email and queries.check_invite(email, new_cal_id):
+                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
+                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role,email)
+                            sender = current_user.name if current_user.name else current_user.email
+                            # send email to email
+                            send_invite(sender,email,cal_name)
                     return 'true'
+    return 'false'
+
+
+@app.route('/request_calandar', methods=['POST', 'GET'])
+@login_required
+def request_calandar():
+    if request.method == "POST":
+        cal_id = request.form.get('cal_id', None)
+        if cal_id:
+            with db.ConnectionInstance() as queries:
+                role = queries.get_calendar_role(current_user.user_id, cal_id)
+                if role is not None:
+                    cal_data = queries.get_calendars_details((cal_id,))[0]
+                    return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
+    return json.dumps({'success' : 'false'})
+
+
+@app.route('/join_calander', methods=['POST', 'GET'])
+@login_required
+def join_calander():
+    if request.method == 'POST':
+        id = request.form.get("calendar_id", None)
+        role = request.form.get("role", None)
+        with db.ConnectionInstance() as q:
+            if q.check_for_invite(current_user.user_id, id, role) == True:
+                q.join_calander(id, current_user.user_id, role)
+                return 'true'
+    return 'false'
+
+
+@app.route('/decline_calander', methods=['POST', 'GET'])
+@login_required
+def decline_calander():
+    if request.method == 'POST':
+        id = request.form.get("calendar_id", None)
+        role = request.form.get("role", None)
+        with db.ConnectionInstance() as q:
+            if q.check_for_invite(current_user.user_id, id, role) == True:
+                return 'true'
+    return 'false'
+
+
+@app.route('/invite_calendar', methods=['POST', 'GET'])
+@login_required
+def invite_calander():
+    if request.method == 'POST':
+        email = request.form.get("email", None)
+        if len(email) > 45:
+            return 'false'
+        calendar_id = request.form.get("calendar_id", None)
+        role = request.form.get("role", None)
+        with db.ConnectionInstance() as q:
+            if q.get_calendar_role(current_user.user_id, calendar_id) == 0 and q.check_invite(email, calendar_id):
+                q.send_invite(calendar_id, q.get_user_id(email), current_user.user_id, role, email)
+                return 'true'
+    return 'false'
+
+
+@app.route('/leave_calander', methods=['POST', 'GET'])
+@login_required
+def leave_calander():
+    if request.method == 'POST':
+        id = request.form.get("calender_id", None)
+        with db.ConnectionInstance() as q:
+            q.leave_calander(id, current_user.user_id)
+        return 'true'
     return 'false'
 
 
 @app.route('/add_event', methods=['POST', 'GET'])
 @login_required
 def add_event():
-    data = request.form
     if request.method == "POST":
-        if data['newEventName'] and data['calendarID'] and data['startDate'] \
-                                and (data['endDate'] == '' or data['endDate'] >= data['startDate']):
-            # TODO conversion of dates into right format if they are not and into utc
+        data = request.form.to_dict()
+        print(data)
+        if 'newEventName' in data and 'calendarID' in data:
+            try:
+                data['startDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)
+            except:
+                return json.dumps({'success' : 'false', 'message': 'date'})
+            try:
+                data['endDate'] = datetime.utcfromtimestamp(int(data['endDate'])/1000.0)
+                if data['endDate'] < data['startDate']:
+                    data['endDate'] = data['startDate']
+            except:
+                data['endDate'] = data['startDate']
             with db.ConnectionInstance() as queries:
-                created = queries.add_event(request.form, datetime.datetime.utcnow(), current_user.user_id)
-                if created:
-                    return 'true'
-    return 'false'
+                role = queries.get_calendar_role(current_user.user_id, data['calendarID'])
+                if role is not None and role == 0:
+                    eid = queries.add_event(data, datetime.utcnow(), current_user.user_id)
+                    if eid:
+                        success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
+                        return json.dumps({'success' : 'true', 'id': eid, 'files': success})
+    return json.dumps({'success' : 'false'})
 
 
 @app.route('/add_files', methods=['POST'])
@@ -335,24 +462,29 @@ def add_event():
 def add_files():
     with db.ConnectionInstance() as q:
         for file in request.files:
-            q.add_file(request.files[file], request.form['event_id'])
+            success = q.add_file(request.files[file], request.form['event_id'])
+            if not success:
+                # TODO handle what happens if the file fails to upload
+                pass
     return 'true'
 
 
-@app.route('/settings')
-@mobile_template('{mobile/}template.html')
+@app.route('/update_profile', methods=['POST'])
 @login_required
-def settings(template):
+def update_profile():
     log_basic()
-    # TODO load user's settings, then render a template with the settings
-    return render_template(template)
-
-
-@app.route('/settings/save', methods=['POST'])  # <- could be done with AJAX?
-def save_settings():
-    # val = request.form.get(name_of_form_field, None) <- Syntax for getting form data
-    # TODO extract settings from form and store in db
-    return redirect(url_for(settings))  # reloads the settings page to show the new settings
+    if request.method == "POST":
+        name = request.form.get('name', None)
+        name = current_user.name if name == '' or name == None else name
+        try:
+            phone = int(request.form['phone'])
+        except:
+            phone = None
+        if name and len(name) < 45:
+            with db.ConnectionInstance() as queries:
+                if queries.update_user(current_user.user_id, name, phone):
+                    return 'true'
+    return 'false'
 
 
 ##################################################################
@@ -362,99 +494,84 @@ def save_settings():
 # TODO errors and error handling
 
 
-@app.route('/delete_user', methods=['POST'])
-@login_required
+@app.route('/delete_user')
+@fresh_login_required
 def delete_user():
-    # TODO rewrite if necessary when login functionality is implemented
-    req_user = get_user_id()
-    del_user = request.form.get('user_id', None)
-    if del_user and req_user == del_user:  # ensures only the user can delete themselves
-        with db.ConnectionInstance() as q:
-            q.db_del_user(del_user)
-    return redirect(url_for(index))
-
-
-@app.route('/delete_event', methods=['POST'])
-@login_required
-def delete_event():
-    user = get_user_id()
-    event = request.form.get('event_id', None)
-    if event:
-        with db.ConnectionInstance() as q:
-            admins = q.db_get_cal_admin(eid=event)
-            if user in admins:
-                q.db_del_event(event)
-
-
-@app.route('/delete_calendar', methods=['POST'])
-@login_required
-def delete_cal():
-    user = get_user_id()
-    cal = request.form.get('calendar_id', None)
-    if cal:
-        with db.ConnectionInstance() as q:
-            admins = q.db_get_cal_admin(cid=cal)
-            if user in admins:
-                q.db_del_cal(cal)
-
-
-@app.route("/recover", methods=["GET", "POST"])
-@mobile_template('{mobile/}recover.html')
-def recover(template):
-    if request.method=="POST":
-        email = request.form.get("email", None)
-        if not email:
-            flash("You need to fill out an email!")
-            return redirect(url_for('recover'))
-        if not user_exists(email):
-                    flash("Unregistered Email")
-        else:
-                #Generate random unique string for resetkey, store in database and send it along with the email.
-                x = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-
-                with db.ConnectionInstance() as queries:
-                    key = x + str(queries.get_user_id(email))
-                    queries.make_resetkey(email,key)
-                msg = Message("Reset Your password",sender="dat210groupea@gmail.com",recipients=[ email ])
-                msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
-                mail.send(msg)
-                return render_template("recoverconfirm.html",email=email)
-    return render_template(template)
-
-
-@app.route("/reset/<resetkey>", methods=["GET", "POST"])
-@mobile_template('{mobile/}reset.html')
-def reset(template, resetkey):
     with db.ConnectionInstance() as queries:
-        info = queries.get_reset_info(resetkey)
-    if info:
-        if request.method=="POST":
-            new_password = request.form.get("new_password", None)
-            repeat_password = request.form.get("repeat_password", None)
-            if not new_password or not repeat_password:
-                flash("Empty password")
-            elif len(new_password) < 6:
-                flash("Minimum 6 characters.")
-            elif new_password == repeat_password:
-                if check_password(new_password, info[0].decode("utf-8")):
-                    flash("You cannot use the old password.")
-                else:
-                    with db.ConnectionInstance() as queries:
-                        queries.set_new_password(info[0].decode("utf-8"),hash_password(new_password))
-                        return render_template("resetsuccess.html")
-            else:
-                flash("Your password do not match")
-        return render_template(template)
+        queries.db_del_user(current_user.user_id)
+        logout_user()
+        # TODO redirect to user has been deleted page
+    return redirect(url_for('index'))
+
+
+@app.route('/delete_event', methods=['POST', 'GET'])
+@fresh_login_required
+def delete_event():
+    if request.method=="POST":
+        event = request.form.get('event_id', None)
+        if event:
+            with db.ConnectionInstance() as queries:
+                cal = queries.get_event_calendar_id(event)
+                role = queries.get_calendar_role(current_user.user_id, cal)
+                if role is not None and role == 0:
+                    queries.db_del_event(event)
+                    # TODO delete files
+                    # TODO delete children
+                    return 'true'
+    return 'false'
+
+
+@app.route('/delete_calendar', methods=['POST', 'GET'])
+@fresh_login_required
+def delete_cal():
+    if request.method=="POST":
+        cal = request.form.get('calendar_id', None)
+        if cal:
+            with db.ConnectionInstance() as queries:
+                role = queries.get_calendar_role(current_user.user_id, cal)
+                if role is not None and role == 0:
+                    queries.db_del_cal(cal)
+                    return 'true'
+    return 'false'
+
+
+@app.route("/verify/<verify_key>", methods=["GET", "POST"])
+def verify(verify_key):
+    with db.ConnectionInstance() as queries:
+        email = queries.get_verify_info(verify_key)
+    if email:
+        with db.ConnectionInstance() as queries:
+            queries.activate_user(email)
+            user = load_user(email)
+            login_user(user)
+        return render_template("verify_confirm.html")
     else:
-        return render_template("invalidlink.html")
+        return ("Your account has been already verified or the link has been expired")
+
+
+@app.route("/verifyoption", methods=["GET", "POST"])
+def verifyoption():
+    email = request.form.get("email", None)
+    user = load_user(email)
+    if email:
+        key = random_key(10) + email[:5]
+        with db.ConnectionInstance() as queries:
+            queries.make_verifykey(user.user_id,key)
+        send_verification(email,key)
+        return render_template("verify_send.html", email=email)
+
+
+def start():
+    app.run()
+
+@app.route("/verifytesting")
+def vtest():
+    return render_template("verify.html", email='thisisemail')
+
+
 
 ##################################################################
 
 
 if __name__ == '__main__':
-
-    logger = setup_logging()
-
-    app.run()
-
-    end_logging(logger)
+    start()

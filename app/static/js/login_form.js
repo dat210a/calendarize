@@ -81,3 +81,9 @@ $('#registerEmail').bind('blur keyup', function(e){
     };
 });
 
+$('#registerPassword').blur(function(){
+    self = $(this)
+    if (self.hasClass('valid')){
+        $('#confirm_password').attr('pattern', self.val())
+    }
+})

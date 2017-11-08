@@ -1,15 +1,10 @@
 
-var margin = 6;
 
 function resize(){
     oldWidth = width;
     oldHeight = height;
     totalWidth = $('.timelineScreen').width();
-    totalHeight = $('.bodyMain').height()-margin;
-
-    //header: 70px footer: 64px svg min-height: 300px
-    // var winH = $(window).height()-70-64-margin;
-    // if (winH > 300 && winH < totalHeight) totalHeight = winH;
+    totalHeight = $('.bodyMain').height();
 
     // set dimensions
     width = totalWidth - 2*xPadding;
@@ -20,14 +15,15 @@ function resize(){
     time.range([0, width]);
 
     //frames
-    $('.side_tab').height(totalHeight-margin+2);
+    // $('#sidebar').css("min-height", totalHeight + "px" )
+    //               .css("max-height", totalHeight + "px" );
 
     //background elements
     svg
         .attr('width', totalWidth)
-        .attr('height', totalHeight)
-    d3.select('.scrollArea').attr("width", width)
-                            .attr('height', (height))
+        .attr('height', height)
+    // d3.select('.scrollArea').attr("width", width)
+    //                         .attr('height', height)
     d3.select('.Year').attr('transform', 'translate('+ width/2 +',' + 75 +')')
 
     //sides
@@ -36,14 +32,14 @@ function resize(){
             + (xPadding + width) + ',' 
             + midScreen + ')')
         .selectAll('rect')
-            .attr('height', totalHeight)
+            .attr('height', height)
             .attr('y', -midScreen)
 
     leftSideBar
         .attr('transform', 'translate(' 
             + xPadding + ',' + midScreen + ')')
         .selectAll('rect')
-            .attr('height', totalHeight)
+            .attr('height', height)
             .attr('y', -midScreen)
 
     //bottom bar
@@ -56,20 +52,17 @@ function resize(){
             .select('.bottomBase')
                 .attr('width', totalWidth)
 
-    //side event panel
-    d3.select('.sidePanel').style('height', totalHeight)
-
     //readjust line position
     d3.select('.timeline')
         .attr("transform", 'translate(' +xPadding+ ','+midScreen+')')
 
     //realign movables
-    var oldX = d3.zoomTransform(d3.select('.scrollArea').node()).x
-    d3.select('.scrollArea').call(zoom.translateBy, oldX/oldWidth*(width - oldWidth)/k, 0);
+    var oldX = d3.zoomTransform(svg.node()).x
+    svg.call(zoom.translateBy, oldX/oldWidth*(width - oldWidth)/k, 0);
  }
 
 $( window ).resize(function(){resize()});
 $( document ).ready(function(){
     resize();
-    resetView();
+    resetView(new Date);
 });
