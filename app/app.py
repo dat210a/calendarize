@@ -356,10 +356,7 @@ def add_calendar():
                     for email in invites:
                         if '@' in email and queries.check_invite(email, new_cal_id):
                             role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
-                            if user_exists(email):
-                                queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role,email)
-                            else:
-                                queries.send_invite(new_cal_id, "null", current_user.user_id, role,email)
+                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role,email)
                             if current_user.name:
                                 sender = current_user.name
                             else:

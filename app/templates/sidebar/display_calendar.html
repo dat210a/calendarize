@@ -119,6 +119,8 @@ function populate(data){
             data: {'calendar_id': data.calendar_id}, 
             success: function(response) {
                 if (response == 'true') {
+                    $("#sidetab").empty()
+                    current_event = null
                     load_data();
                     calendars_list();
                 }
