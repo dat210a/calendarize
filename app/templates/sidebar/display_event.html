@@ -170,6 +170,8 @@
 <script>
 $("#eventDisplay").hide(0)
 $(document).ready(function(){
+    $('ul.tabs').css("display", "block")
+    $('ul.tabs').tabs()
     $("#recurring_event").text("general event")
     $("#specific_event").text(() => "Year: " + current_event.event_year)
 

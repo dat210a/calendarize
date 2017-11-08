@@ -182,13 +182,13 @@ class ConnectionInstance:
 
     def get_user_data(self, uid):
         user_data = ['user_phone']
-        sql = "SELECT user_phone FROM users WHERE user_id = ?"
+        sql = "SELECT (" + ",".join(user_data) + ") FROM users WHERE user_id = ?"
         self.__cur.execute(sql, [uid])
         try:
             res = self.__cur.fetchone()
-            return res[0]
+            return res[0].decode('utf-8')
         except Exception as e:
-            logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
+            logging.debug('{}\nWhile trying to retreive user data with id:\n{}'.format(e, uid))
             return None
 
     def get_calendars(self, uid):
