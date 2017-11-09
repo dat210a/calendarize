@@ -63,7 +63,7 @@ DROP TABLE IF EXISTS `calendars`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `calendars` (
   `calendar_id` int NOT NULL AUTO_INCREMENT,
-  `calendar_owner` int NOT NULL,
+  `calendar_owner_id` int NOT NULL,
   `calendar_date_created` datetime NOT NULL,
   `calendar_name` varchar(45) NOT NULL,
   `calendar_color` varchar(6) DEFAULT NULL,
@@ -95,11 +95,12 @@ CREATE TABLE `events` (
   `event_id` int NOT NULL AUTO_INCREMENT,
   `event_calendar_id` int NOT NULL,  
   `event_date_created` datetime NOT NULL,
-  `event_owner` int NOT NULL,
+  `event_owner_id` int NOT NULL,
   `event_name` varchar(45) NOT NULL,
   `event_start` datetime NOT NULL,
   `event_end` datetime NOT NULL,
   `event_recurring` tinyint(1) NOT NULL DEFAULT '0',
+  `event_fixed_date` tinyint(1) NOT NULL DEFAULT '1',
   `event_location` varchar(45) DEFAULT NULL,
   `event_details` varchar(1000) DEFAULT NULL,
   `event_extra` varchar(45) DEFAULT NULL,
@@ -129,7 +130,7 @@ CREATE TABLE `event_children` (
   `child_id` int NOT NULL AUTO_INCREMENT,
   `child_parent_id` int NOT NULL, 
   `child_date_created` datetime NOT NULL,
-  `child_owner` int NOT NULL,
+  `child_owner_id` int NOT NULL,
   `child_year` int NOT NULL,  
   `child_start` datetime DEFAULT NULL,
   `child_end` datetime DEFAULT NULL,
@@ -177,7 +178,6 @@ LOCK TABLES `user_calendars` WRITE;
 /*!40000 ALTER TABLE `user_calendars` ENABLE KEYS */;
 UNLOCK TABLES;
 
-
 --
 -- Table structure for table `calendar_invites`
 --
@@ -197,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `calendar_invites` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user_calendars`
+-- Dumping data for table `calendar_invites`
 --
 
 LOCK TABLES `calendar_invites` WRITE;
@@ -227,6 +227,31 @@ CREATE TABLE `user_friends` (
 LOCK TABLES `user_friends` WRITE;
 /*!40000 ALTER TABLE `user_friends` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_friends` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `friend_requests`
+--
+
+DROP TABLE IF EXISTS `friend_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `friend_requests` (
+  `sender_user_id` INT NOT NULL,
+  `invited_user_id` INT DEFAULT NULL,
+  `email` varchar(45) NOT NULL,
+  `unique_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`unique_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `friend_requests`
+--
+
+LOCK TABLES `friend_requests` WRITE;
+/*!40000 ALTER TABLE `friend_requests` DISABLE KEYS */;
+/*!40000 ALTER TABLE `friend_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
