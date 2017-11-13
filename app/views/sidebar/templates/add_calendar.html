@@ -90,10 +90,10 @@
             url: '/add_calendar',
             data: $(this).serialize(), 
             type: 'POST',
-            success: function(response) {
-                if (response == 'true') {
-                    $("#sidebar").empty();
-                    load_data();
+            dataType: 'json',
+            success: function(r) {
+                if (r.success == 'true'){
+                    display_calendar(JSON.parse(r.data));
                 }
                 else {
                     console.log ('could not create new calendar')

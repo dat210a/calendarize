@@ -1,12 +1,12 @@
 {% extends 'base.html' %} 
 {% block title %}calendarize.user{% endblock %}
 {% block nav %}
-<link href="static/css/nav_user.css" type="text/css" rel="stylesheet" media="screen,projection" />
+<link href="{{ url_for('static', filename='css/nav_user.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
 <ul id='settings_dropdown' class='dropdown-content accentgrey-dark accentgrey-light-text'>
     <li><a href="{{ url_for('index') }}">Homepage</a></li>
-    <li><a href="#!" id="showFriends">Friends</a></li>
+    <li><a href="#!" id="showFriends" onclick="display_friends">Friends</a></li>
     <li><a href="#!" onclick="calendars_list()">Calendars</a></li>
-    <li><a href="#!" id="openProfile">Profile<i class="material-icons right">settings</i></a></li>
+    <li><a href="#!" id="openProfile" onclick="display_profile()">Profile<i class="material-icons right">settings</i></a></li>
     <li class="divider"></li>
     <li>
         <a href="/logout">Logout<i class="material-icons right">power_settings_new</i></a>
@@ -14,9 +14,9 @@
 </ul>
 <nav class="accentgrey-dark z-depth-3">
     <div class="nav-wrapper hide-on-med-and-down">
-        <a href="#"><img src="static/images/logo_nav.png" class="placeholderimg"></a>
+        <a href="#"><img src="{{ url_for('static', filename='images/logo_nav.png') }}" class="placeholderimg"></a>
         <ul class="right">
-            <li><a href="#!" onclick="load_notifications()" id="showNotifications">
+            <li><a href="#!" onclick="notifications()" id="showNotifications">
                 <ul><li><i class="material-icons">notifications</i></li><li id="newNotifications"></li></ul></a>
             </li>
             <li><a id="nav_username" class="dropdown-button" href="#!" data-activates="settings_dropdown">{{name}}<i class="material-icons right">arrow_drop_down</i></a></li>

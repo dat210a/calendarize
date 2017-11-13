@@ -17,7 +17,7 @@ import pytz
 # from pytz import timezone
 from datetime import datetime, date
 from classes import db_queries as db
-from flask import Flask, flash, render_template, session, g, request, url_for, redirect, safe_join
+from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from classes.user import User
@@ -30,9 +30,11 @@ from flask_mail import Mail, Message
 from funcs.file_tools import load_file
 from funcs.send_email import *
 from funcs.reset import *
+from views.sidebar import sidebar
 
 # app initialization
 app = Flask(__name__)
+app.register_blueprint(sidebar.sidebar, url_prefix='/side')
 Mobility(app)
 
 # config setup
@@ -159,8 +161,7 @@ def index_user(template):
 #            print(app.config['shards'])
 #            st.work()
 #        print(app.config['shards'])
-    displayed_name = current_user.name if current_user.name else current_user.email
-    return render_template(template, name=displayed_name)
+    return render_template(template, name=current_user.username())
 
 
 @app.route('/user_availability', methods=['GET', 'POST'])
@@ -279,29 +280,10 @@ def reset(resetkey):
 def calendar(template):
     """
     """
-    log_basic()
     with db.ConnectionInstance() as queries:
         invites = queries.get_user_invites(current_user.user_id)
         invites = len(invites) if invites else 0
-    displayed_name = current_user.email if current_user.name is None else current_user.name
-    return render_template(template, name=displayed_name, notifier=invites)
-
-
-@app.route('/side/<path>')
-@login_required
-def load_sidebar(path):
-    safe_path = safe_join('sidebar', path + '.html')
-    log_basic()
-    if path == 'notifications':
-        with db.ConnectionInstance() as queries:
-            invites = queries.get_user_invites(current_user.user_id)
-            return render_template(safe_path, notifications=invites)
-    if path == 'display_profile':
-        with db.ConnectionInstance() as queries:
-            phone = queries.get_user_data(current_user.user_id)
-            name = current_user.name if current_user.name else current_user.email
-        return render_template(safe_path, name=name, email=current_user.email, phone=phone)
-    return render_template(safe_path)
+    return render_template(template, name=current_user.username(), notifier=invites)
 
 
 @app.route('/get_data')
@@ -356,12 +338,13 @@ def add_calendar():
                     for email in invites:
                         if '@' in email and queries.check_invite(email, new_cal_id):
                             role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
-                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role,email)
-                            sender = current_user.name if current_user.name else current_user.email
+                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role, email)
+                            sender = current_user.username()
                             # send email to email
                             send_invite(sender,email,cal_name)
-                    return 'true'
-    return 'false'
+                    cal_data = queries.get_calendars_details((new_cal_id,))[0]
+                    return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
+    return json.dumps({'success' : 'false'})
 
 
 @app.route('/request_calandar', methods=['POST', 'GET'])
@@ -435,7 +418,6 @@ def leave_calander():
 def add_event():
     if request.method == "POST":
         data = request.form.to_dict()
-        print(data)
         if 'newEventName' in data and 'calendarID' in data:
             try:
                 data['startDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)
@@ -449,7 +431,7 @@ def add_event():
                 data['endDate'] = data['startDate']
             with db.ConnectionInstance() as queries:
                 role = queries.get_calendar_role(current_user.user_id, data['calendarID'])
-                if role is not None and role == 0:
+                if role is not None and role <= 2:
                     eid = queries.add_event(data, datetime.utcnow(), current_user.user_id)
                     if eid:
                         success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
@@ -472,7 +454,6 @@ def add_files():
 @app.route('/update_profile', methods=['POST'])
 @login_required
 def update_profile():
-    log_basic()
     if request.method == "POST":
         name = request.form.get('name', None)
         name = current_user.name if name == '' or name == None else name

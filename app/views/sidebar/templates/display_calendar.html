@@ -6,7 +6,8 @@
                 <span class="grey-text text-lighten-3" id="calendarOwner">Created by: Person X</span>
             </div>
         </div>
-        <a class="btn-floating btn-large waves-effect waves-light right calendardetailsheaderBtn"><i class="material-icons">edit</i></a>
+        <a id="editCalendar" class="btn-floating btn-large waves-effect waves-light right calendardetailsheaderBtn"><i class="material-icons">edit</i></a>
+        <a id="displayCalendar" onclick="calendars_list()" class="btn-floating btn-large waves-effect waves-light right cancel calendardetailsheaderBtn"><i class="material-icons">arrow_back</i></a>
         <div style="padding-top: 7em">
             <div class="row">
                 <!-- <div class="col s6">
@@ -89,50 +90,49 @@
 </div>
 </div>
 <script>
-function populate(data){
-    $('.calendardetailsfixedheader').css('background-color', "#"+data.calendar_color);
-    $('.calendardetailsheaderBtn').css('background-color', "#"+data.calendar_color);
-    $('.calendarName').text(data.calendar_name);
-    $('#calendarOwner').text(() => "Created by: " + data.calendar_owner);
-    if (data.members.length > 0){
-        $('#members').empty()
-        data.members.forEach(function(member){
-            $('#members').append(`<li>${ member }</li>`)
-        })
-    }
-    if (data.pending.length > 0){
-        $('#pending').empty()
-        data.pending.forEach(function(pending){
-            $('#pending').append(`<li>${ pending }</li>`)
-        })
-    }
+    function populate(data){
+        $('.calendardetailsfixedheader').css('background-color', "#"+data.calendar_color);
+        $('.calendardetailsheaderBtn').css('background-color', "#"+data.calendar_color);
+        $('.calendarName').text(data.calendar_name);
+        $('#calendarOwner').text(() => "Created by: " + data.calendar_owner_id);
+        if (data.members.length > 0){
+            $('#members').empty()
+            data.members.forEach(function(member){
+                $('#members').append(`<li>${ member }</li>`)
+            })
+        }
+        if (data.pending.length > 0){
+            $('#pending').empty()
+            data.pending.forEach(function(pending){
+                $('#pending').append(`<li>${ pending }</li>`)
+            })
+        }
 
-    $(".calendardetailsheaderBtn").on('click', function(){
-        
-    })
+        $("#editCalendar").on('click', function(){
+            edit_calendar(data);
+        })
 
-    $('#delete_calendar').click(function(e){
-        e.preventDefault()
-        $.ajax({
-            url: '/delete_calendar',
-            type: 'POST',
-            data: {'calendar_id': data.calendar_id}, 
-            success: function(response) {
-                if (response == 'true') {
-                    $("#sidetab").empty()
-                    current_event = null
-                    load_data();
-                    calendars_list();
+        $('#delete_calendar').click(function(e){
+            e.preventDefault()
+            $.ajax({
+                url: '/delete_calendar',
+                type: 'POST',
+                data: {'calendar_id': data.calendar_id}, 
+                success: function(response) {
+                    if (response == 'true') {
+                        $("#sidetab").empty()
+                        current_event = null
+                        load_data();
+                        calendars_list();
+                    }
+                    else {
+                        console.log (response, 'could not delete this calendar')
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
                 }
-                else {
-                    console.log (response, 'could not delete this calendar')
-                }
-            },
-            error: function(error) {
-                console.log(error);
-            }
+            });
         });
-    });
-}
-
+    }
 </script>

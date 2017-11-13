@@ -1,7 +1,7 @@
 ﻿{% extends 'nav_user.html' %}
 
 {% block content %}
-    <link href="static/css/calendar.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="{{ url_for('static', filename='css/calendar.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
     <div id="preloader">
         <div class="body_valign center">
             <div class="preloader-wrapper big active body_valign">
@@ -50,8 +50,8 @@
                 <ul>
                     <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue tooltipped" data-position="top" data-delay="50" data-tooltip="Today"><i class="material-icons">center_focus_strong</i></a></li>
                     <!-- <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li> -->
-                    <li><a id="addCalendarForm" class="waves-effect waves-light btn-floating yellow darken-1 tooltipped" data-position="top" data-delay="50" data-tooltip="New calendar"><i class="material-icons">insert_invitation</i></a></li>
-                    <li><a id='addEventForm' class="waves-effect waves-light btn-floating red tooltipped" data-position="top" data-delay="50" data-tooltip="New event"><i class="material-icons">playlist_add</i></a>
+                    <li><a id="addCalendarForm" onclick="add_calendar()" class="waves-effect waves-light btn-floating yellow darken-1 tooltipped" data-position="top" data-delay="50" data-tooltip="New calendar"><i class="material-icons">insert_invitation</i></a></li>
+                    <li><a id='addEventForm' onclick="add_event()" class="waves-effect waves-light btn-floating red tooltipped" data-position="top" data-delay="50" data-tooltip="New event"><i class="material-icons">playlist_add</i></a>
                     </li>
                 </ul>
             </div>

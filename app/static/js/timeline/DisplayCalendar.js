@@ -20,7 +20,7 @@ var time = d3.scaleTime()
 var axis = d3.axisBottom(time)
                 .tickFormat(d3.timeFormat('%b'))
                 .tickArguments([d3.timeMonth.every(1)])
-                .tickPadding(15)
+                .tickPadding(0)
                 .tickSize(25)
 
 //create canvas and all basic timeline objects
@@ -74,13 +74,24 @@ displayAxis.selectAll('path')
                 .style("stroke-width", radius)
                 .style("stroke", "#97989C")
 
-displayAxis
-    .selectAll('line')
-        .attr('stroke', '#3D4148')
-        .attr('y1', function(){
-            return -d3.select(this).attr('y2')
-        })
-        .attr('stroke-width', '2px')
+// displayAxis
+//     .selectAll('line')
+//         .attr('stroke', '#3D4148')
+//         .attr('stroke-width', '2px')
+//         .each(function(d){
+//             if (d.getMonth() == 0){
+//                 d3.select(this).attr('y2', () => +d3.select(this).attr('y2') + 30)
+//                                .attr('y1', () => -d3.select(this).attr('y2'))
+//             }
+//             else d3.select(this).attr('y1', () => -d3.select(this).attr('y2'))
+//         })
+        
+// displayAxis
+//     .selectAll("text")
+//     .each(function(){
+//         console.log("this")
+//         d3.select(this).attr("x", 20)
+//     })
 
 //today
 d3.select('.timeline')

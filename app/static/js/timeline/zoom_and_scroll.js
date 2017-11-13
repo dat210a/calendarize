@@ -27,7 +27,7 @@ function resetView(date) {
     //     })
     //     .each(function(d){
     //         current_event = d
-    //         display()
+    //         display_event()
     //     })
 }
 
@@ -60,9 +60,20 @@ function rescale() {
         .selectAll('line')
             .style('stroke', '#3D4148')
             .style('stroke-width', (3/4*radius))
-            .attr('y1', function(){
-                return -d3.select(this).attr('y2')
+            .each(function(d){
+                if (d.getMonth() == 0){
+                    d3.select(this).attr('y2', () => +d3.select(this).attr('y2') + 20)
+                                   .attr('y1', () => -d3.select(this).attr('y2'))
+                }
+                else d3.select(this).attr('y1', () => -d3.select(this).attr('y2'))
             })
+
+    displayAxis
+        .selectAll("text")
+        .each(function(){
+            d3.select(this).attr("x", 22)
+            d3.select(this).attr("y", 20)
+        })
     
     //update year count
     yearTag
@@ -83,22 +94,18 @@ function rescale() {
         //Update data points positions if there are any
         d3.selectAll(".data").selectAll('.points')
             .each(function(d, i){
-                var startDate = new Date(d.event_start)
-                d.x = timeRescaled(startDate)
+                d.x = timeRescaled(d.event_start)
                 if (d.event_recurring == 1){
-                    d.event_year = d3.timeFormat('%Y')(startDate)
-                    d.event_year -= Math.floor(d.x / Math.round(width*k))
-                    var child = d.children.filter(c => d.event_year == c.child_year)
+                    year = d.event_start.getFullYear()
+                    year -= Math.floor(d.x / Math.round(width*k))
+                    d.event_start.setFullYear(year)
+                    var child = d.children.filter(c => year == c.child_year)
                     if (child.length > 0){
-                        startDate = new Date(child[0].child_start)
-                        startDate.setFullYear(d.event_year) // TODO delete this after testing
+                        var startDate = new Date(child[0].child_start)
                         d.x = timeRescaled(startDate)
-                        d.length = timeRescaled(new Date(startDate)) - d.x // TODO change to child[0].child_end
+                        d.length = timeRescaled(new Date( child[0].child_end)) - d.x
                     }
-                    else{
-                        startDate.setFullYear(d.event_year)
-                        d.x = timeRescaled(startDate)
-                    }
+                    else d.x = timeRescaled(d.event_start);
                     // TODO make duplicate if need to display more on same screen
                 }
             })

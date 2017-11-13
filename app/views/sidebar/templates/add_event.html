@@ -1,12 +1,16 @@
 <div class="add_event_container" id="eventForm">
   <form class="addEvent" id="addEvent">
-    <div class="row neweventfixedheader accentgrey-medium z-depth-1">
+    <div class="row neweventfixedheader accentgrey-dark z-depth-1">
       <div class="col s12">
         <h4 class="left-align grey-text text-lighten-5">New event</h4>
       </div>
     </div>
     <button id="btnNewEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
-    <div style="padding-top: 5em">
+    <div style="padding-top: 4em">
+      <div class="row accentgrey-light">
+        <h5 style="padding: 0.75rem">Basic information</h5>
+        <hr>
+      </div>
       <div class="row">
         <div class="col s12 input-field">
           <input id="newEventName" Name="newEventName" type="text" class="" validate required>
@@ -21,23 +25,33 @@
         </div>
       </div>
       <!--  -->
-      <div class="row">
-        <h5 style="padding: 0.75rem">Date</h5>
-        <hr>
-        <div class="col s4">
-          <p>
-            <input class="with-gap" name="fixedSwitch" type="radio" id="checkFixed" checked />
-            <label for="checkFixed">Fixed</label></p>
-          </p>
+      <div class="dateHead accentgrey-light">
+        <div class="row">
+            <h5 style="padding: 0.75rem">Date</h5>
+            <hr>
         </div>
-        <div class="col s8">
-          <p>
-            <input class="with-gap" name="fixedSwitch" type="radio" id="checkNotfixed" />
-            <label for="checkNotfixed">Not Fixed</label></p>
-          </p>
+        <div class="row">
+          <div class="col s4">
+            <input type="checkbox" id="repeatEvent" name="recurring" />
+            <label for="repeatEvent">Recurring</label>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 0.75rem">
+          <div class="col s4">
+            <p>
+              <input class="with-gap" name="fixedSwitch" type="radio" id="checkFixed" checked />
+              <label for="checkFixed">Fixed</label>
+            </p>
+          </div>
+          <div class="col s8">
+            <p>
+              <input class="with-gap" name="fixedSwitch" type="radio" id="checkNotfixed" />
+              <label for="checkNotfixed">Not Fixed</label>
+            </p>
+          </div>
         </div>
       </div>
-      <!--  -->
+        <!--  -->
       <div id="switchFixed">
         <div class="row">
           <div class="col s12">
@@ -55,7 +69,7 @@
       <!--  -->
       <div id="switchNotfixed">
         <div class="row">
-          <div class="col s12 input-field">
+          <div class="col s7 input-field">
             <select id="month">
                   <option value="0">January</option>
                   <option value="1">February</option>
@@ -72,6 +86,9 @@
               </select>
             <label>Month</label>
           </div>
+          <div class="col s5 input-field" id="yearContainer">
+            <select id="yearSelector"></select>
+          </div>
         </div>
         <div class="row">
           <div class="col s12 input-field">
@@ -81,32 +98,26 @@
                   <option value="2">Middle</option>
                   <option value="3">End</option>
               </select>
-            <label>Part of Month</label>
+            <label>Part of the Month</label>
           </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <div class="col s6">
             <div class="input-field">
               <input placeholder="Optional" id="duration" type="number" class="center">
               <label>Duration in days</label>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       <!--  -->
-      <div class="row">
-        <div class="col s4">
-          <input type="checkbox" id="repeatEvent" name="recurring" />
-          <label for="repeatEvent">Recurring</label>
-        </div>
-      </div>
       <!-- <div class="row">
         <div class="col s12 input-field">
           <input placeholder="Optional" id="first_name2" type="text">
           <label class="active" for="first_name2">Location</label>
         </div>
       </div> -->
-      <div class="row">
+      <!-- <div class="row">
         <div class="col s2 input-field">
           <input value="0" id="first_name2" type="text" class="center">
           <label>Notification</label>
@@ -119,7 +130,7 @@
                         <option value="4" class="right circle">Days in advance</option>
                     </select>
         </div>
-      </div>
+      </div> -->
       <!-- <div class="row">
         <div class="input-field col s12">
           <select multiple>
@@ -131,6 +142,10 @@
           <label>Add Members</label>
         </div>
       </div> -->
+      <div class="row accentgrey-light">
+        <h5 style="padding: 0.75rem">Additional information</h5>
+        <hr>
+      </div>
       <div class="row">
         <div class="input-field col s12">
           <textarea id="textarea1" name="event_details" placeholder="Optional" class="materialize-textarea"></textarea>
@@ -148,17 +163,32 @@
           </div>
         </div>
       </div>
+      <div class="accentgrey-light"><br></div>
     </div>
   </form>
 </div>
 <script>
   $("#eventForm").hide(0)
-  selector = $('#calendarID');
-  selector.empty()
+  // possible calendars for the event to belong to
+  calSelector = $('#calendarID');
+  calSelector.empty()
   d3.selectAll('.group').each(function(d) {
-    selector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
+    calSelector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
   })
+  // set month and year to current on mont and year choosers
+  $("#month").val(new Date().getMonth())
+  yearSelector = $('#yearSelector');
+  yearSelector.empty()
+  var thisYear = new Date().getFullYear()
+  for (var year = thisYear-10; year <= thisYear+10; year++) {
+    yearSelector.append("<option value=" + year + ">" + year + "</option>");
+    if (thisYear == year){
+      yearSelector.children().last().attr("selected", 'selected')
+    }
+  }
   init_date();
+
+  // toggle fixed / non fixed date choosers
   $("#switchNotfixed").hide(0)
   $("input[name=fixedSwitch]").change(function(){
     if (this.id == 'checkNotfixed'){
@@ -173,44 +203,64 @@
     }
   })
 
+  // if calendar is a repeated event we don't need year selector
+  $("#repeatEvent").change(function(){
+    if ($(this).prop("checked")) $("#yearContainer").hide('fast')
+    else $("#yearContainer").show('fast')
+  })
+
+  // set start date as minimum for end date on date picker
   $("#startDate").change(function() {
     var $input = $('#endDate').pickadate()
     var picker = $input.pickadate('picker')
     picker.set('min', $(this).val())
   });
 
-  $("#addEvent").submit(function(e) {
-    e.preventDefault()
-    var form = $(this)[0];
-    oData = new FormData(form);
+  function prepare_data(form){
+    var oData = new FormData($(form)[0]);
     if ($("#checkFixed").prop( "checked" )){
+      oData.set("fixedSwitch", 1)
       oData.set('startDate', new Date(oData.get('startDate')).getTime())
       if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
     }
     else{
+      oData.set("fixedSwitch", 0)
       var startDate = new Date()
+      if (!$("#repeatEvent").prop("checked")) startDate.setFullYear($("#yearSelector").val())
       startDate.setMonth($("#month").val())
+      startDate.setDate(1)
       startDate.setHours(0, 0, 0, 0)
-      if ($("#whenInMonth").val() == 1){
-        startDate.setDate(1)
-      }
-      else if ($("#whenInMonth").val() == 3){
-        startDate.setDate(22)
-      }
-      else{
-        startDate.setDate(14)
-      }
-      if ($("#duration").val() != ''){
-        endDate = new Date(startDate)
-        endDate.setDate(startDate.getDate() + parseInt($("#duration").val()))
-        oData.set('endDate', endDate.getTime())
+      var endDate = new Date(startDate)
+      endDate.setMonth(endDate.getMonth()+1)
+      endDate.setDate(0)
+      var numDays = endDate.getDate()-startDate.getDate()
+      switch (parseInt($("#whenInMonth").val())){
+        case 1:
+          endDate.setDate(numDays/3)
+          break;
+        case 2:
+          startDate.setDate(numDays/3+1)
+          endDate.setDate(numDays*2/3)
+          break;
+        case 3:
+          startDate.setDate(numDays*2/3+1)
+          break;
+        default:
+        // endDate.setDate(endDate.getDate()+1)
       }
       oData.set('startDate', startDate.getTime())
+      oData.set('endDate', endDate.getTime())
     }
+    return oData;
+  }
+
+  $("#addEvent").submit(function(e) {
+    e.preventDefault()
+    data = prepare_data(this)
     $.ajax({
       url: '/add_event',
       type: 'POST',
-      data: oData,
+      data: data,
       encType: "multipart/form-data",
       processData: false,
       contentType: false,
@@ -223,13 +273,15 @@
             "event_id": r.id
           };
           load_data()
-        } else {
+        } 
+        else {
           if (r.message == 'date') {
             $('#startDate').addClass("validate invalid")
               .blur(function() {
                 $(this).removeClass('validate invalid');
               });
-          } else {
+          } 
+          else {
             console.log('Cannot create new event at this time')
           }
         }

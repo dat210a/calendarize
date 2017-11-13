@@ -54,10 +54,12 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
 
+
     def get_validation_info(self, calendar_id, user_id):
         sql = "SELECT role FROM user_calendars WHERE calendar_id = ? AND user_id = ?"
         self.__cur.execute(sql, [calendar_id, user_id])
         return self.__cur.fetchone()[0]
+
 
     def get_user_activity(self, email):
         sql = "SELECT active FROM users WHERE ? = user_email"
@@ -68,6 +70,7 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             return None
+
 
     def get_user_invites(self, uid):
         sql = "SELECT sender_user_id, calendar_id, role FROM calendar_invites WHERE invited_user_id = ?"
@@ -85,6 +88,7 @@ class ConnectionInstance:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, uid))
             return None
 
+
     def get_calendar_name(self, cid):
         sql = "SELECT calendar_name FROM calendars WHERE ? = calendar_id "
         self.__cur.execute(sql, [cid])
@@ -94,6 +98,7 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile retrieving calendar name:\n{}'.format(e, cid))
             return None
+
 
     def join_calander(self, calender_id, user_id, role):
         self.__cur.execute("SELECT unique_id from user_calendars ORDER BY unique_id DESC LIMIT 1")
@@ -112,6 +117,7 @@ class ConnectionInstance:
         self.__cur.execute(sql, [user_id, calender_id])
         self.__con.commit()
 
+
     def send_invite(self, calender_id, user_id, sender_id, role, email):
         sql = "INSERT INTO calendar_invites VALUES (?,?,?,?,?,?)"
         self.__cur.execute("SELECT unique_id from calendar_invites ORDER BY unique_id DESC LIMIT 1")
@@ -123,6 +129,7 @@ class ConnectionInstance:
         self.__cur.execute(sql, [unique_id, calender_id, user_id, email, sender_id, role])
         self.__con.commit()
 
+
     def check_invite(self, email, calendar_id):
         sql_invite = "SELECT * from calendar_invites where email = ? and calendar_id = ?"
         self.__cur.execute(sql_invite, [email, calendar_id])
@@ -133,6 +140,7 @@ class ConnectionInstance:
         if calendar == None and invite == None:
             return True
         return False
+
 
     def check_for_invite(self, user_id, calendar_id, role):
         sql = "SELECT invited_user_id, calendar_id, role, unique_id FROM calendar_invites WHERE invited_user_id = ? AND calendar_id = ?"
@@ -240,6 +248,7 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile fetching calendars for user: {}'.format(e, uid))
             return None
+
     def get_calendar_name(self, calender_id):
         sql = "SELECT calendar_name FROM calendars WHERE calendar_id = ?"
         self.__cur.execute(sql, [calender_id])
@@ -251,7 +260,9 @@ class ConnectionInstance:
             return None
 
     def get_calendars_details(self, cids):
-        cal_keys = ["calendar_id", "calendar_name", "calendar_color", "calendar_owner"]
+        if len(cids) == 0:
+            return None
+        cal_keys = ["calendar_id", "calendar_name", "calendar_color", "calendar_owner_id"]
         sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
               "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
               "AND deleted = 0"
@@ -274,7 +285,9 @@ class ConnectionInstance:
 
 
     def get_events_details(self, cids):
-        data_key = ["event_id", "event_owner", "event_calendar_id", "event_name", "event_start", "event_end", "event_recurring", "event_details"]
+        if len(cids) == 0:
+            return None
+        data_key = ["event_id", "event_owner_id", "event_calendar_id", "event_name", "event_start", "event_end", "event_recurring", "event_fixed_date", "event_details"]
         sql = "SELECT " + ",".join(data_key) + " FROM events " \
               "WHERE event_calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
               "AND deleted = 0"
@@ -295,7 +308,7 @@ class ConnectionInstance:
     def get_user_repr(self, id):
         name = self.get_user_name(id)
         if not name:
-            name = self.get_user_email(id)
+            return self.get_user_email(id)
         return name
 
     def get_event_files(self, eid):
@@ -308,7 +321,7 @@ class ConnectionInstance:
             return None
 
     def get_event_children(self, eid):
-        data_key = ["child_id", "child_owner", "child_year", "child_start", "child_end", "child_location", "child_details", "skip_year"]
+        data_key = ["child_id", "child_owner_id", "child_year", "child_start", "child_end", "child_location", "child_details", "skip_year"]
         sql = "SELECT " + ",".join(data_key) + " FROM event_children " \
               "WHERE child_parent_id = ? " \
               "AND deleted = 0"
@@ -368,7 +381,7 @@ class ConnectionInstance:
 
     def add_calendar(self, created, owner, cal_name="Default", cal_color="f57c00"):
         sql = "INSERT INTO calendars " \
-              "(calendar_name, calendar_date_created, calendar_owner, calendar_color) " \
+              "(calendar_name, calendar_date_created, calendar_owner_id, calendar_color) " \
               "VALUES (?, ?, ?, ?)"
         self.__cur.execute(sql, [
             cal_name,
@@ -388,7 +401,7 @@ class ConnectionInstance:
             return None
 
     def add_event(self, event_data, created, owner):
-        data_key = ["event_name", "event_calendar_id", "event_date_created", "event_owner", "event_start", "event_end", "event_recurring", "event_details"]
+        data_key = ["event_name", "event_calendar_id", "event_date_created", "event_owner_id", "event_start", "event_end", "event_recurring", "event_fixed_date", "event_details"]
         sql = "INSERT INTO events " \
               "(" + ",".join(data_key) + ") " \
               "VALUES (" + ",".join("?"*len(data_key)) + ")"
@@ -402,6 +415,7 @@ class ConnectionInstance:
                 event_data['startDate'],
                 event_data['endDate'],
                 1 if 'recurring' in event_data else 0,
+                event_data['fixedSwitch'],
                 event_data['event_details']
             ]
         )
@@ -430,6 +444,7 @@ class ConnectionInstance:
 
 #######################################################################################
             # Update
+
     def make_verifykey(self, user_id, verify_key):
         sql ="UPDATE users SET verify_key=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_id=?"
         self.__cur.execute(sql, (verify_key,user_id))

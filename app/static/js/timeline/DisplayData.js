@@ -43,7 +43,7 @@ function ready(error, allData){
     //objects whith coordinates for detail boxes
     var detailsPoints = new Array(myData.length);
     for (i = 0; i < detailsPoints.length; i++){
-        detailsPoints[i] = {'name': myData[i].event_name, 'start': myData[i].event_start, 'end': myData[i].event_end};
+        detailsPoints[i] = {'name': myData[i].event_name, 'start': myData[i].event_start, 'end': myData[i].event_end, 'fixed': myData[i].event_fixed_date};
     }
 
     //setup simulation based on data
@@ -88,21 +88,21 @@ var connections = dataGroup
                             .attr("height", radius*2)
                             .attr("rx", radius)
                             .attr("x", function(d){
-                                var startDate = new Date(d.event_start)
-                                d.event_year = d3.timeFormat('%Y')(startDate)
-                                return d.x = time(startDate)
+                                d.event_start = new Date(d.event_start)
+                                return d.x = time(d.event_start)
                             })
                             .attr("y", function(d){
                                 d.y = 0;
                                 return d.y - radius;
                             })
                             .attr("width", function(d){
-                                d.length = time(new Date(d.event_end)) - d.x
+                                d.event_end = new Date(d.event_end)
+                                d.length = time(d.event_end) - d.x
                                 return radius*2 + d.length;
                             })
                             .on('click', function (d, i) {
                                 current_event = d
-                                display();
+                                display_event();
                             });
 
 
@@ -134,7 +134,7 @@ var connections = dataGroup
         .data(detailsPoints)
         .on('click', function (d, i) {
             current_event = this.parentNode.__data__
-            display();
+            display_event();
         });
 
     
@@ -169,12 +169,17 @@ var connections = dataGroup
             .style("font-size", 25)
             .style('fill', '#F1F0F0')
             .text(function(data){
-                if (data.start == data.end){
-                    return d3.timeFormat('%d / %m')(new Date(this.parentNode.__data__.start));
+                if (data.fixed == 1){
+                    if (data.start == data.end){
+                        return d3.timeFormat('%d / %m')(new Date(data.start));
+                    }
+                    else{
+                        return d3.timeFormat('%d/%m')(new Date(data.start)) + '  -  ' 
+                             + d3.timeFormat('%d/%m')(new Date(data.end));
+                    }
                 }
                 else{
-                    return d3.timeFormat('%d/%m')(new Date(this.parentNode.__data__.start)) + '  -  ' 
-                         + d3.timeFormat('%d/%m')(new Date(this.parentNode.__data__.end));
+                    return 'In ' + d3.timeFormat('%B')(new Date(data.start));
                 }
             });
 
@@ -189,7 +194,7 @@ var connections = dataGroup
         svg.call(zoom.translateBy, 0) // TODO center to event
         event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]
         current_event = event_data
-        display()
+        display_event()
         resetView(new Date(event_data.event_start))
     }
 };

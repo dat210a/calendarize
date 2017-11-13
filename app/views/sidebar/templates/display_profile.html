@@ -8,7 +8,7 @@
             <span class="grey-text text-lighten-3">{{ email }}</span>
         </div>
     </div>
-    <button class="btn-floating btn-large waves-effect waves-light right profiledetailsheaderBtn accentgrey-dark" onclick="editProfile()"><i class="material-icons">edit</i></button>
+    <a id="editProfile" class="btn-floating btn-large waves-effect waves-light right profiledetailsheaderBtn accentgrey-dark"><i class="material-icons">edit</i></a>
     <div class="profilepaddingfix">
         <div class="row">
             <div class="col s12">
@@ -33,10 +33,13 @@
 </div>
 <script>
     $("#profileDisplay").hide(0)
-    var user = {
-        "name": '{{ name }}',
-        "email": '{{ name }}',
-        "phone": '{{ phone }}'
-    }
+    $("#editProfile").on('click', function(){
+        var user = {
+            "name": '{{ name }}',
+            "email": '{{ name }}',
+            "phone": '{{ phone }}'
+        }
+        edit_profile(user);
+    })
     $("#profileDisplay").show(700)
 </script>

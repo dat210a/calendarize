@@ -1,62 +1,67 @@
-
-var form_div_ids = ["#eventDisplay", "#calendarDisplay", "#calendarForm", "#editCalendarForm", "#eventForm", "#editEventForm", "#profileDisplay"];
 var colors = ['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38'];
-var current_event = null
+var current_event = null;
 
 var slider = document.getElementById("zoomSlider");
-
-
-$("#resetToToday" ).click(function() {
-    resetView(new Date);
-});
 
 slider.onchange = function (){
     svg.call(zoom.scaleTo, this.value);
 };
 
+$("#resetToToday" ).click(function() {
+    resetView(new Date);
+});
+
 // load forms
-$("#addCalendarForm").click(function(){
-    $('#sidebar').load("/side/add_calendar")
-});
-
-$("#addEventForm").click(function(){
-    $('#sidebar').load("/side/add_event")
-});
-
 function calendars_list(){
-    $('#sidebar').load("/side/calendars_list")
+    $('#sidebar').load("/side/calendars_list");
+};
+
+function add_calendar(){
+    $('#sidebar').load("/side/add_calendar");
 };
 
 function display_calendar(calendar_data){
     $('#sidebar').load("/side/display_calendar", function(){
-        populate(calendar_data)
-    })
-}
+        populate(calendar_data);
+    });
+};
 
-function edit_calendar(){
-    
-}
+function edit_calendar(calendar_data){
+    $('#sidebar').load("/side/edit_calendar", function(){
+        populate(calendar_data);
+    });
+};
 
-function editEvent(){
-    $('#sidebar').load("/side/edit_event")
-}
+function add_event(){
+    $('#sidebar').load("/side/add_event");
+};
 
-function display(){
-    $('#sidebar').load("/side/display_event")
-}
+function display_event(){
+    $('#sidebar').load("/side/display_event");
+};
 
-$("#openProfile").click(function(){
-    $('#sidebar').load("/side/display_profile")
-});
+function edit_event(){
+    $('#sidebar').load("/side/edit_event");
+};
 
-function editProfile(){
-    $('#sidebar').load("/side/edit_profile")
-}
+function display_profile(){
+    $('#sidebar').load("/side/display_profile");
+};
 
-function load_notifications(){
-    $('#sidebar').load("/side/notifications")
-}
+function edit_profile(user_data){
+    $('#sidebar').load("/side/edit_profile", function(){
+        populate(user_data)
+    });
+};
 
-$("#showFriends").click(function(){
-    $('#sidebar').load("/side/friends")
-});
+function notifications(){
+    $('#sidebar').load("/side/notifications");
+};
+
+function display_friends(){
+    $('#sidebar').load("/side/friends");
+};
+
+function add_friends(){
+    $('#sidebar').load("/side/add_friends");
+};

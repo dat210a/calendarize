@@ -132,6 +132,7 @@ span.infotitle {
     z-index: 10;
 }
 
+.calendardetailsheaderBtn.cancel,
 .neweventheaderBtn.cancel {
   right: 5em;
 }

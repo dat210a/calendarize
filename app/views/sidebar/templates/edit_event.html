@@ -6,7 +6,7 @@
             </div>
         </div>
         <button id="btnEditEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
-        <button id="btnCancelEditEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn cancel accentgrey-dark"><i class="material-icons">close</i></button>
+        <a id="btnCancelEditEvent" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn cancel accentgrey-dark"><i class="material-icons">close</i></a>
         <div style="padding-top: 5em">
             <div class="row">
                 <div class="col s12 input-field">
@@ -102,11 +102,13 @@
 <script>
     $("#editEventForm").hide(0)
     init_date();
+
     $("#startDate").change(function(){
         var $input = $('#endDate').pickadate()
         var picker = $input.pickadate('picker')
         picker.set('min', $(this).val())
     });
+
     $("#editEvent").submit(function(e){
         e.preventDefault()
         var form = $(this)[0];
@@ -121,7 +123,7 @@
             processData: false,
             contentType: false,
             cache: false,
-            success: function(response) {
+            success: function(r) {
                 r = JSON.parse(response)
                 if (r.success == 'true') {
                     $("#sidebar").empty();
