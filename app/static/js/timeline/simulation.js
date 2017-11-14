@@ -35,8 +35,8 @@ function pointCollider(alpha){
         for (j = i + 1; j < n; ++j){
             point = nodes[j];
             var dist = capsuleCollider(capsule, point, capsule.length*k);
-            if (dist < radius*2+1) {
-                if (point.length <= capsule.length) point.vy -= (radius*2+1 - dist);
+            if (dist < radius*2+2) {
+                if (point.length*0.9 <= capsule.length) point.vy -= (radius*2+1 - dist);
                 else capsule.vy -= (radius*2+1 - dist);
             }
         }
