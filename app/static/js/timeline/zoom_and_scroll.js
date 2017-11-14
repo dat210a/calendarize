@@ -11,7 +11,7 @@ svg.call(zoom)
 function resetView(date) {
     //adjust view to today
     var month = d3.timeMonth.floor(date)
-    var numDays = d3.timeDay.count(month, d3.timeMonth.ceil(date))
+    var numDays = d3.timeDay.count(month, d3.timeMonth.ceil(+month + 1))
     if (d3.timeDay.count(month, date) > numDays*3/4) month = d3.timeMonth.ceil(date);
     var focusOn = time(d3.timeDay.offset(month, Math.floor(numDays/2.0)));
     svg.call(zoom.scaleTo, 3.8);
@@ -40,16 +40,16 @@ function rescale() {
     axis.scale(timeRescaled)
     d3.select('.axis').call(axis)
 
-    //show/hide bottom bar when zooming in/out
-    if (!d3.selectAll('.bottomMenu').empty())
-    {
-        if (k > 3.3 && transform.k < 3.3){
-            if (d3.select('.bottomMenu').attr('up') === 'false') ToggleAgendaMenu();
-        }
-        else if (k < 3.3 && transform.k > 3.3){
-            if (d3.select('.bottomMenu').attr('up') === 'true') ToggleAgendaMenu();
-        }
-    }
+    // //show/hide bottom bar when zooming in/out
+    // if (!d3.selectAll('.bottomMenu').empty())
+    // {
+    //     if (k > 3.3 && transform.k < 3.3){
+    //         if (d3.select('.bottomMenu').attr('up') === 'false') ToggleAgendaMenu();
+    //     }
+    //     else if (k < 3.3 && transform.k > 3.3){
+    //         if (d3.select('.bottomMenu').attr('up') === 'true') ToggleAgendaMenu();
+    //     }
+    // }
     k = d3.event.transform.k;
     
     //adjust slider

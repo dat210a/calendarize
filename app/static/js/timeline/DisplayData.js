@@ -51,10 +51,6 @@ function ready(error, allData){
     simulation.nodes(nodes)
                 .on('tick', ticked);
 
-    //divide what forces affect which objects
-    dataGravity.initialize(myData);
-    detailsGravity.initialize(detailsPoints);
-
     //display data
     var dataGroup = d3.select(".timeline")
                         .insert('g', '.g-today')
@@ -63,19 +59,20 @@ function ready(error, allData){
                             .data(myData)
                             .enter()
                                 .append("g")
-                                    .attr("class", function(d, i){return 'datapoints ' + i;})
+                                    .attr("class", function(d, i){return 'datapoints e' + d.event_id;})
                                     .style('display', 'inline')
 
     //initialize lines connecting point on timeline and detail boxes
-var connections = dataGroup
-                    .append('path')
-                        .attr('class', 'connector shadow')
-                        .attr('opacity', '0.99')
-                        .style("stroke-width", '2')
-                        .style("stroke", '#3D4148')
-                        .style("fill", 'none')
-                        .style('display', 'none');
+    var connections = dataGroup
+                        .append('path')
+                            .attr('class', 'connector shadow')
+                            .attr('opacity', '0.99')
+                            .style("stroke-width", '2')
+                            .style("stroke", '#3D4148')
+                            .style("fill", 'none')
+                            .style('display', 'none');
                             
+    //initialize points on the timeline
     var points = dataGroup.append("rect")
                             .attr('class', 'points shadow')
                             .style('pointer-events', 'visible')
@@ -132,6 +129,7 @@ var connections = dataGroup
     //bind data (locations) to detail boxes
     detailContainer 
         .data(detailsPoints)
+        .each(function(d){d.y = 0})
         .on('click', function (d, i) {
             current_event = this.parentNode.__data__
             display_event();
@@ -189,13 +187,12 @@ var connections = dataGroup
                 .style('fill', function(){return data.calendar_color;});
         });
     
+    // load, center to and display new created event
     if (current_event == null) svg.call(zoom.translateBy, 0)
     else{
-        svg.call(zoom.translateBy, 0) // TODO center to event
-        event_data = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]
-        current_event = event_data
+        current_event = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]
         display_event()
-        resetView(new Date(event_data.event_start))
+        resetView(new Date(current_event.event_start))
     }
 };
 
@@ -217,7 +214,7 @@ function ticked() {
         })
         .attr("y", function (d) {
             d.y = d.y > 0 ? 0 : d.y;
-            return d.y -radius;
+            return d.y - radius;
         })
     
     selection.selectAll('.detailContainer')
@@ -241,45 +238,46 @@ function showDetails(){
                 return ((d.x > 0) && (d.x < width) && d3.select(this).style("display") == 'inline');
             }).data().length
 
+        var selection = d3.selectAll('.data').selectAll('.detailContainer');
         if (k < 3.3 && tresholdNumPoints < pointsOnScreen){
-            if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'inline'){
-                d3.selectAll('.data').selectAll('.detailContainer')
-                        .transition()
-                        .duration(500)
-                        .attr('transform', function(d){
-                            return 'translate(' + d.x + ',' + 0 + ')scale(0)';
-                        })
-                        .on("start", function(){
-                            d3.selectAll('.data').selectAll('path').style('display', 'none');
-                        })
-                        .on("end", function(){d3.select(this).style('display', 'none')});
+            if (selection.style('display') == 'inline'){
+                selection
+                    .transition()
+                    .duration(500)
+                    .attr('transform', function(d){
+                        return 'translate(' + d.x + ',' + 0 + ')scale(0)';
+                    })
+                    .on("start", function(){
+                        d3.selectAll('.data').selectAll('path').style('display', 'none');
+                    })
+                    .on("end", function(){d3.select(this).style('display', 'none')});
             };
         }
         else {
-            if (d3.selectAll('.data').selectAll('.detailContainer').style('display') == 'none'){
-                d3.selectAll('.data').selectAll('.detailContainer')
-                            .transition()
-                            .duration(500)
+            if (selection.style('display') == 'none'){
+                selection
+                    .transition()
+                    .duration(500)
+                    .attr('transform', function(d){
+                        var parent = this.parentNode.__data__;
+                        d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
+                        return 'translate(' + d.x + ',' + (d.y-detailHeight/2) + ')scale(1)';
+                    })
+                    .on("start", function(){
+                        d3.select(this).style('display', 'inline')
                             .attr('transform', function(d){
-                                var parent = this.parentNode.__data__;
-                                d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
-                                return 'translate(' + d.x + ',' + (d.y-detailHeight/2) + ')scale(1)';
+                                return 'translate(' + d.x + ',' + 0 + ')scale(0)';
                             })
-                            .on("start", function(){
-                                d3.select(this).style('display', 'inline')
-                                    .attr('transform', function(d){
-                                        return 'translate(' + d.x + ',' + 0 + ')scale(0)';
-                                    })
-                            })
-                            .on("end", function(){ 
-                                d3.selectAll('.miniID')
-                                    .attr('x', 15)
-                                    .attr('y', 30)
-                                d3.selectAll('.miniDate')
-                                    .attr('x', 15)
-                                    .attr('y', detailHeight/2 + 30)                              
-                                d3.selectAll('.data').selectAll('path').style('display', 'inline');
-                            })
+                    })
+                    .on("end", function(){ 
+                        d3.selectAll('.miniID')
+                            .attr('x', 15)
+                            .attr('y', 30)
+                        d3.selectAll('.miniDate')
+                            .attr('x', 15)
+                            .attr('y', detailHeight/2 + 30)                              
+                        d3.selectAll('.data').selectAll('path').style('display', 'inline');
+                    })
             } 
         }
         simUpdate();

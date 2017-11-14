@@ -1,15 +1,7 @@
 
-
-//force pull towards the middle line
-var dataGravity = d3.forceY(0).strength(0.1);
-var detailsGravity = d3.forceY(function(d){
-                                return d.y > 10 ? 100 : -140
-                            }).strength(0.5);
-
 //instantiate simulation
 var simulation = d3.forceSimulation()
-                        .force('gravity', dataGravity)
-                        .force('detailsGravity', detailsGravity)
+                        .force('gravity', gravity)
                         .force('pointsCollider', pointCollider)
                         .force('detailsBoxCollider', detailBoxCollider);
 
@@ -19,6 +11,37 @@ function simUpdate(){
     simulation
         .alpha(1)
         .restart();
+};
+
+function pushDown(container){
+    d3.selectAll('.data').selectAll('.e' + container.event_id)
+        .selectAll('.detailContainer')
+            .each(function(d){ if (d.y <= 0) d.y = 100;})
+}
+
+function pullUp(container){
+    d3.selectAll('.data').selectAll('.e' + container.event_id)
+        .selectAll('.detailContainer')
+            .each(function(d){ if (d.y > 0) d.y = -140;})
+}
+
+//pull towards the mid line 
+function gravity(alpha){
+    var selection = d3.selectAll('.data')
+                        .selectAll('g')
+                            .filter(function(d){
+                                return d3.select(this).style('display') == 'inline';
+                            })
+    selection.selectAll('.points')
+                .each(function(d){
+                    d.vy += (0 - d.y)*0.05*alpha
+                })
+    selection.selectAll('.detailContainer')
+                .each(function(d){
+                    var pullTo =  d.y > 10 ? 100 : -140
+                    d.vy += (pullTo - d.y)*0.1*alpha
+                    // if (this.parentNode.__data__.event_id == 39) console.log(d.y, d.vy)
+                })        
 };
 
 //collision force for points on the line
@@ -32,13 +55,28 @@ function pointCollider(alpha){
                             .data().reverse();
     for (i = 0, n = nodes.length; i < n; i++){
         capsule = nodes[i];
-        for (j = i + 1; j < n; ++j){
+        var numOverlap = 0;
+        for (j = i + 1; j < n; j++){
             point = nodes[j];
             var dist = capsuleCollider(capsule, point, capsule.length*k);
             if (dist < radius*2+2) {
-                if (point.length*0.9 <= capsule.length) point.vy -= (radius*2+1 - dist);
-                else capsule.vy -= (radius*2+1 - dist);
+                numOverlap++;
+                if (capsule.length < point.length*0.9
+                    || (point.length > 0.9*capsule.length && point.y + point.vy > capsule.y + capsule.vy))
+                    {
+                        capsule.vy -= (radius*2+2 - dist);
+                    }
+                else point.vy -= (radius*2+2 - dist);
+                if (alpha > 0.95 && point.y + point.vy == 0)
+                    pushDown(point)
             }
+        }
+        if (alpha > 0.95 && numOverlap > 0 && capsule.y + capsule.vy == 0){
+            pushDown(capsule)
+            // else 
+            //     d3.selectAll('.data').selectAll('.e' + capsule.event_id)
+            //         .selectAll('.detailContainer')
+            //             .each(function(d){ if (d.y > 0) d.y = -140;})
         }
     }
 }
@@ -51,17 +89,28 @@ function detailBoxCollider(alpha){
         })
         .each(function(point, i){
             var pParent = this.parentNode.__data__;
+            var pointRootX = pParent.x + pParent.length*k/2;
             d3.selectAll('.data').selectAll('.detailContainer')
                 .filter(function(){
                     return d3.select(this.parentNode).style('display') == 'inline';
                 })
-                .filter(function(d, j){return j > i;})
-                .each(function(capsule, j){
+                .filter((d, j) => j > i)
+                .each(function(capsule){
                     var cParent = this.parentNode.__data__;
-                    var dist = detailsCollider(capsule, point, detailWidth, cParent, pParent);
-                    if (dist < detailHeight+5) {
-                        if (capsule.y > 0) capsule.vy += (detailHeight+5 - dist);
-                        else capsule.vy -= (detailHeight+5 - dist);
+                    var capsuleRootX = cParent.x + cParent.length*k/2
+                    if (capsuleRootX < pointRootX) {
+                        var dist = detailsCollider(capsule, point, detailWidth, capsuleRootX, pointRootX);
+                        if (dist < detailHeight+5) {
+                            if (capsule.y > 0) capsule.vy += (detailHeight+5 - dist);
+                            else capsule.vy -= (detailHeight+5 - dist);
+                        }
+                    }
+                    else{
+                        var dist = detailsCollider(point, capsule, detailWidth, pointRootX, capsuleRootX);
+                        if (dist < detailHeight+5) {
+                            if (point.y > 0) point.vy += (detailHeight+5 - dist);
+                            else point.vy -= (detailHeight+5 - dist);
+                        }
                     }
                 })
         })
@@ -77,11 +126,11 @@ function capsuleCollider(capsule, point, duration){
                          duration);
 };
 
-function detailsCollider(capsule, point, duration, cParent, pParent){
-    cx = cParent.x + cParent.length*k/2 + xOffset(Math.abs(capsule.y + capsule.vy));
-    px = pParent.x + pParent.length*k/2 + xOffset(Math.abs(point.y + point.vy));
+function detailsCollider(capsule, point, length, capsuleRootX, pointRootX){
+    cx = capsuleRootX + xOffset(Math.abs(capsule.y + capsule.vy));
+    px = pointRootX + xOffset(Math.abs(point.y + point.vy));
     if (px > cx + detailWidth + 25) return width;
-    return distToCapsule(cx, capsule.y + capsule.vy, px, point.y + point.vy, duration);
+    return distToCapsule(cx, capsule.y + capsule.vy, px, point.y + point.vy, length);
 };
 
 // Capsule Collider helper functions
@@ -93,9 +142,9 @@ function dist2(x1, y1, x2, y2){
     return sqr(x1 - x2) + sqr(y1 - y2);
 };
 
-function distToCapsule(cx, cy, px, py, duration) {
-    if (duration == 0) return Math.sqrt(dist2(px, py, cx, cy));
-    var t = (px - cx) / duration;
+function distToCapsule(cx, cy, px, py, length) {
+    if (length == 0) return Math.sqrt(dist2(px, py, cx, cy));
+    var t = (px - cx) / length;
     t = Math.max(0, Math.min(1, t));
-    return Math.sqrt(dist2(px, py, cx + t * duration, cy));
+    return Math.sqrt(dist2(px, py, cx + t * length, cy));
 };

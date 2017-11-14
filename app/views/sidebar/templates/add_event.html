@@ -233,7 +233,7 @@
       var endDate = new Date(startDate)
       endDate.setMonth(endDate.getMonth()+1)
       endDate.setDate(0)
-      var numDays = endDate.getDate()-startDate.getDate()
+      var numDays = endDate.getDate()-startDate.getDate() + 1
       switch (parseInt($("#whenInMonth").val())){
         case 1:
           endDate.setDate(numDays/3)
