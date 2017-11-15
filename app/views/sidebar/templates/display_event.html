@@ -5,7 +5,7 @@
             <span class="grey-text text-lighten-3" id="event_owner"></span>
         </div>
     </div>
-    <a class="btn-floating btn-large waves-effect waves-light right eventdetailsheaderBtn" onclick="editEvent()"><i class="material-icons">edit</i></a>
+    <a class="btn-floating btn-large waves-effect waves-light right eventdetailsheaderBtn" onclick="edit_event()"><i class="material-icons">edit</i></a>
     <div style="padding-top: 7em">
         <div class="row">
             <div class="col s12">
@@ -34,42 +34,6 @@
                     <span class="sub">Recurring: </span><span class="sub eventRecur"></span>
                 </div>
             </div>
-            <!-- <div class="row">
-                <div class="col s12">
-                    <span class="infotitle"><strong>Location</strong></span>
-                    <br>
-                    <span>TBD</span>
-                </div>
-            </div> -->
-            <!-- <div class="row">
-                <div class="col s12">
-                    <span class="infotitle"><strong>Notifications</strong></span>
-                    <br>
-                    <span>TBD</span>
-                </div>
-            </div> -->
-            <!-- <div class="row">
-                <div class="col s12">
-                    <span class="infotitle"><strong>Members</strong></span>
-                    <div class="row">
-                        <div class="col s5" style="padding:0">
-                            <ul>
-                                <li>TBD</li>
-                                <li>TBD</li>
-                                <li>TBD</li>
-                                <li><a href="#">See more</a></li>
-                            </ul>
-                        </div>
-                        <div class="col 5">
-                            <ul>
-                                <li>TBD</li>
-                                <li>TBD</li>
-                                <li>TBD</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
             <div class="row">
                 <div class="col s12">
                     <span class="infotitle"><strong>Notes</strong></span>
@@ -99,13 +63,6 @@
                 <br>
                 <a class="btn"></a>
             </div>
-            <!-- <div class="row">
-                <div class="col s12">
-                    <span class="infotitle"><strong>Group</strong></span>
-                    <br>
-                    <span class="eventGroup">NaN</span>
-                </div>
-            </div> -->
             <div id="instanceExists">
                 <div class="row">
                     <div class="col s12">
@@ -116,42 +73,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="row">
-                    <div class="col s12">
-                        <span class="infotitle"><strong>Location</strong></span>
-                        <br>
-                        <span>TBD</span>
-                    </div>
-                </div> -->
-                <!-- <div class="row">
-                    <div class="col s12">
-                        <span class="infotitle"><strong>Notifications</strong></span>
-                        <br>
-                        <span>TBD</span>
-                    </div>
-                </div> -->
-                <!-- <div class="row">
-                    <div class="col s12">
-                        <span class="infotitle"><strong>Members</strong></span>
-                        <div class="row">
-                            <div class="col s5" style="padding:0">
-                                <ul>
-                                    <li>TBD</li>
-                                    <li>TBD</li>
-                                    <li>TBD</li>
-                                    <li><a href="#">See more</a></li>
-                                </ul>
-                            </div>
-                            <div class="col 5">
-                                <ul>
-                                    <li>TBD</li>
-                                    <li>TBD</li>
-                                    <li>TBD</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
                 <div class="row">
                     <div class="col s12">
                         <span class="infotitle"><strong>Notes</strong></span>
@@ -241,13 +162,20 @@ $(document).ready(function(){
 
     populate_event();
     console.log(current_event)
-    populate_instance();
+    if (current_event.event_recurring == 1){
+        populate_instance();
 
-    $('ul.tabs').css("display", "block")
-    $('ul.tabs').tabs()
-    $("#eventDisplay").slideDown('slow', function(){
+        $('ul.tabs').css("display", "block")
         $('ul.tabs').tabs()
-    })
+        $("#eventDisplay").slideDown('slow', function(){
+            $('ul.tabs').tabs()
+        })
+    }
+    else{
+        $('ul.tabs').remove()
+        $('#child').remove()
+        $("#eventDisplay").slideDown('slow')
+    }
 
     $('#delete_event').click(function(e){
         e.preventDefault()

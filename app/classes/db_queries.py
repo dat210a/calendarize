@@ -400,30 +400,17 @@ class ConnectionInstance:
             self.__con.rollback()
             return None
 
-    def add_event(self, event_data, created, owner):
-        data_key = ["event_name", "event_calendar_id", "event_date_created", "event_owner_id", "event_start", "event_end", "event_recurring", "event_fixed_date", "event_details"]
+    def add_event(self, event_data):
+        data_key = list(event_data.keys())
         sql = "INSERT INTO events " \
               "(" + ",".join(data_key) + ") " \
               "VALUES (" + ",".join("?"*len(data_key)) + ")"
-        self.__cur.execute(
-            sql,
-            [
-                event_data['newEventName'],
-                event_data['calendarID'],
-                created,
-                owner,
-                event_data['startDate'],
-                event_data['endDate'],
-                1 if 'recurring' in event_data else 0,
-                event_data['fixedSwitch'],
-                event_data['event_details']
-            ]
-        )
+        self.__cur.execute(sql, list(event_data.values()))
         try:
             self.__con.commit()
             return self.get_last_ID()
         except Exception as e:
-            logging.debug('{}\nOccurred while trying to insert event with data:\n{}'.format(e, pp.pformat(event_data)))
+            logging.debug('{}\nOccurred while trying to insert new event with data:\n{}'.format(e, pp.pformat(event_data)))
             self.__con.rollback()
             return None
 
@@ -497,7 +484,7 @@ class ConnectionInstance:
         pass
 
     def update_event(self, event_data):
-        #TODO
+        
         pass
 
     def update_role(self, data):

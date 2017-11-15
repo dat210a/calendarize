@@ -71,19 +71,19 @@
         <div class="row">
           <div class="col s7 input-field">
             <select id="month">
-                  <option value="0">January</option>
-                  <option value="1">February</option>
-                  <option value="2">March</option>
-                  <option value="3">April</option>
-                  <option value="4">May</option>
-                  <option value="5">June</option>
-                  <option value="6">July</option>
-                  <option value="7">August</option>
-                  <option value="8">September</option>
-                  <option value="9">October</option>
-                  <option value="10">November</option>
-                  <option value="11">December</option>
-              </select>
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
             <label>Month</label>
           </div>
           <div class="col s5 input-field" id="yearContainer">
@@ -93,55 +93,16 @@
         <div class="row">
           <div class="col s12 input-field">
             <select id="whenInMonth">
-                  <option value="0" selected>Unspecified</option>
-                  <option value="1">Beginning</option>
-                  <option value="2">Middle</option>
-                  <option value="3">End</option>
-              </select>
+              <option value="0" selected>Unspecified</option>
+              <option value="1">Beginning</option>
+              <option value="2">Middle</option>
+              <option value="3">End</option>
+            </select>
             <label>Part of the Month</label>
           </div>
         </div>
-        <!-- <div class="row">
-          <div class="col s6">
-            <div class="input-field">
-              <input placeholder="Optional" id="duration" type="number" class="center">
-              <label>Duration in days</label>
-            </div>
-          </div>
-        </div> -->
       </div>
       <!--  -->
-      <!-- <div class="row">
-        <div class="col s12 input-field">
-          <input placeholder="Optional" id="first_name2" type="text">
-          <label class="active" for="first_name2">Location</label>
-        </div>
-      </div> -->
-      <!-- <div class="row">
-        <div class="col s2 input-field">
-          <input value="0" id="first_name2" type="text" class="center">
-          <label>Notification</label>
-        </div>
-        <div class="col s10 input-field">
-          <select>
-                        <option value="1">None</option>
-                        <option value="2">Minutes in advance</option>
-                        <option value="3">Hours in advance</option>
-                        <option value="4" class="right circle">Days in advance</option>
-                    </select>
-        </div>
-      </div> -->
-      <!-- <div class="row">
-        <div class="input-field col s12">
-          <select multiple>
-                        <option value="0" selected disabled>None</option>
-                        <option value="1">Person 1</option>
-                        <option value="2">Person 2</option>
-                        <option value="3">Person 3</option>
-                    </select>
-          <label>Add Members</label>
-        </div>
-      </div> -->
       <div class="row accentgrey-light">
         <h5 style="padding: 0.75rem">Additional information</h5>
         <hr>
@@ -175,7 +136,7 @@
   d3.selectAll('.group').each(function(d) {
     calSelector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
   })
-  // set month and year to current on mont and year choosers
+  // set month and year to current on month and year choosers
   $("#month").val(new Date().getMonth())
   yearSelector = $('#yearSelector');
   yearSelector.empty()
@@ -224,26 +185,26 @@
       if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
     }
     else{
-      oData.set("fixedSwitch", 0)
+      oData.delete("fixedSwitch")
       var startDate = new Date()
       if (!$("#repeatEvent").prop("checked")) startDate.setFullYear($("#yearSelector").val())
       startDate.setMonth($("#month").val())
-      startDate.setDate(1)
+      startDate.setDate(2)
       startDate.setHours(0, 0, 0, 0)
       var endDate = new Date(startDate)
       endDate.setMonth(endDate.getMonth()+1)
       endDate.setDate(0)
-      var numDays = endDate.getDate()-startDate.getDate() + 1
+      var numDays = endDate.getDate()-startDate.getDate() + 2
       switch (parseInt($("#whenInMonth").val())){
         case 1:
           endDate.setDate(numDays/3)
           break;
         case 2:
-          startDate.setDate(numDays/3+1)
+          startDate.setDate(numDays/3+2)
           endDate.setDate(numDays*2/3)
           break;
         case 3:
-          startDate.setDate(numDays*2/3+1)
+          startDate.setDate(numDays*2/3+2)
           break;
         default:
         // endDate.setDate(endDate.getDate()+1)

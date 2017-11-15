@@ -417,27 +417,90 @@ def leave_calander():
 @login_required
 def add_event():
     if request.method == "POST":
-        data = request.form.to_dict()
-        if 'newEventName' in data and 'calendarID' in data:
-            try:
-                data['startDate'] = datetime.utcfromtimestamp(int(data['startDate'])/1000.0)
-            except:
-                return json.dumps({'success' : 'false', 'message': 'date'})
-            try:
-                data['endDate'] = datetime.utcfromtimestamp(int(data['endDate'])/1000.0)
-                if data['endDate'] < data['startDate']:
-                    data['endDate'] = data['startDate']
-            except:
-                data['endDate'] = data['startDate']
-            with db.ConnectionInstance() as queries:
-                role = queries.get_calendar_role(current_user.user_id, data['calendarID'])
-                if role is not None and role <= 2:
-                    eid = queries.add_event(data, datetime.utcnow(), current_user.user_id)
-                    if eid:
-                        success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
-                        return json.dumps({'success' : 'true', 'id': eid, 'files': success})
+        response, data = prepare_new_event_data()
+        if not response:
+            return json.dumps({'success' : 'false', 'message': data})
+        with db.ConnectionInstance() as queries:
+            role = queries.get_calendar_role(current_user.user_id, data['event_calendar_id'])
+            if role is not None and role <= 2:
+                eid = queries.add_event(data)
+                if eid:
+                    success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
+                    return json.dumps({'success' : 'true', 'id': eid, 'files': success})
     return json.dumps({'success' : 'false'})
 
+
+def prepare_new_event_data():
+    data = {}
+    data['event_name'] = request.form.get('newEventName', None)
+    data['event_calendar_id'] = request.form.get('calendarID', None)
+    if not data['event_name'] or not data['event_calendar_id']:
+        return False, 'basic information'
+    try:
+        data['event_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
+    except:
+        return False, 'date'
+    try:
+        data['event_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
+        if data['event_end'] < data['event_start']:
+            data['event_end'] = data['event_start']
+    except:
+        data['event_end'] = data['event_start']
+    data['event_date_created'] = datetime.utcnow()
+    data['event_owner_id'] = current_user.user_id
+    data['event_recurring'] = 1 if 'recurring' in request.form else 0
+    data['event_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
+    data['event_details'] = request.form.get('event_details', None)
+    return True, data
+
+
+@app.route('/edit_event', methods=['POST', 'GET'])
+@login_required
+def edit_event():
+    if request.method == "POST":
+        response, data = prepare_edit_event_data()
+        if not response:
+            return json.dumps({'success' : 'false', 'message': data})
+        with db.ConnectionInstance() as queries:
+            current_calendar = queries.get_event_calendar_id(data['event_id'])
+            if current_calendar is None:
+                return json.dumps({'success' : 'false', 'message': 'bad event ID'})
+            role_old = queries.get_calendar_role(current_user.user_id, current_calendar)
+            if role_old is None or role_old > 1:
+                return json.dumps({'success' : 'false', 'message': 'no permission'})
+            if data['event_calendar_id']:
+                role_new = queries.get_calendar_role(current_user.user_id, data['event_calendar_id'])
+            if role_new is None or role_new > 1:
+                return json.dumps({'success' : 'false', 'message': 'no permission'})
+            edit = queries.update_event(data)
+            if edit:
+                success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
+                return json.dumps({'success' : 'true', 'files': success})
+    return json.dumps({'success' : 'false'})
+
+
+def prepare_edit_event_data():
+    data = {}
+    data['event_id'] = request.form.get('event_id', None)
+    if not data['event_id']:
+        return False, 'No event_id'
+    name = request.form.get('newEventName', None)
+    if name:
+        data['event_name'] = name
+    cal = request.form.get('calendarID', None)
+    if cal:
+        data['event_calendar_id'] = cal
+    try:
+        data['event_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
+        data['event_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
+        if data['event_end'] < data['event_start']:
+            data['event_end'] = data['event_start']
+    except:
+        pass
+    data['event_recurring'] = 1 if 'recurring' in request.form else 0
+    data['event_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
+    data['event_details'] = request.form.get('event_details', None)
+    return True, data
 
 @app.route('/add_files', methods=['POST'])
 @login_required

@@ -201,7 +201,7 @@ function ticked() {
     // if (timer == 0) {            //for debuging purposes - only allows one tick 
     //     simulation.stop()
     // }
-    // timer++;
+    timer++;
 
     var selection = d3.selectAll('.datapoints')
                         .filter(function(){

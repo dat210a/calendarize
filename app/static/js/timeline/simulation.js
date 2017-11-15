@@ -9,7 +9,7 @@ var simulation = d3.forceSimulation()
 function simUpdate(){
     timer = 0;
     simulation
-        .alpha(1)
+        .alpha(0.2)
         .restart();
 };
 
@@ -34,7 +34,7 @@ function gravity(alpha){
                             })
     selection.selectAll('.points')
                 .each(function(d){
-                    d.vy += (0 - d.y)*0.05*alpha
+                    d.vy += (0 - d.y)*0.4*alpha
                 })
     selection.selectAll('.detailContainer')
                 .each(function(d){
@@ -62,16 +62,16 @@ function pointCollider(alpha){
             if (dist < radius*2+2) {
                 numOverlap++;
                 if (capsule.length < point.length*0.9
-                    || (point.length > 0.9*capsule.length && point.y + point.vy > capsule.y + capsule.vy))
+                    || (point.length > 0.9*capsule.length && point.y + point.vy > capsule.y + capsule.vy + radius/2))
                     {
                         capsule.vy -= (radius*2+2 - dist);
                     }
                 else point.vy -= (radius*2+2 - dist);
-                if (alpha > 0.95 && point.y + point.vy == 0)
+                if (timer == 0 && point.y + point.vy == 0)
                     pushDown(point)
             }
         }
-        if (alpha > 0.95 && numOverlap > 0 && capsule.y + capsule.vy == 0){
+        if (timer == 0 && numOverlap > 0 && capsule.y + capsule.vy == 0){
             pushDown(capsule)
             // else 
             //     d3.selectAll('.data').selectAll('.e' + capsule.event_id)
