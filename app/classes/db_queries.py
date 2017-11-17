@@ -188,6 +188,12 @@ class ConnectionInstance:
             logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
             return None
 
+    def get_user_repr(self, id):
+        name = self.get_user_name(id)
+        if not name:
+            return self.get_user_email(id)
+        return name
+
     def get_user_data(self, uid):
         user_data = ['user_phone']
         sql = "SELECT (" + ",".join(user_data) + ") FROM users WHERE user_id = ?"
@@ -305,11 +311,6 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching event(s) details for calendar(s): {}'.format(e, cids))
             return None
 
-    def get_user_repr(self, id):
-        name = self.get_user_name(id)
-        if not name:
-            return self.get_user_email(id)
-        return name
 
     def get_event_files(self, eid):
         sql = "SELECT file_name FROM event_files WHERE event_id = ?"
@@ -320,14 +321,38 @@ class ConnectionInstance:
             logging.debug('{}\nWhile fetching files for event with id: {}'.format(e, eid))
             return None
 
+    def get_child_files(self, chid):
+        sql = "SELECT file_name FROM child_files WHERE child_id = ?"
+        self.__cur.execute(sql, (chid,))
+        try:
+            return self.__cur.fetchall()
+        except Exception as e:
+            logging.debug('{}\nWhile fetching files for child event with id: {}'.format(e, chid))
+            return None
+
+    def get_child_id(self, eid, year):
+        sql = "SELECT child_id FROM event_children WHERE child_parent_id = ? AND child_year = ?"
+        self.__cur.execute(sql, (eid, year))
+        try:
+            res = self.__cur.fetchone()
+            return res[0]
+        except Exception as e:
+            logging.debug('{}\nWhile fetching event child for event with id: {}'.format(e, eid))
+            return None
+
     def get_event_children(self, eid):
-        data_key = ["child_id", "child_owner_id", "child_year", "child_start", "child_end", "child_location", "child_details", "skip_year"]
+        data_key = ["child_id", "child_owner_id", "child_year", "child_start", "child_end", "child_fixed_date", "child_location", "child_details", "skip_year"]
         sql = "SELECT " + ",".join(data_key) + " FROM event_children " \
               "WHERE child_parent_id = ? " \
               "AND deleted = 0"
         self.__cur.execute(sql, (eid,))
         try:
-            return [dict(zip(data_key, child)) for child in self.__cur.fetchall()]
+            children = []
+            for child in self.__cur.fetchall():
+                child = list(child)
+                files = self.get_child_files(child[0])
+                children.append(child+[files])
+            return [dict(zip(data_key+['files'], c)) for c in children]
         except Exception as e:
             logging.debug('{}\nWhile fetching event children for event with id: {}'.format(e, eid))
             return None
@@ -414,7 +439,21 @@ class ConnectionInstance:
             self.__con.rollback()
             return None
 
-    def add_file(self, rqdat, eid):
+    def add_child(self, child_data):
+        data_key = list(child_data.keys())
+        sql = "INSERT INTO event_children " \
+              "(" + ",".join(data_key) + ") " \
+              "VALUES (" + ",".join("?"*len(data_key)) + ")"
+        self.__cur.execute(sql, list(child_data.values()))
+        try:
+            self.__con.commit()
+            return self.get_last_ID()
+        except Exception as e:
+            logging.debug('{}\nOccurred while trying to insert new child event with data:\n{}'.format(e, pp.pformat(child_data)))
+            self.__con.rollback()
+            return None
+
+    def add_event_file(self, rqdat, eid):
         fname = save_file(rqdat, eid)
         if fname:
             sql = "INSERT INTO event_files (event_id, file_name) VALUES (?, ?)"
@@ -425,9 +464,20 @@ class ConnectionInstance:
             except Exception as e:
                 logging.debug('{}\nWhile adding file with name:\n{}'.format(e, fname))
                 self.__con.rollback()
-        else:
-            return False
+        return False
 
+    def add_child_file(self, rqdat, eid, chid):
+        fname = save_file(rqdat, eid, chid)
+        if fname:
+            sql = "INSERT INTO child_files (child_id, file_name) VALUES (?, ?)"
+            self.__cur.execute(sql, (chid, fname))
+            try:
+                self.__con.commit()
+                return True
+            except Exception as e:
+                logging.debug('{}\nWhile adding file with name:\n{}'.format(e, fname))
+                self.__con.rollback()
+        return False
 
 #######################################################################################
             # Update
@@ -437,35 +487,44 @@ class ConnectionInstance:
         self.__cur.execute(sql, (verify_key,user_id))
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile setting new verify key:\n{}'.format(e, email))
+            self.__con.rollback()
+            return False
 
     def make_resetkey(self, email, resetkey):
         sql ="UPDATE users SET resetkey=?,expires= NOW() + INTERVAL 48 HOUR WHERE user_email=?"
         self.__cur.execute(sql, (resetkey,email))
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile setting resetkey for email:\n{}'.format(e, email))
             self.__con.rollback()
+            return False
 
     def set_new_password(self, email, new_password):
         sql = "UPDATE users SET user_password =?, resetkey='' WHERE user_email = ?"
         self.__cur.execute(sql, (new_password,email))
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile setting user new password:\n{}'.format(e, email))
             self.__con.rollback()
+            return False
 
     def activate_user(self, email):
         sql = "UPDATE users SET active = 1, verify_key='' WHERE user_email = ?"
         self.__cur.execute(sql, [email])
         try:
             self.__con.commit()
+            return True
         except Exception as e:
             logging.debug('{}\nWhile retrieving id for email:\n{}'.format(e, email))
             self.__con.rollback()
+            return False
 
     def update_user(self, uid, name, phone):
         sql = "UPDATE users SET user_name = ?, user_phone=? WHERE user_id = ?"
@@ -477,15 +536,38 @@ class ConnectionInstance:
             logging.debug('{}\nWhile updating user with id:\n{}'.format(e, uid))
             self.__con.rollback()
             return False
-        pass
 
     def update_calendar(self, calendar_data):
         #TODO
         pass
 
-    def update_event(self, event_data):
-        
-        pass
+    def update_event(self, event_data, eid):
+        data_key = list(event_data.keys())
+        sql = "UPDATE events SET "\
+              + " = ?, ".join(data_key) + " = ? "\
+              "WHERE event_id = ?"
+        self.__cur.execute(sql, list(event_data.values()) + [eid])
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile updating event with data:\n{}'.format(e,  pp.pformat(event_data)))
+            self.__con.rollback()
+            return False
+
+    def update_child(self, child_data, chid):
+        data_key = list(child_data.keys())
+        sql = "UPDATE event_children SET "\
+              + " = ?, ".join(data_key) + " = ? "\
+              "WHERE child_id = ?"
+        self.__cur.execute(sql, list(child_data.values()) + [chid])
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile updating child event with data:\n{}'.format(e,  pp.pformat(child_data)))
+            self.__con.rollback()
+            return False
 
     def update_role(self, data):
         #TODO
@@ -525,12 +607,12 @@ class ConnectionInstance:
             self.__con.rollback()
             return False
 
-    def db_del_child(self, chid):
-        self.__cur.execute("UPDATE events SET deleted=1, child_date_deleted = NOW() + INTERVAL 1 MONTH WHERE ? = event_id", [chid])
+    def db_del_child(self, eid, year):
+        self.__cur.execute("UPDATE events SET deleted=1, child_date_deleted = NOW() + INTERVAL 1 MONTH WHERE child_parent_id = ? AND child_year = ?", [eid, year])
         try:
             self.__con.commit()
             return True
         except Exception as e:
-            logging.debug('{}\nWhile trying to delete event: {}'.format(e, chid))
+            logging.debug('{}\nWhile trying to delete child of event: {}'.format(e, eid))
             self.__con.rollback()
             return False

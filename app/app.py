@@ -313,12 +313,13 @@ def type_handler(x):
 @app.route('/uploads/<filename>')
 @login_required
 def uploaded_file(filename):
-    eid = request.args.get('id')
+    eid = request.args.get('id', None)
+    chid = request.args.get('chid', None)
     with db.ConnectionInstance() as queries:
         cal = queries.get_event_calendar_id(eid)
         role = queries.get_calendar_role(current_user.user_id, cal)
         if role is not None:
-            return load_file(filename, eid)
+            return load_file(filename, eid, chid)
     # return redirect(url_for('error'))
 
 
@@ -425,7 +426,7 @@ def add_event():
             if role is not None and role <= 2:
                 eid = queries.add_event(data)
                 if eid:
-                    success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
+                    success = [queries.add_event_file(file, eid) for file in request.files.getlist('file')]
                     return json.dumps({'success' : 'true', 'id': eid, 'files': success})
     return json.dumps({'success' : 'false'})
 
@@ -458,32 +459,38 @@ def prepare_new_event_data():
 @login_required
 def edit_event():
     if request.method == "POST":
+        eid = request.form.get('event_id', None)
+        if eid is None:
+            return json.dumps({'success' : 'false', 'message': 'Missing event id'})
+
         response, data = prepare_edit_event_data()
         if not response:
             return json.dumps({'success' : 'false', 'message': data})
+
         with db.ConnectionInstance() as queries:
-            current_calendar = queries.get_event_calendar_id(data['event_id'])
+            current_calendar = queries.get_event_calendar_id(eid)
             if current_calendar is None:
                 return json.dumps({'success' : 'false', 'message': 'bad event ID'})
+
             role_old = queries.get_calendar_role(current_user.user_id, current_calendar)
             if role_old is None or role_old > 1:
                 return json.dumps({'success' : 'false', 'message': 'no permission'})
-            if data['event_calendar_id']:
+
+            if data['event_calendar_id'] and data['event_calendar_id'] != current_calendar:
                 role_new = queries.get_calendar_role(current_user.user_id, data['event_calendar_id'])
-            if role_new is None or role_new > 1:
-                return json.dumps({'success' : 'false', 'message': 'no permission'})
-            edit = queries.update_event(data)
+                if role_new is None or role_new > 1:
+                    return json.dumps({'success' : 'false', 'message': 'no permission'})
+
+            edit = queries.update_event(data, eid)
             if edit:
-                success = [queries.add_file(file, eid) for file in request.files.getlist('file')]
+                success = [queries.add_event_file(file, eid) for file in request.files.getlist('file')]
                 return json.dumps({'success' : 'true', 'files': success})
+
     return json.dumps({'success' : 'false'})
 
 
 def prepare_edit_event_data():
     data = {}
-    data['event_id'] = request.form.get('event_id', None)
-    if not data['event_id']:
-        return False, 'No event_id'
     name = request.form.get('newEventName', None)
     if name:
         data['event_name'] = name
@@ -502,16 +509,67 @@ def prepare_edit_event_data():
     data['event_details'] = request.form.get('event_details', None)
     return True, data
 
-@app.route('/add_files', methods=['POST'])
+
+@app.route('/set_instance', methods=['POST', 'GET'])
 @login_required
-def add_files():
-    with db.ConnectionInstance() as q:
-        for file in request.files:
-            success = q.add_file(request.files[file], request.form['event_id'])
-            if not success:
-                # TODO handle what happens if the file fails to upload
-                pass
-    return 'true'
+def set_instance():
+    print(request.form)
+    if request.method == "POST":
+        eid = request.form.get('event_id', None)
+        year = request.form.get('year', None)
+        if not eid or not year:
+            return json.dumps({'success' : 'false', 'message': 'Non specified event id or year'})
+
+        response, data = prepare_set_instance_data()
+        if not response:
+            return json.dumps({'success' : 'false', 'message': data})
+
+        with db.ConnectionInstance() as queries:
+            cid = queries.get_event_calendar_id(eid)
+            role = queries.get_calendar_role(current_user.user_id, cid)
+            if role is not None and role <= 2:
+                chid = queries.get_child_id(eid, year)
+                if chid:
+                    queries.update_child(data, iid)
+                else:
+                    data['child_date_created'] = datetime.utcnow()
+                    data['child_owner_id'] = current_user.user_id
+                    data['child_parent_id'] = eid
+                    data['child_year'] = year
+                    chid = queries.add_child(data)
+                if chid:
+                    success = [queries.add_child_file(file, eid, chid) for file in request.files.getlist('file')]
+                    return json.dumps({'success' : 'true', 'files': success})
+    return json.dumps({'success' : 'false'})
+
+
+def prepare_set_instance_data():
+    data = {}
+    try:
+        data['child_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
+    except:
+        return False, 'date'
+    try:
+        data['child_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
+        if data['child_end'] < data['child_start']:
+            data['child_end'] = data['child_start']
+    except:
+        data['child_end'] = data['child_start']
+    data['child_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
+    data['child_details'] = request.form.get('event_details', None)
+    return True, data
+
+
+# @app.route('/add_files', methods=['POST'])
+# @login_required
+# def add_files():
+#     with db.ConnectionInstance() as q:
+#         for file in request.files:
+#             success = q.add_file(request.files[file], request.form['event_id'])
+#             if not success:
+#                 # TODO handle what happens if the file fails to upload
+#                 pass
+#     return 'true'
 
 
 @app.route('/update_profile', methods=['POST'])
@@ -560,7 +618,23 @@ def delete_event():
                 if role is not None and role == 0:
                     queries.db_del_event(event)
                     # TODO delete files
-                    # TODO delete children
+                    return 'true'
+    return 'false'
+
+
+@app.route('/delete_instance', methods=['POST', 'GET'])
+@fresh_login_required
+def delete_instance():
+    if request.method=="POST":
+        event = request.form.get('event_id', None)
+        year = request.form.get('year', None)
+        if event and year:
+            with db.ConnectionInstance() as queries:
+                cal = queries.get_event_calendar_id(event)
+                role = queries.get_calendar_role(current_user.user_id, cal)
+                if role is not None and role < 2:
+                    queries.db_del_child(event, year)
+                    # TODO delete files
                     return 'true'
     return 'false'
 
@@ -605,17 +679,9 @@ def verifyoption():
         return render_template("verify_send.html", email=email)
 
 
-def start():
-    app.run()
-
-@app.route("/verifytesting")
-def vtest():
-    return render_template("verify.html", email='thisisemail')
-
-
 
 ##################################################################
 
 
 if __name__ == '__main__':
-    start()
+    app.run()

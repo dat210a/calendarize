@@ -134,6 +134,7 @@ CREATE TABLE `event_children` (
   `child_year` int NOT NULL,  
   `child_start` datetime DEFAULT NULL,
   `child_end` datetime DEFAULT NULL,
+  `child_fixed_date` tinyint(1) NOT NULL DEFAULT '1',
   `child_location` varchar(45) DEFAULT NULL,
   `child_details` varchar(1000) DEFAULT NULL,
   `child_extra` varchar(45) DEFAULT NULL,

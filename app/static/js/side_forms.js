@@ -44,6 +44,10 @@ function edit_event(){
     $('#sidebar').load("/side/edit_event");
 };
 
+function edit_instance(){
+    $('#sidebar').load("/side/edit_instance");
+};
+
 function display_profile(){
     $('#sidebar').load("/side/display_profile");
 };

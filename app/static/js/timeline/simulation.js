@@ -58,7 +58,7 @@ function pointCollider(alpha){
         var numOverlap = 0;
         for (j = i + 1; j < n; j++){
             point = nodes[j];
-            var dist = capsuleCollider(capsule, point, capsule.length*k);
+            var dist = capsuleCollider(capsule, point, capsule.length);
             if (dist < radius*2+2) {
                 numOverlap++;
                 if (capsule.length < point.length*0.9
@@ -89,7 +89,7 @@ function detailBoxCollider(alpha){
         })
         .each(function(point, i){
             var pParent = this.parentNode.__data__;
-            var pointRootX = pParent.x + pParent.length*k/2;
+            var pointRootX = pParent.x + pParent.length/2;
             d3.selectAll('.data').selectAll('.detailContainer')
                 .filter(function(){
                     return d3.select(this.parentNode).style('display') == 'inline';
@@ -97,7 +97,7 @@ function detailBoxCollider(alpha){
                 .filter((d, j) => j > i)
                 .each(function(capsule){
                     var cParent = this.parentNode.__data__;
-                    var capsuleRootX = cParent.x + cParent.length*k/2
+                    var capsuleRootX = cParent.x + cParent.length/2
                     if (capsuleRootX < pointRootX) {
                         var dist = detailsCollider(capsule, point, detailWidth, capsuleRootX, pointRootX);
                         if (dist < detailHeight+5) {

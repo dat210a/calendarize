@@ -220,7 +220,7 @@ function ticked() {
     selection.selectAll('.detailContainer')
         .attr('transform', function(d){
             var parent = this.parentNode.__data__;
-            d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
+            d.x = parent.x + parent.length/2 + xOffset(Math.abs(d.y));
             return 'translate(' + d.x + ',' + (d.y-detailHeight/2) + ')';
         });
 
@@ -260,7 +260,7 @@ function showDetails(){
                     .duration(500)
                     .attr('transform', function(d){
                         var parent = this.parentNode.__data__;
-                        d.x = parent.x + parent.length*k/2 + xOffset(Math.abs(d.y));
+                        d.x = parent.x + parent.length/2 + xOffset(Math.abs(d.y));
                         return 'translate(' + d.x + ',' + (d.y-detailHeight/2) + ')scale(1)';
                     })
                     .on("start", function(){
@@ -286,7 +286,7 @@ function showDetails(){
 
 //draw lines data-details
 function link(target, source) {
-    var x1 = Math.round(source.x + source.length*k/2);
+    var x1 = Math.round(source.x + source.length/2);
     var y1 = Math.round(source.y);
     var x2 = Math.round(target.x);
     var y2 = Math.round(target.y);

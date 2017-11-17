@@ -133,7 +133,9 @@ span.infotitle {
 }
 
 .calendardetailsheaderBtn.cancel,
-.neweventheaderBtn.cancel {
+.neweventheaderBtn.cancel,
+.eventdetailsheaderBtn.cancel,
+.calendardetailsheaderBtn.cancel {
   right: 5em;
 }
 
