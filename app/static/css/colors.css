@@ -7,11 +7,11 @@
 }
 
 .accentgrey-medium {
-    background-color: #97989C;
+    background-color: #97989c;
 }
 
 .accentgrey-medium.trans {
-    background-color: rgba(151, 152, 156, .22);
+    background-color: #97989c38;
 }
 
 .accentgrey-medium-text {

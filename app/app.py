@@ -530,7 +530,7 @@ def set_instance():
             if role is not None and role <= 2:
                 chid = queries.get_child_id(eid, year)
                 if chid:
-                    queries.update_child(data, iid)
+                    queries.update_child(data, chid)
                 else:
                     data['child_date_created'] = datetime.utcnow()
                     data['child_owner_id'] = current_user.user_id

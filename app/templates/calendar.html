@@ -2,6 +2,8 @@
 
 {% block content %}
     <link href="{{ url_for('static', filename='css/calendar.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="{{ url_for('static', filename='css/bottombar.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="{{ url_for('static', filename='css/sidebar.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
     <div id="preloader">
         <div class="body_valign center">
             <div class="preloader-wrapper big active body_valign">
@@ -41,44 +43,44 @@
                 </defs>
             </svg>
             <!-- toolbar -->
-            <div class="calendarToolbox">
+            <div class="calendarToolbox open anim">
                 <!-- FAB -->
                 <div class="fixed-action-btn horizontal mainAddButtonContainer">
-                    <a class="btn-floating btn-large accentgrey-dark">
-                        <i class="large material-icons">add</i>
+                    <a class="btn-floating btn-large accentgrey-dark"><i class="large material-icons">add</i></a>
+                    <ul>
+                        <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue tooltipped" data-position="top" data-delay="50" data-tooltip="Today"><i class="material-icons">center_focus_strong</i></a></li>
+                        <!-- <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li> -->
+                        <li><a id="addCalendarForm" onclick="add_calendar()" class="waves-effect waves-light btn-floating yellow darken-1 tooltipped" data-position="top" data-delay="50" data-tooltip="New calendar"><i class="material-icons">insert_invitation</i></a></li>
+                        <li><a id='addEventForm' onclick="add_event()" class="waves-effect waves-light btn-floating red tooltipped" data-position="top" data-delay="50" data-tooltip="New event"><i class="material-icons">playlist_add</i></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- show/hide groups -->
+                <div class="center upDown">
+                    <a class="waves-effect waves-light btn accentgrey-dark toggleGroupVisibility" onclick="ToggleAgendaMenu()">
+                        <i class="large material-icons left toggleArrow">arrow_drop_down</i>groups
                     </a>
-                <ul>
-                    <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue tooltipped" data-position="top" data-delay="50" data-tooltip="Today"><i class="material-icons">center_focus_strong</i></a></li>
-                    <!-- <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li> -->
-                    <li><a id="addCalendarForm" onclick="add_calendar()" class="waves-effect waves-light btn-floating yellow darken-1 tooltipped" data-position="top" data-delay="50" data-tooltip="New calendar"><i class="material-icons">insert_invitation</i></a></li>
-                    <li><a id='addEventForm' onclick="add_event()" class="waves-effect waves-light btn-floating red tooltipped" data-position="top" data-delay="50" data-tooltip="New event"><i class="material-icons">playlist_add</i></a>
-                    </li>
-                </ul>
-            </div>
-            <!-- show/hide groups -->
-            <div class="center upDown">
-                <a class="waves-effect waves-light btn accentgrey-dark toggleGroupVisibility">
-                        <i class="large material-icons left toggleArrow">arrow_drop_down</i>
-                        groups
-                    </a>
-            </div>
-            <!-- zoom -->
-            <div class="zoomSlider" id="slidecontainer" style="position: absolute; display: inline-block; left: 50px; bottom: 10px; width: 25%">
-                <p class="range-field">
-                    <input type="range" id="zoomSlider" min="1" max="12" step="0.01" />
-                </p>
-            </div>
-            <!-- bottom / main future calendar selector ? -->
-            <div class="tollbarPadding" , style="position: absolute; bottom: 0px; width: 100%; height: 5px; background-color:rgba(0,0,0,0.2); border-top: 1px solid black">
+                </div>
+                <!-- zoom -->
+                <div class="zoomSlider" id="slidecontainer">
+                    <p class="range-field">
+                        <input type="range" id="zoomSlider" min="1" max="12" step="0.01" />
+                    </p>
+                </div>
+                <!-- bottom / main future calendar selector ? -->
+                <div class="calendarsContainer open anim">
+                    <div class="calendarsContainerInner">
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- 
-        sidebar
- -->
-<div class="col m3 hide-on-med-and-down z-depth-3 overflow fwheader" id="sidebar">
-</div>
+    <!-- 
+            sidebar
+    -->
+    <div class="col m3 hide-on-med-and-down z-depth-3 overflow fwheader" id="sidebar">
+    </div>
 <!-- TODO make a bundle -->
 <script src="/static/js/lib/d3.min.js"></script>
 <script src="/static/js/timeline/DisplayCalendar.js"></script>

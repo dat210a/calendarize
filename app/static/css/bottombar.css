@@ -1,0 +1,82 @@
+.calendarToolbox{
+    position: absolute;
+    width:100%;
+    height: 45px;
+}
+
+.calendarToolbox.open{
+    bottom: 150px;
+}
+
+.calendarToolbox.closed{
+    bottom: 5px;
+}
+
+.zoomSlider{
+    position: absolute; 
+    display: inline-block; 
+    left: 50px; 
+    bottom: 10px; 
+    width: 25%
+}
+
+.mainAddButtonContainer {
+    position: absolute;
+    display: inline-block;
+    right: 15px;
+    bottom: 15px;
+}
+
+.calendarsContainer {
+    position: relative; 
+    width: 100%;
+    border-top: 1px solid black;
+    background-color: rgba(201, 200, 200, 0.2);
+    overflow: hidden;
+    margin: 0;
+}
+
+.calendarsContainer.closed{
+    min-height: 5px; 
+    max-height: 5px; 
+}
+
+.calendarsContainer.open{
+    min-height: 152px; 
+    max-height: 152px; 
+}
+
+.calendarsContainerInner{
+    padding: 20px;
+}
+
+.groupInstance{
+    display: inline-block;
+    margin-right: 20px;
+    width: 150px;
+    height: 120px;
+    border-radius: 5px;
+}
+
+.groupInstanceSettings{
+    width: 0px;
+    height: 0px;
+    border-top: 40px solid #3D4148;
+    border-right: 40px solid #3D4148;
+    border-bottom: 40px solid transparent;
+    border-left: 40px solid transparent;
+}
+
+.groupInstanceName{
+    position: absolute;
+    bottom: 20px;
+    padding-left: 20px;
+    font-size: 30px;
+}
+
+.anim{
+    -webkit-transition: all 0.6s ease;
+    -moz-transition: all 0.6s ease;
+    -o-transition: all 0.6s ease;
+    transition: all 0.6s ease;
+}

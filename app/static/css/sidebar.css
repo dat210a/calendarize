@@ -1,0 +1,130 @@
+.add_calendar_container,
+.add_event_container,
+.event_details_container,
+.edit_calendar_container,
+.edit_event_container,
+.calendar_details_container,
+.profile_details_container {
+    /* display: none; */
+    height: 100%;
+}
+
+span.infotitle {
+    font-size: 1.4rem;
+}
+
+.row span {
+    line-height: 1.8;
+}
+
+.row ul {
+    margin: 0px;
+}
+
+.row span.sub {
+    color: grey;
+}
+
+.btn-floating.btn-large {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.eventdetailsheaderBtn,
+.calendardetailsheaderBtn {
+    position: fixed;
+    top: 8.6em;
+    right: 0em;
+    border-style: solid !important;
+    border-color: white !important;
+    border-width: 0.5px !important;
+    z-index: 10;
+}
+
+.eventdetailsfixedheader,
+.calendardetailsfixedheader {
+    position: fixed;
+    width: 100%;
+    z-index: 9;
+}
+
+.neweventheaderBtn {
+    position: fixed;
+    top: 6.7em;
+    right: 0em;
+    border-style: solid !important;
+    border-color: white !important;
+    border-width: 0.5px !important;
+    z-index: 10;
+}
+
+.calendardetailsheaderBtn.cancel,
+.neweventheaderBtn.cancel,
+.eventdetailsheaderBtn.cancel,
+.calendardetailsheaderBtn.cancel {
+  right: 5em;
+}
+
+.neweventfixedheader {
+    position: fixed;
+    width: 100%;
+    z-index: 9;
+}
+
+.profiledetailsheaderBtn {
+    position: relative;
+    top: -3.3em;
+    right: 0em;
+    border-style: solid !important;
+    border-color: white !important;
+    border-width: 0.5px !important;
+    z-index: 10;
+}
+
+label,
+form label,
+form .input-field.col label,
+form .input-field label,
+.input-field label:not(.label-icon).active {
+    color: black;
+    font-size: 1rem;
+}
+
+.overflow {
+    height: 100%;
+    overflow: scroll;
+    border-left: solid;
+}
+
+.overflow.fwheader {
+    padding: 0;
+}
+
+.switch label input[type=checkbox]:checked+.lever {
+    color: #15A5C6;
+    background-color: rgba(21, 165, 198, 0.62);
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+    color: #15A5C6;
+    background-color: #15A5C6;
+}
+
+.profileimg {
+    width: 5em;
+    height: 5em;
+    margin-top: .5em;
+}
+
+.profileheaderimg {
+    background-image: url("http://via.placeholder.com/600x800");
+    background-color: #cccccc;
+    background-repeat: no-repeat;
+    width: 100%;
+    /*height: 100%;*/
+}
+
+.profilepaddingfix {
+    top: -5em;
+    position: relative;
+}

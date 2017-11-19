@@ -284,6 +284,29 @@ function showDetails(){
     }
 }
 
+//toggle on/off
+function ToggleAgenda(cid) {
+    d3.selectAll(".data").selectAll('.points')
+        .filter(function(d){return d.event_calendar_id == cid})
+        .each(function(){
+            d3.select(this.parentNode).style("display", function(){
+                    return d3.select(this).style("display") == 'inline' ? 'none' : 'inline';
+                })
+            })
+    showDetails();
+};
+
+// text cutoff
+function short_text(self, textWidth, endTextBuffer) {
+    var textLength = self.node().getComputedTextLength(),
+        text = self.text();
+    while (textLength > (textWidth - endTextBuffer)) {
+        text = text.slice(0, -1);
+        self.text(text + '...');
+        textLength = self.node().getComputedTextLength();
+    }
+}
+
 //draw lines data-details
 function link(target, source) {
     var x1 = Math.round(source.x + source.length/2);
