@@ -1,24 +1,69 @@
 function AddGroupButtons(groups){
     var container = $(".calendarsContainerInner")
+    container.empty();
     groups.forEach(function(gr){
-        container.append(`<div class="groupInstance z-depth-3" style="background-color: ${gr.calendar_color}"> \
-                            <div class="groupInstanceSettings right"></div> \
+        container.append(`<a class="groupInstance z-depth-3" href="#!" data-id="${gr.calendar_id}" style="background-color: ${gr.calendar_color}"> \
                             <div class="groupInstanceName">${gr.calendar_name}</div> \
-                          </div>`)
+                            <div class="groupInstanceSettings right anim" href="#!" data-id="${gr.calendar_id}"><i class="material-icons">settings</i></div> \
+                          </a>`)
     })
+
+    $(".groupInstance").on('click', function(e){
+        var id = $(this).data('id');
+        ToggleAgenda(id)
+        if ($(this).css("opacity") == 1) {
+            $(this).css("opacity", 0.3)
+        }
+        else $(this).css("opacity", 1)
+    })
+
+    $(".groupInstanceSettings").on('click', function(e){
+        if ($(this).hasClass("hover")){
+            e.stopPropagation()
+            request_calendar($(this).data('id'))
+        } 
+    })
+
+    $(".groupInstanceSettings").on('mousemove', function(e){
+        var offset = $(this).offset();
+        if (e.pageX - offset.left - e.pageY + offset.top > 0){
+            if (!$(this).hasClass('hover')) $(this).addClass('hover')
+        }
+        else $(this).removeClass('hover')
+    })
+
+    $(".groupInstanceSettings").on('mouseleave', function(e){
+        $(this).removeClass('hover')
+    })
+
     $(".groupInstanceName").each(function(){short_text_div($(this), 150, 30)})
 }
+
+$(".calendarsContainerInner").on('mousewheel', function(e){
+    var container = $(this)
+    var numRows = container.height()/131
+    var scrollConst = e.originalEvent.wheelDelta/120*32.5
+    var scroll = parseFloat(container.css("top"))+scrollConst
+    scroll = Math.max(-130*(numRows-1), Math.min(scroll, 0))
+    container.css("top", () => scroll+"px")
+})
 
 function ToggleAgendaMenu(){
     var $toggle = $(".calendarsContainer, .calendarToolbox")
     if ($toggle.hasClass('open')){
         $toggle.addClass('closed')
         $toggle.removeClass('open')
+        $('.toggleArrow').text('arrow_drop_up')
     }
     else{
         $toggle.addClass('open')
-        $toggle.removeClass('closed')     
+        $toggle.removeClass('closed')  
+        $('.toggleArrow').text('arrow_drop_down')   
     }
+}
+
+function hide(){
+    console.log("hide")
 }
 
 // text cutoff
@@ -32,106 +77,21 @@ function short_text_div(self, textWidth, endTextBuffer) {
     }
 }
 
+function request_calendar(cal_id){
+    $.ajax({
+        url: '/request_calandar',
+        method: 'POST',
+        dataType: 'json',
+        data: {"cal_id": cal_id},
+        success: function(r){
+            if (r.success == 'true'){
+                display_calendar(JSON.parse(r.data));
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    });
+};
 
-
-
-
-
-
-
-// var bottomBarHeight = 180;
-// var groupBoxDim = 150;
-
-// var padding = 20;
-
-// //create bottom bar
-// var bottomMenu = svg.append('g')
-//                         .attr("class", "bottomMenu")
-//                         .attr("transform", "translate("+0+","+(height-bottomBarHeight)+")")
-//                         .attr('up', true)
-
-// bottomMenu.append('rect')
-//     .attr('class', 'bottomBase')
-//     .attr('width', totalWidth)
-//     .attr('height', bottomBarHeight);
-
-// bottomMenu.append('g')
-//             .attr('class', 'agendas')
-
-// d3.select('.toggleGroupVisibility')
-//                 .on('click', function(){
-//                     ToggleAgendaMenu();
-//                 });
-
-// function AddGroupButtons(groups){
-//     //initialize toggle objects and bind color data
-//     var agendasContainer = d3.selectAll(".agendas").selectAll('g')
-//                                 .data(groups)
-//                                 .enter()
-//                                 .append('g').attr('class', function(d){return 'group ' + d.calendar_name})
-//                                     .attr('transform', function(d, i){
-//                                         return "translate("+((groupBoxDim+padding)*i + padding)+","+((bottomBarHeight - groupBoxDim)/2)+")"
-//                                     })
-
-//     //add subscribed calendar boxes and click event handler
-//     agendasContainer
-//         .append("rect")
-//             .attr("width", groupBoxDim)
-//             .attr("height", groupBoxDim)
-//             .attr("rx", 20)
-//             .attr("ry", 20)
-//             .style("fill", function (d) {
-//                 return d.calendar_color;
-//             })
-//             .on('click', function (d) {
-//                 ToggleAgenda(d.calendar_id)
-//                 if (d3.select(this).style("fill") == "darkgrey") {
-//                     d3.select(this).style("fill", function (d) {return d.calendar_color;})
-//                 }
-//                 else { d3.select(this).style("fill", "darkgrey") }
-//             });
-
-//     agendasContainer
-//         .append("text")
-//             .attr("x", 20)
-//             .attr("y", 120)
-//             .style("font-size", 30)
-//             .text(function(d){
-//                 return d.calendar_name})
-//             .each(function(){
-//                 short_text(d3.select(this), groupBoxDim, 30)
-//             });
-// };
-
-// //toggle up/down
-// function ToggleAgendaMenu(){
-//     var toggle;
-//     d3.selectAll('.bottomMenu')
-//         .transition()
-//         .duration(1000)
-//         .attr('transform', function(){
-//             toggle = d3.select(this).attr('up') === 'true'
-//             var move = toggle ? height : height-bottomBarHeight
-//             // d3.selectAll('.scrollArea')
-//             //     .attr('height', function(){
-//             //         return +d3.select(this).attr('height') + (toggle ? bottomBarHeight : -(bottomBarHeight))
-//             //     })
-//             d3.select(this).attr('up', !toggle)
-//             return "translate(0," + move + ")"
-//         })
-//     d3.select(".calendarToolbox")
-//         .transition()
-//         .duration(1000)
-//         .style("bottom", function(){
-//             return toggle ? '5px' : '180px'
-//         })
-//     if (toggle){
-//         d3.select('.toggleArrow')
-//             .text('arrow_drop_up')
-//     }
-//     else{
-//         d3.select('.toggleArrow')
-//                 .text('arrow_drop_down')
-//     }
-// }
 

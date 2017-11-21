@@ -12,9 +12,9 @@ $("#resetToToday" ).click(function() {
 });
 
 // load forms
-function calendars_list(){
-    $('#sidebar').load("/side/calendars_list");
-};
+// function calendars_list(){
+//     $('#sidebar').load("/side/calendars_list");
+// };
 
 function add_calendar(){
     $('#sidebar').load("/side/add_calendar");
@@ -22,6 +22,7 @@ function add_calendar(){
 
 function display_calendar(calendar_data){
     $('#sidebar').load("/side/display_calendar", function(){
+
         populate(calendar_data);
     });
 };

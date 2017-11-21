@@ -68,6 +68,7 @@
             dataType: 'json',
             success: function(r) {
                 if (r.success == 'true'){
+                    load_data();
                     display_calendar(JSON.parse(r.data));
                 }
                 else {

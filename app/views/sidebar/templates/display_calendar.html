@@ -7,7 +7,7 @@
             </div>
         </div>
         <a id="editCalendar" class="btn-floating btn-large waves-effect waves-light right calendardetailsheaderBtn"><i class="material-icons">edit</i></a>
-        <a id="displayCalendar" onclick="calendars_list()" class="btn-floating btn-large waves-effect waves-light right cancel calendardetailsheaderBtn"><i class="material-icons">arrow_back</i></a>
+        <!-- <a id="displayCalendar" onclick="calendars_list()" class="btn-floating btn-large waves-effect waves-light right cancel calendardetailsheaderBtn"><i class="material-icons">arrow_back</i></a> -->
         <div style="padding-top: 7em">
             <div class="row">
             <div class="row">
@@ -42,6 +42,8 @@
 </div>
 </div>
 <script>
+    $(".calendar_details_container").hide(0)
+
     function populate(data){
         $('.calendardetailsfixedheader').css('background-color', "#"+data.calendar_color);
         $('.calendardetailsheaderBtn').css('background-color', "#"+data.calendar_color);
@@ -86,5 +88,7 @@
                 }
             });
         });
+
+        $(".calendar_details_container").show('slow')
     }
 </script>

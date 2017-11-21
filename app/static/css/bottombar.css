@@ -9,7 +9,80 @@
 }
 
 .calendarToolbox.closed{
+    bottom: 0px;
+}
+
+.calendarsContainer {
+    position: relative; 
+    width: 100%;
+    /* border-top: 1px solid black; */
+    overflow: hidden;
+    margin: 0;
+}
+
+.calendarsContainer.closed{
+    min-height: 5px; 
+    max-height: 5px; 
+}
+
+.calendarsContainer.open{
+    min-height: 152px; 
+    max-height: 152px; 
+}
+
+.calendarsContainerInner{
+    position: absolute;
+    padding: 15px;
+}
+
+.groupInstance{
+    position: relative;
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 5px;
+    width: 150px;
+    height: 120px;
+    border-radius: 5px;
+    /* box-shadow: inset 0 0 10px #000000; */
+}
+
+.groupInstanceSettings{
+    position: relative;
+    width: 0px;
+    height: 0px;
+    border-top: 40px solid #3D4148;
+    border-right: 40px solid #3D4148;
+    border-bottom: 40px solid transparent;
+    border-left: 40px solid transparent;
+    /* border-radius: 5px; */
+}
+
+.groupInstanceSettings.hover{
+    border-top: 40px solid #268DAF;
+    border-right: 40px solid #268DAF;
+}
+
+.groupInstanceSettings i{
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    /* margin-bottom: 80px; */
+    color: #F1F0F0
+}
+
+.groupInstanceName{
+    position: absolute;
     bottom: 5px;
+    left: 20px;
+    font-size: 30px;
+    color: black;
+}
+
+.anim{
+    -webkit-transition: all 0.6s ease;
+    -moz-transition: all 0.6s ease;
+    -o-transition: all 0.6s ease;
+    transition: all 0.6s ease;
 }
 
 .zoomSlider{
@@ -27,56 +100,8 @@
     bottom: 15px;
 }
 
-.calendarsContainer {
-    position: relative; 
-    width: 100%;
-    border-top: 1px solid black;
-    background-color: rgba(201, 200, 200, 0.2);
-    overflow: hidden;
-    margin: 0;
-}
-
-.calendarsContainer.closed{
-    min-height: 5px; 
-    max-height: 5px; 
-}
-
-.calendarsContainer.open{
-    min-height: 152px; 
-    max-height: 152px; 
-}
-
-.calendarsContainerInner{
-    padding: 20px;
-}
-
-.groupInstance{
-    display: inline-block;
-    margin-right: 20px;
-    width: 150px;
-    height: 120px;
-    border-radius: 5px;
-}
-
-.groupInstanceSettings{
-    width: 0px;
-    height: 0px;
-    border-top: 40px solid #3D4148;
-    border-right: 40px solid #3D4148;
-    border-bottom: 40px solid transparent;
-    border-left: 40px solid transparent;
-}
-
-.groupInstanceName{
-    position: absolute;
-    bottom: 20px;
-    padding-left: 20px;
-    font-size: 30px;
-}
-
-.anim{
-    -webkit-transition: all 0.6s ease;
-    -moz-transition: all 0.6s ease;
-    -o-transition: all 0.6s ease;
-    transition: all 0.6s ease;
+.calendarsContainer,
+.toggleGroupVisibility,
+.toggleGroupVisibility:hover{
+    box-shadow: 0 -6px 10px 0 rgba(0,0,0,0.14), 0 -1px 18px 0 rgba(0,0,0,0.12), 0 -3px 5px -1px rgba(0,0,0,0.3);
 }
