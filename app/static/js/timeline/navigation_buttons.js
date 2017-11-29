@@ -72,7 +72,7 @@ rightLinearGradient.append("stop")
     .attr("offset", "100%")   
     .attr("stop-color", "rgba(0,0,0,0.5)"); 
 
-    leftSideBar
+left_timeline_button
     .on('mouseover', function(d){
         left_timeline_button.transition()
                             .duration(200)

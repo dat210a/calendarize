@@ -11,11 +11,6 @@ $("#resetToToday" ).click(function() {
     resetView(new Date);
 });
 
-// load forms
-// function calendars_list(){
-//     $('#sidebar').load("/side/calendars_list");
-// };
-
 function add_calendar(){
     $('#sidebar').load("/side/add_calendar");
 };

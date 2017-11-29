@@ -14,16 +14,11 @@ function resize(){
     // Scales
     time.range([0, width]);
 
-    //frames
-    // $('#sidebar').css("min-height", totalHeight + "px" )
-    //               .css("max-height", totalHeight + "px" );
-
     //background elements
     svg
         .attr('width', totalWidth)
         .attr('height', height)
-    // d3.select('.scrollArea').attr("width", width)
-    //                         .attr('height', height)
+        
     d3.select('.Year').attr('transform', 'translate('+ width/2 +',' + 75 +')')
 
     //sides

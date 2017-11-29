@@ -10,7 +10,7 @@ var detailHeight = 80,
 //load data async
 function load_data(){
     d3.queue()
-        .defer(d3.json, '/get_data') //  /tz?tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone)
+        .defer(d3.json, '/get_data')
         .await(ready);
 }
 
@@ -187,7 +187,7 @@ function ready(error, allData){
                 .style('fill', function(){return data.calendar_color;});
         });
     
-    // load, center to and display new created event
+    // center to and display the newly created event
     if (current_event == null) svg.call(zoom.translateBy, 0)
     else{
         current_event = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]

@@ -58,34 +58,41 @@
                 <!-- show/hide groups -->
                 <div class="center upDown">
                     <a class="waves-effect waves-light btn accentgrey-dark toggleGroupVisibility" onclick="ToggleAgendaMenu()">
-                        <i class="large material-icons left toggleArrow">arrow_drop_down</i>groups
+                        <i class="material-icons left toggleArrow">arrow_drop_down</i>groups
                     </a>
                 </div>
                 <!-- zoom -->
-                <div class="zoomSlider" id="slidecontainer">
-                    <p class="range-field">
-                        <input type="range" id="zoomSlider" min="1" max="12" step="0.01" />
-                    </p>
+                <div class="valign-wrapper slidecontainer">
+                    <span class="valign-wrapper left-align" style="display: inline-block; margin-right: 5px"><strong>1Y</strong></span>
+                    <input class="browser-default z-depth-1" id="zoomSlider" type="range" min="1" max="12" step="0.01" style="display: inline-block"/>
+                    <span class="valign-wrapper right-align"  style="display: inline-block;  margin-left: 5px"><strong>1M</strong></span>
                 </div>
                 <!-- bottom / main future calendar selector ? -->
                 <div class="calendarsContainer open anim accentgrey-dark">
-                    <div class="calendarsContainerInner">
-
+                    <div style="position: relative; margin-right: 60px;">
+                        <div class="calendarsContainerInner">
+                        </div>
+                    </div>
+                    <div class="calendarsContainerNav right">
+                        <div>
+                            <a class="calendarsContainerNavUp" href="#!" onclick="calendarsContainerInnerUp()"><i class="material-icons accentgrey-light-text medium">keyboard_arrow_up</i></a>
+                        </div>
+                        <div style="padding-top: 20px">
+                            <a class="calendarsContainerNavDown" href="#!" onclick="calendarsContainerInnerDown()"><i class="material-icons accentgrey-light-text medium">keyboard_arrow_down</i></a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- 
-            sidebar
-    -->
+    <!-- sidebar -->
     <div class="col m3 hide-on-med-and-down z-depth-3 overflow fwheader accentgrey-light" id="sidebar">
     </div>
 <!-- TODO make a bundle -->
 <script src="/static/js/lib/d3.min.js"></script>
 <script src="/static/js/timeline/DisplayCalendar.js"></script>
 <script src="/static/js/timeline/navigation_buttons.js"></script>
-<script src="/static/js/timeline/SubbedGroups.js"></script>
+<script src="/static/js/bottom_bar.js"></script>
 <script src="/static/js/timeline/simulation.js"></script>
 <script src="/static/js/timeline/DisplayData.js"></script>
 <script src="/static/js/timeline/zoom_and_scroll.js"></script>

@@ -10,10 +10,10 @@
   <div class="row">
     <div class="col s12 m6 offset-m3">
       <div class="card-panel white center-align">
-        <span class="accentgrey-dark-text">Your account has been successfully verified. You will be automaticaly redirected to your homepage in a few moments or you can optionally click on the link below</span>
+        <span class="accentgrey-dark-text">Your account has been successfully verified. You will be automaticaly redirected to your homepage in a few moments or you can click on the link below</span>
         <br><br>
         <a class="btn waves-effect waves-light" href="{{ url_for('index') }}">Return to Homepage</a>
-        <script>setInterval(function(){ window.location.replace("{{ url_for('index') }}"); }, 15000);</script>
+        <script>setInterval(function(){ window.location.replace("{{ url_for('index') }}"); }, 10000);</script>
       </div>
     </div>
   </div>
