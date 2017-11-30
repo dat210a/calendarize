@@ -537,9 +537,19 @@ class ConnectionInstance:
             self.__con.rollback()
             return False
 
-    def update_calendar(self, calendar_data):
-        #TODO
-        pass
+    def update_calendar(self, calendar_data, cid):
+        data_key = list(calendar_data.keys())
+        sql = "UPDATE calendars SET "\
+              + " = ?, ".join(data_key) + " = ? "\
+              "WHERE calendar_id = ?"
+        self.__cur.execute(sql, list(calendar_data.values()) + [cid])
+        try:
+            self.__con.commit()
+            return True
+        except Exception as e:
+            logging.debug('{}\nWhile updating calendar with data:\n{}'.format(e,  pp.pformat(calendar_data)))
+            self.__con.rollback()
+            return False
 
     def update_event(self, event_data, eid):
         data_key = list(event_data.keys())

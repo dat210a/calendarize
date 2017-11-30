@@ -9,7 +9,7 @@
     <div style="padding-top: 7em">
         <div class="row">
             <div class="col s12">
-                <ul class="tabs" style="display:none">
+                <ul class="tabs accentgrey-light" style="display:none;">
                     <li class="tab col s6"><a id="recurring_event" class="active" href="#event"></a></li>
                     <li class="tab col s6"><a id="specific_event" href="#child"></a></li>
                 </ul>
@@ -129,8 +129,8 @@
                 $("#dateOfEvent").append(`<span>On: ${format(current_event.event_start)}</span>`)
             else
                 $("#dateOfEvent").append(`<span>From: ${format(current_event.event_start)}</span> \
-                                        <br> \
-                                        <span> To: ${format(current_event.event_end)}</span>`)
+                                          <br> \
+                                          <span> To: ${format(current_event.event_end)}</span>`)
         }
         else{
             var start = current_event.event_start.getDate(),
@@ -143,7 +143,10 @@
             else var when = 'the end of '
             $("#dateOfEvent").append(`<span>Sometime in ${when}${d3.timeFormat('%B')(current_event.event_start)}</span>`)
         }
-        $('.eventGroup').text(() => d3.selectAll('.group').filter(d => d.calendar_id == current_event.event_calendar_id).data()[0].calendar_name)
+        $('.eventGroup').text(() => $(".groupInstance").filter(function() {
+                                                            return $(this).data("id") == current_event.event_calendar_id
+                                                        })
+                                                        .children(".groupInstanceName").contents()[0].nodeValue)
         $('.eventRecur').text(() => +current_event.event_recurring == 1 ? 'YES' : 'NO')
         
         $('#event_notes').empty()
@@ -174,8 +177,8 @@
                     $("#dateOfInstance").append(`<span>On: ${format(child_data.child_start)}</span>`)
                 else
                     $("#dateOfInstance").append(`<span>From: ${format(child_data.child_start)}</span> \
-                                                <br> \
-                                                <span> To: ${format(child_data.child_end)}</span>`)
+                                                 <br> \
+                                                 <span> To: ${format(child_data.child_end)}</span>`)
             }
             else{
                 var start = child_data.child_start.getDate(),

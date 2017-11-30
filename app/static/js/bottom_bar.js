@@ -1,9 +1,13 @@
+$("#zoomSlider").on("input", function (){
+    svg.call(zoom.scaleTo, this.value);
+});
+
 function AddGroupButtons(groups){
     // add calendar buttons
     var container = $(".calendarsContainerInner")
     container.empty();
     groups.forEach(function(gr){
-        container.append(`<a class="groupInstance z-depth-3 hoverable" href="#!" data-id="${gr.calendar_id}" style="background-color: ${gr.calendar_color}"> \
+        container.append(`<a class="groupInstance z-depth-3 hoverable" href="#!" data-id="${gr.calendar_id}" data-color="${gr.calendar_color}" style="background-color: ${gr.calendar_color}"> \
                             <div class="groupInstanceName">${gr.calendar_name}</div> \
                             <div class="groupInstanceSettings right anim" href="#!" data-id="${gr.calendar_id}"><i class="material-icons">settings</i></div> \
                           </a>`)

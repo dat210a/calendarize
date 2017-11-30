@@ -43,7 +43,7 @@
     });
     init_forms();
     $.each(colors, function(i, color){
-        if (d3.selectAll(".group").filter(d => d.calendar_color == color).empty()){
+        if ($(".groupInstance").filter(function(){return $(this).data("color") == color}).length == 0){
             $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + color)   
             selector.val(color) 
             return false;

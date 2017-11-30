@@ -10,77 +10,65 @@
         <div style="padding-top: 5em">
             <div class="row">
                 <div class="col s12 input-field">
-                    <input placeholder="Group name" id="editCalendarName" name="editCalendarName" type="text" required>
-                    <label for="editCalendarName">Name of group</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col s2 input-field">
-                    <input value="0" id="first_name2" type="text" class="center">
-                    <label>Notification</label>
-                </div>
-                <div class="col s10 input-field">
-                    <select>
-                        <option value="1">None</option>
-                        <option value="2">Minutes in advance</option>
-                        <option value="3">Hours in advance</option>
-                        <option value="4">Days in advance</option>
-                    </select>
+                    <input placeholder="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
+                    <label for="newCalendarName">Name of group</label>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <select multiple>
-                        <option value="1">Person 1</option>
-                        <option value="2">Person 2</option>
-                        <option value="3">Person 3</option>
-                    </select>
-                    <label>Add Members</label>
+                    <textarea placeholder="Add emails" id="calInvites" name="invites" class="materialize-textarea"></textarea>
+                    <label for="calInvites">Share</label>
                 </div>
             </div>
             <div class="row">
-                <div class="col s12 input-field">
-                    <select>
-                        <option value="1">Everyone</option>
-                        <option value="2">Users only</option>
-                        <option value="3">Invite only</option>
-                        <option value="4">Private</option>
-                    </select>
-                    <label>Accessibility</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col s12 input-field">
-                    <select>
-                        <option value="1">Red</option>
-                        <option value="2">Blue</option>
-                        <option value="3">Purple</option>
-                        <option value="4">Yellow</option>
+                <div class="col s12 input-field" id="setColorContainer">
+                    <select id="setCalendarColor" name="color">
                     </select>
                     <label>Color</label>
                 </div>
             </div>
         </div>
+        <input id="cal_id" type="hidden" name="cal_id" value>
     </form>
 </div>
 <script>
     $("#editCalendarForm").hide(0)
     function populate(cal_data){
+        $("#newCalendarName").val(cal_data.calendar_name)
+        // color picker
+        selector = $('#setCalendarColor');
+        selector.empty()
+        colors.forEach(function(color){
+            selector.append("<option value=" + color + "></option>");
+        })
+        selector.on("change", function(){
+            $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
+        });
         init_forms();
+        selector.val("#"+cal_data.calendar_color);
+        $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid #" + cal_data.calendar_color)
+        $("#setColorContainer").find("li").each(function(i){
+            $(this).empty().addClass("valign-wrapper")
+                .append("<div></div>").children("div").addClass("coloredLine").css("background-color", colors[i])
+        })
+        $("#cal_id").val(cal_data.calendar_id)
+
         $("#btnCancelEditCalendar").on("click", function(){
             display_calendar(cal_data)
         })
     }
+
     $("#editCalendar").submit(function(e){
         e.preventDefault()
         $.ajax({
             url: '/edit_calendar',
             data: $(this).serialize(),
             type: 'POST',
-            success: function(response) {
-                if (response == 'true') {
-                    $("#sidebar").empty();
+            dataType: 'json',
+            success: function(r) {
+                if (r.success == 'true'){
                     load_data();
+                    display_calendar(JSON.parse(r.data));
                 }
                 else {
                     console.log ('could not create new calendar')

@@ -29,8 +29,8 @@ function rescale() {
     k = d3.event.transform.k;
     
     //adjust slider
-    slider.value = k;
     colorStop = (k-0.5)/12*100;
+    $("#zoomSlider").val( k );
     $("#zoomSlider").css("--gradient", () => 'linear-gradient(90deg, #3D4148 '+ colorStop +'%, #97989c '+ colorStop +'%)')
 
     //update axis

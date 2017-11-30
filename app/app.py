@@ -348,6 +348,34 @@ def add_calendar():
     return json.dumps({'success' : 'false'})
 
 
+@app.route('/edit_calendar', methods=['POST', 'GET'])
+@login_required
+def edit_calendar():
+    cal_data = {}
+    if request.method == "POST":
+        cal_data['calendar_name'] = request.form.get('newCalendarName', None)
+        cal_data['calendar_color'] = request.form.get('color', None)[1:]
+        cid = request.form.get('cal_id', None)
+        with db.ConnectionInstance() as queries:
+            role = queries.get_calendar_role(current_user.user_id, cid)
+            if role is not None and role <= 2:
+                success = queries.update_calendar(cal_data, cid)
+                if success:
+                    # parse 'invites' string and send invites
+                    invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
+                    invites = re.split(',| |;', invites)
+                    for email in invites:
+                        if '@' in email and queries.check_invite(email, cid):
+                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
+                            queries.send_invite(cid, queries.get_user_id(email), current_user.user_id, role, email)
+                            sender = current_user.username()
+                            # send email to email
+                            send_invite(sender,email,cal_data['calendar_name'])
+                    cal_data = queries.get_calendars_details((cid,))[0]
+                    return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
+    return json.dumps({'success' : 'false'})
+
+
 @app.route('/request_calandar', methods=['POST', 'GET'])
 @login_required
 def request_calandar():

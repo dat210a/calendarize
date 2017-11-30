@@ -1,12 +1,6 @@
 var colors = ['#f57c00', '#d32f2f', '#c2185b', '#7b1fa2', '#512da8', '#1976d2', '#0097a7', '#689f38'];
 var current_event = null;
 
-var slider = document.getElementById("zoomSlider");
-
-slider.onchange = function (){
-    svg.call(zoom.scaleTo, this.value);
-};
-
 $("#resetToToday" ).click(function() {
     resetView(new Date);
 });
