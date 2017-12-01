@@ -44,6 +44,12 @@ class ConnectionInstance:
 #######################################################################################
         # Retrieval
 
+    def get_user_repr(self, id):
+        name = self.get_user_name(id)
+        if not name:
+            return self.get_user_email(id)
+        return name
+
     def get_user_id(self, email):
         sql = "SELECT user_id FROM users WHERE ? = user_email "
         self.__cur.execute(sql, [email])
@@ -187,12 +193,6 @@ class ConnectionInstance:
         except Exception as e:
             logging.debug('{}\nWhile trying to retreive username with email:\n{}'.format(e, uid))
             return None
-
-    def get_user_repr(self, id):
-        name = self.get_user_name(id)
-        if not name:
-            return self.get_user_email(id)
-        return name
 
     def get_user_data(self, uid):
         user_data = ['user_phone']
@@ -618,7 +618,7 @@ class ConnectionInstance:
             return False
 
     def db_del_child(self, eid, year):
-        self.__cur.execute("UPDATE events SET deleted=1, child_date_deleted = NOW() + INTERVAL 1 MONTH WHERE child_parent_id = ? AND child_year = ?", [eid, year])
+        self.__cur.execute("UPDATE event_children SET deleted=1, child_date_deleted = NOW() + INTERVAL 1 MONTH WHERE child_parent_id = ? AND child_year = ?", [eid, year])
         try:
             self.__con.commit()
             return True

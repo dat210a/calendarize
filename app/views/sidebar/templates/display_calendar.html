@@ -74,10 +74,9 @@
                 data: {'calendar_id': data.calendar_id}, 
                 success: function(response) {
                     if (response == 'true') {
-                        $("#sidetab").empty()
+                        $("#sidebar").empty()
                         current_event = null
                         load_data();
-                        // calendars_list();
                     }
                     else {
                         console.log (response, 'could not delete this calendar')

@@ -8,52 +8,54 @@
         <button id="btnEditEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
         <a id="btnCancelEditEvent" onclick="display_event()" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn cancel accentgrey-dark"><i class="material-icons">close</i></a>
         <div style="padding-top: 4em">
-            <div class="row accentgrey-light">
+            <div class="row form-sub-head">
                 <h5 style="padding: 0.75rem">Basic information</h5>
                 <hr>
             </div>
-            <div class="row">
-                <div class="col s12 input-field">
-                    <input id="eventName" Name="eventName" type="text" class="" validate required>
-                    <label for="eventName">Name of event</label>
+            <div class="row form-sub-body">
+                <div class="row">
+                    <div class="col s12 input-field">
+                        <input id="eventName" Name="eventName" type="text" class="" validate required>
+                        <label for="eventName">Name of event</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <select id="calendarID" Name="calendarID">
-                            </select>
-                    <label>Calendar</label>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <select id="calendarID" Name="calendarID">
+                                </select>
+                        <label>Calendar</label>
+                    </div>
                 </div>
             </div>
             <!--  -->
-            <div class="dateHead accentgrey-light">
+            <div class="dateHead form-sub-head">
                 <div class="row">
                     <h5 style="padding: 0.75rem">Date</h5>
                     <hr>
                 </div>
-            <div class="row">
-                <div class="col s4">
-                    <input type="checkbox" id="repeatEvent" name="recurring" />
-                    <label for="repeatEvent">Recurring</label>
+                <div class="row">
+                    <div class="col s4">
+                        <input type="checkbox" id="repeatEvent" name="recurring" />
+                        <label for="repeatEvent">Recurring</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="padding-bottom: 0.75rem">
-                <div class="col s4">
-                    <p>
-                        <input class="with-gap" name="fixedSwitch" type="radio" id="checkFixed" checked />
-                        <label for="checkFixed">Fixed</label>
-                    </p>
+                <div class="row" style="padding-bottom: 0.75rem">
+                    <div class="col s4">
+                        <p>
+                            <input class="with-gap" name="fixedSwitch" type="radio" id="checkFixed" checked />
+                            <label for="checkFixed">Fixed</label>
+                        </p>
+                    </div>
+                    <div class="col s8">
+                        <p>
+                            <input class="with-gap" name="fixedSwitch" type="radio" id="checkNotfixed" />
+                            <label for="checkNotfixed">Not Fixed</label>
+                        </p>
+                    </div>
                 </div>
-                <div class="col s8">
-                    <p>
-                        <input class="with-gap" name="fixedSwitch" type="radio" id="checkNotfixed" />
-                        <label for="checkNotfixed">Not Fixed</label>
-                    </p>
-                </div>
-            </div>
             </div>
             <!--  -->
-            <div id="switchFixed">
+            <div class="form-sub-body" id="switchFixed">
                 <div class="row">
                     <div class="col s12">
                         <label for="startDate">Start date</label>
@@ -68,7 +70,7 @@
                 </div>
             </div>
             <!--  -->
-            <div id="switchNotfixed">
+            <div class="form-sub-body" id="switchNotfixed">
                 <div class="row">
                     <div class="col s7 input-field">
                         <select id="month">
@@ -104,28 +106,29 @@
                 </div>
             </div>
             <!--  -->
-            <div class="row accentgrey-light">
+            <div class="row form-sub-head">
                 <h5 style="padding: 0.75rem">Additional information</h5>
                 <hr>
             </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <textarea id="textarea1" name="event_details" placeholder="Optional" class="materialize-textarea"></textarea>
-                    <label for="textarea1">Notes</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="file-field input-field col s12">
-                    <div class="btn">
-                        <span>File</span>
-                        <input type="file" name="file" multiple>
-                    </div>
-                    <div class="file-path-wrapper">
-                        <input class="file-path validate" type="text" placeholder="Upload one or more files">
+            <div class="form-sub-body">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="textarea1" name="event_details" placeholder="Optional" class="materialize-textarea"></textarea>
+                        <label for="textarea1">Notes</label>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="file-field input-field col s12">
+                        <div class="btn">
+                            <span>File</span>
+                            <input type="file" name="file" multiple>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                        </div>
+                    </div>
+               </div>
             </div>
-            <div class="accentgrey-light"><br></div>
         </div>
     </form>
 </div>
@@ -134,7 +137,8 @@
     // possible calendars for the event to belong to
     calSelector = $('#calendarID');
     calSelector.empty()
-    d3.selectAll('.group').each(function(d) {
+    $('.groupInstance').each(function() {
+        var d = $(this).data('data')
         calSelector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
         if (d.calendar_id == current_event.event_calendar_id)
             calSelector.children().last().attr("selected", 'selected')

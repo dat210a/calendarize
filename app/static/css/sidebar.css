@@ -128,3 +128,11 @@ form .input-field label,
     top: -5em;
     position: relative;
 }
+
+.form-sub-head{
+    background-color: transparent;
+}
+
+.form-sub-body{
+    background-color: white;
+}

@@ -25,22 +25,40 @@ def random_key(y):
     return x
 
 def send_verification(email,key):
-    msg = Message("Verify your account",sender= sender,recipients=[ email ])
-    msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
-    mail.send(msg)
-    return None
+    try:
+        msg = Message("Verify your account",sender= sender,recipients=[ email ])
+        msg.body = " Please click on the link below to verify your account:\n" + "http://localhost:5000/verify/"+ key
+        mail.send(msg)
+        return True
+    except:
+        return False
 
 def send_recover(email):
     with ConnectionInstance() as queries:
         key = random_key(10) + str(queries.get_user_id(email))
         queries.make_resetkey(email,key)
-    msg = Message("Reset Your password",sender=sender,recipients=[ email ])
-    msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
-    mail.send(msg)
-    return None
+    try:
+        msg = Message("Reset Your password",sender=sender,recipients=[ email ])
+        msg.body = " Please click on the link below to reset your password:\n" + "http://localhost:5000/reset/"+ key
+        mail.send(msg)
+        return True
+    except:
+        return False
 
 def send_invite(sender_name,invited_email,calendar_name):
-    msg = Message("Invitation to join "+ calendar_name + ".",sender=sender,recipients=[ invited_email ])
-    msg.body = sender_name + " has invited you to join " + calendar_name +".\nVisit our webpage: http://localhost:5000"
-    mail.send(msg)
-    return None
+    try:
+        msg = Message("Invitation to join "+ calendar_name + ".",sender=sender,recipients=[ invited_email ])
+        msg.body = sender_name + " has invited you to join " + calendar_name +".\nVisit our webpage: http://localhost:5000"
+        mail.send(msg)
+        return True
+    except:
+        return False
+
+def send_friend_request(sender, email):
+    try:
+        msg = Message("Friend request",sender=sender,recipients=[ email ])
+        msg.body = sender + " has sent you a friend request on Calendarize.\nVisit our webpage: http://localhost:5000"
+        mail.send(msg)
+        return True
+    except:
+        return False

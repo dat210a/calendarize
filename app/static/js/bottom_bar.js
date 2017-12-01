@@ -6,16 +6,17 @@ function AddGroupButtons(groups){
     // add calendar buttons
     var container = $(".calendarsContainerInner")
     container.empty();
-    groups.forEach(function(gr){
-        container.append(`<a class="groupInstance z-depth-3 hoverable" href="#!" data-id="${gr.calendar_id}" data-color="${gr.calendar_color}" style="background-color: ${gr.calendar_color}"> \
-                            <div class="groupInstanceName">${gr.calendar_name}</div> \
-                            <div class="groupInstanceSettings right anim" href="#!" data-id="${gr.calendar_id}"><i class="material-icons">settings</i></div> \
+    groups.forEach(function(d){
+        container.append(`<a class="groupInstance z-depth-3 hoverable" href="#!" style="background-color: ${d.calendar_color}"> \
+                            <div class="groupInstanceName">${d.calendar_name}</div> \
+                            <div class="groupInstanceSettings right anim" href="#!"><i class="material-icons">settings</i></div> \
                           </a>`)
+        container.children().last().data("data", d)
     })
 
     //toggle display of events that belong to certain calendar on click
     $(".groupInstance").on('click', function(e){
-        var id = $(this).data('id');
+        var id = $(this).data('data').calendar_id;
         ToggleAgenda(id)
         if ($(this).css("opacity") == 1) {
             $(this).css("opacity", 0.3)
@@ -27,7 +28,7 @@ function AddGroupButtons(groups){
     $(".groupInstanceSettings").on('click', function(e){
         if ($(this).hasClass("hover")){
             e.stopPropagation()
-            request_calendar($(this).data('id'))
+            request_calendar($(this).parent().data('data').calendar_id)
         } 
     })
 

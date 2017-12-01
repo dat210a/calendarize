@@ -144,9 +144,9 @@
             $("#dateOfEvent").append(`<span>Sometime in ${when}${d3.timeFormat('%B')(current_event.event_start)}</span>`)
         }
         $('.eventGroup').text(() => $(".groupInstance").filter(function() {
-                                                            return $(this).data("id") == current_event.event_calendar_id
+                                                            return $(this).data("data").calendar_id == current_event.event_calendar_id;
                                                         })
-                                                        .children(".groupInstanceName").contents()[0].nodeValue)
+                                                        .data('data').calendar_name)
         $('.eventRecur').text(() => +current_event.event_recurring == 1 ? 'YES' : 'NO')
         
         $('#event_notes').empty()

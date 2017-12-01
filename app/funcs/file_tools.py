@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
 upload_folder = 'files/uploaded'  # temporary path
+users_folder = 'static/images'
 max_file_size = 50000000
 banned_extensions = []
 
@@ -48,4 +49,9 @@ def load_file(filename, eid, chid=None):
     fpath = '{}/{}'.format(upload_folder, eid)
     if chid:
         fpath = '{}/{}'.format(fpath, chid)
+    return send_from_directory(fpath, filename)
+
+
+def load_profile_pic(folder, filename):
+    fpath = '{}/{}'.format(users_folder, folder)
     return send_from_directory(fpath, filename)

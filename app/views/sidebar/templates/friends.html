@@ -5,9 +5,87 @@
             <span class="grey-text text-lighten-3" id="event_owner"></span>
         </div>
     </div>
-    <button id="btnNewEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">add</i></button>
-    <div class="row" style="padding-top: 7em">
-        <ul class="collapsible" id="notificationAccordian" data-collapsible="expandable">
-        </ul>
-    </div>
+    <form id="addFriends">
+        <button id="btnAddFriends" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark" style="display: none"><i class="material-icons">add</i></button>
+        <div class="row" style="padding-top: 7em">
+            <div class="row">
+                <div class="input-field col s12">
+                    <textarea placeholder="john@mail.com" id="friendInvites" name="invites" class="materialize-textarea"></textarea>
+                    <label for="friendInvites">Add friends</label>
+                </div>
+            </div>
+            <div class="row">
+                <ul class="collection" id="friendsCollection">
+                </ul>
+            </div>
+        </div>
+    </form>
 </div>
+<script>
+    $("#friendInvites").on('keydown', function(e){
+        if(e.which == 186 || e.which == 188 || e.which == 32 || e.which == 13){
+            e.preventDefault()
+            var emails = $(this).val();
+            var cursorPosition = $(this).prop("selectionStart");
+            var cutoff = emails.length - cursorPosition;
+            var modifiedRow = cutoff == 0 ? emails.split('\n').slice(-1)[0] : emails.slice(0, -cutoff).split('\n').slice(-1)[0]
+            if (cursorPosition == emails.length)
+            {
+                if (!(modifiedRow.length < 3 || modifiedRow.indexOf('@') == -1))
+                    $(this).val((i, val) => val + ',\n')
+            }
+        }
+    })
+
+    $("#friendInvites").on('keyup', function(e){
+        if ($(this).val().length > 0) $('#btnAddFriends').show()
+        else $('#btnAddFriends').hide()
+    })
+
+    $("#addFriends").submit(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '/friend_request',
+            data: $(this).serialize(), 
+            type: 'POST',
+            dataType: 'json',
+            success: function(r) {
+                if (r.success == 'true'){
+                    display_friends();
+                }
+                else {
+                    console.log ('could not send requests')
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    })
+
+    $(document).ready(function(){
+        var friends = JSON.parse('{{ friends|tojson|safe }}')
+        var pending = JSON.parse('{{ pending|tojson|safe }}')
+        console.log(friends)
+        console.log(pending)
+
+        var col_li = "<li class='friendsCollectionInstance collection-item avatar'> \
+                        </li>"
+        
+        $("#friendsCollection").empty()
+        for (i = 0; i < friends.length; i++){
+            var friends_card =  `<img src="/images/profiles/${friends[i]['profile_pic']}" alt="" class="circle">\
+                                 <span class="title">${friends[i]['name']}</span>\
+                                 <p>Email: ${friends[i]['email']}<br>\
+                                    Shared calendars: TODO\
+                                </p>\
+                                <a href="#!" class="secondary-content"><i class="material-icons">star_border</i></a>`
+
+
+            $("#friendsCollection").append(col_li)
+            $(".friendsCollectionInstance:last").append(friends_card)
+        }
+        $('.collapsible').collapsible();
+        init_forms();
+    })
+</script>

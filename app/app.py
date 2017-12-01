@@ -17,6 +17,7 @@ import pytz
 # from pytz import timezone
 from datetime import datetime, date
 from classes import db_queries as db
+from classes.db_queries_friends import ConnectionInstanceFriends as friends_queries
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
 from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
@@ -27,7 +28,7 @@ from funcs.logIn import check_password, hash_password
 from funcs.logIn import login_func
 from funcs import file_tools
 from flask_mail import Mail, Message
-from funcs.file_tools import load_file
+from funcs.file_tools import load_file, load_profile_pic
 from funcs.send_email import *
 from funcs.reset import *
 from views.sidebar import sidebar
@@ -155,13 +156,12 @@ def index(template):
 def index_user(template):
     """
     """
-#    from classes.dummy_classes import ShardTestingClass
-#    for i in range(0, 5):
-#        with ShardTestingClass(app) as st:
-#            print(app.config['shards'])
-#            st.work()
-#        print(app.config['shards'])
-    return render_template(template, name=current_user.username())
+    with db.ConnectionInstance() as queries:
+        invites = queries.get_user_invites(current_user.user_id)
+        invites = len(invites) if invites else 0
+    with friends_queries() as q:
+        invites += len(q.get_friend_requests(current_user.email))
+    return render_template(template, name=current_user.username(), notifier=invites)
 
 
 @app.route('/user_availability', methods=['GET', 'POST'])
@@ -187,7 +187,7 @@ def register():
         # validate received values
         if email and password and not user_exists(email):
             with db.ConnectionInstance() as queries:
-                key = random_key(10) + email[:5]
+                key = random_key(10) + email
                 # TODO delete or merge previously created user if exists
                 #adds new user to the database
                 added = queries.add_user(datetime.utcnow(), email, hash_password(password),key)
@@ -283,6 +283,8 @@ def calendar(template):
     with db.ConnectionInstance() as queries:
         invites = queries.get_user_invites(current_user.user_id)
         invites = len(invites) if invites else 0
+    with friends_queries() as q:
+        invites += len(q.get_friend_requests(current_user.email))
     return render_template(template, name=current_user.username(), notifier=invites)
 
 
@@ -323,6 +325,11 @@ def uploaded_file(filename):
     # return redirect(url_for('error'))
 
 
+@app.route('/images/<folder>/<filename>')
+def profile_picture(folder, filename):
+    return load_profile_pic(folder, filename)
+
+
 @app.route('/add_calendar', methods=['POST', 'GET'])
 @login_required
 def add_calendar():
@@ -337,12 +344,11 @@ def add_calendar():
                     invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
                     invites = re.split(',| |;', invites)
                     for email in invites:
-                        if '@' in email and queries.check_invite(email, new_cal_id):
+                        # send email to email
+                        sent = send_invite(current_user.username(),email,cal_name)
+                        if sent and queries.check_invite(email, new_cal_id):
                             role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
                             queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role, email)
-                            sender = current_user.username()
-                            # send email to email
-                            send_invite(sender,email,cal_name)
                     cal_data = queries.get_calendars_details((new_cal_id,))[0]
                     return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
     return json.dumps({'success' : 'false'})
@@ -365,12 +371,11 @@ def edit_calendar():
                     invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
                     invites = re.split(',| |;', invites)
                     for email in invites:
-                        if '@' in email and queries.check_invite(email, cid):
+                        # send email to email
+                        sent = send_invite(current_user.username(),email,cal_data['calendar_name'])
+                        if sent and queries.check_invite(email, cid):
                             role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
                             queries.send_invite(cid, queries.get_user_id(email), current_user.user_id, role, email)
-                            sender = current_user.username()
-                            # send email to email
-                            send_invite(sender,email,cal_data['calendar_name'])
                     cal_data = queries.get_calendars_details((cid,))[0]
                     return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
     return json.dumps({'success' : 'false'})
@@ -435,11 +440,62 @@ def invite_calander():
 @login_required
 def leave_calander():
     if request.method == 'POST':
-        id = request.form.get("calender_id", None)
+        cid = request.form.get("calender_id", None)
         with db.ConnectionInstance() as q:
-            q.leave_calander(id, current_user.user_id)
+            q.leave_calander(cid, current_user.user_id)
         return 'true'
     return 'false'
+
+
+@app.route('/friend_request', methods=['POST', 'GET'])
+@login_required
+def friend_request():
+    if request.method == 'POST':
+        invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
+        invites = re.split(',| |;', invites)
+        with friends_queries() as queries:
+            for email in invites:
+                # send email to email
+                sender = current_user.username()
+                sent = send_friend_request(sender,email)
+                #add request to database
+                if sent and not queries.check_friend(current_user.user_id, queries.get_user_id(email), email):
+                    queries.add_friend(current_user.user_id, email)
+            return json.dumps({'success' : 'true'})
+    return json.dumps({'success' : 'false'})
+
+
+@app.route('/accept_friend', methods=['POST', 'GET'])
+@login_required
+def accept_friend():
+    if request.method == 'POST':
+        sender = request.form.get('friend_id', None)
+        if sender:
+            with friends_queries() as queries:
+                if queries.check_friend(sender, None, current_user.email):
+                    queries.accept_friend(sender, current_user.user_id, current_user.email)
+            return json.dumps({'success' : 'true'})
+    return json.dumps({'success' : 'false'})
+
+
+@app.route('/remove_friend', methods=['POST', 'GET'])
+@login_required
+def remove_friends():
+    print(request.form)
+    if request.method == 'POST':
+        friend_id = request.form.get('friend_id', None)
+        friend_email = request.form.get('email', None)
+        if friend_id or friend_email:
+            with friends_queries() as queries:
+                friend_email = friend_email if friend_email else queries.get_user_email(friend_id)
+                row = queries.check_friend(current_user.user_id, friend_id, friend_email)
+                if row:
+                    queries.remove_friend(row)
+                row = queries.check_friend(friend_id, current_user.user_id, current_user.email)
+                if row:
+                    queries.remove_friend(row)
+            return json.dumps({'success' : 'true'})
+    return json.dumps({'success' : 'false'})
 
 
 @app.route('/add_event', methods=['POST', 'GET'])
@@ -692,7 +748,7 @@ def verify(verify_key):
             login_user(user)
         return render_template("verify_confirm.html")
     else:
-        return ("Your account has been already verified or the link has been expired")
+        return ("Your account has been already verified or the link is no longer valid")
 
 
 @app.route("/verifyoption", methods=["GET", "POST"])
@@ -700,7 +756,7 @@ def verifyoption():
     email = request.form.get("email", None)
     user = load_user(email)
     if email:
-        key = random_key(10) + email[:5]
+        key = random_key(10) + email
         with db.ConnectionInstance() as queries:
             queries.make_verifykey(user.user_id,key)
         send_verification(email,key)

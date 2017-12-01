@@ -55,7 +55,3 @@ function notifications(){
 function display_friends(){
     $('#sidebar').load("/side/friends");
 };
-
-function add_friends(){
-    $('#sidebar').load("/side/add_friends");
-};

@@ -34,7 +34,7 @@ CREATE TABLE `users` (
   `user_phone` varchar(15) DEFAULT NULL,
   `user_record` varchar(45) DEFAULT NULL,
   `user_extra` varchar(45) DEFAULT NULL,
-  `verify_key` varchar(15) DEFAULT NULL,    
+  `verify_key` varchar(80) DEFAULT NULL,    
   `resetkey` varchar(80) DEFAULT NULL,  
   `expires` datetime DEFAULT NULL,  
   `active` tinyint(1) NOT NULL DEFAULT '0', 
@@ -215,7 +215,8 @@ DROP TABLE IF EXISTS `user_friends`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_friends` (
   `user_id` int NOT NULL,
-  `friend_id` int NOT NULL,
+  `friend_id` int DEFAULT NULL,
+  `friend_email` varchar(45) DEFAULT NULL,
   `unique_id` int NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`unique_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -228,31 +229,6 @@ CREATE TABLE `user_friends` (
 LOCK TABLES `user_friends` WRITE;
 /*!40000 ALTER TABLE `user_friends` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_friends` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `friend_requests`
---
-
-DROP TABLE IF EXISTS `friend_requests`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE IF NOT EXISTS `friend_requests` (
-  `sender_user_id` INT NOT NULL,
-  `invited_user_id` INT DEFAULT NULL,
-  `email` varchar(45) NOT NULL,
-  `unique_id` INT NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`unique_id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `friend_requests`
---
-
-LOCK TABLES `friend_requests` WRITE;
-/*!40000 ALTER TABLE `friend_requests` DISABLE KEYS */;
-/*!40000 ALTER TABLE `friend_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

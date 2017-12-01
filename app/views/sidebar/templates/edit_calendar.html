@@ -8,23 +8,29 @@
         <button id="btnEditCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
         <a id="btnCancelEditCalendar" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn cancel accentgrey-dark"><i class="material-icons">close</i></a>
         <div style="padding-top: 5em">
-            <div class="row">
-                <div class="col s12 input-field">
-                    <input placeholder="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
-                    <label for="newCalendarName">Name of group</label>
-                </div>
+            <div class="row form-sub-head">
+                <h5 style="padding: 0.75rem">Basic information</h5>
+                <hr>
             </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <textarea placeholder="Add emails" id="calInvites" name="invites" class="materialize-textarea"></textarea>
-                    <label for="calInvites">Share</label>
+            <div class="row form-sub-body">
+                <div class="row">
+                    <div class="col s12 input-field">
+                        <input placeholder="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
+                        <label for="newCalendarName">Name of group</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col s12 input-field" id="setColorContainer">
-                    <select id="setCalendarColor" name="color">
-                    </select>
-                    <label>Color</label>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea placeholder="john@mail.com" id="calInvites" name="invites" class="materialize-textarea"></textarea>
+                        <label for="calInvites">Share</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 input-field" id="setColorContainer">
+                        <select id="setCalendarColor" name="color">
+                        </select>
+                        <label>Color</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,6 +63,21 @@
             display_calendar(cal_data)
         })
     }
+
+    $("#calInvites").on('keydown', function(e){
+        if(e.which == 186 || e.which == 188 || e.which == 32 || e.which == 13){
+            e.preventDefault()
+            var emails = $(this).val();
+            var cursorPosition = $(this).prop("selectionStart");
+            var cutoff = emails.length - cursorPosition;
+            var modifiedRow = cutoff == 0 ? emails.split('\n').slice(-1)[0] : emails.slice(0, -cutoff).split('\n').slice(-1)[0]
+            if (cursorPosition == emails.length)
+            {
+                if (!(modifiedRow.length < 3 || modifiedRow.indexOf('@') == -1))
+                    $(this).val((i, val) => val + ',\n')
+            }
+        }
+    })
 
     $("#editCalendar").submit(function(e){
         e.preventDefault()
