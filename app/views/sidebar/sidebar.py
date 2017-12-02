@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, make_response
+from flask import Blueprint, render_template, redirect, abort
 from flask_login import login_required, current_user
 from classes import db_queries as db
 from classes.db_queries_friends import ConnectionInstanceFriends as friends_queries
@@ -56,7 +56,10 @@ def friends():
 #         details = q.get_events_details()
 #     return render_template('display_event.html', event=details)
 
-
+# temporary conveniance function until all routes are sorted
 @sidebar.route('/<path>')
 def load_sidebar(path):
-    return render_template(path + '.html')
+    try:
+        return render_template(path + '.html')
+    except:
+        abort(404)

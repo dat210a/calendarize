@@ -61,31 +61,62 @@
                 console.log(error);
             }
         });
-    })
+    });
+
+    function remove_friend(email){
+        $.ajax({
+            url: '/remove_friend',
+            data: {'email' : email}, 
+            type: 'POST',
+            dataType: 'json',
+            success: function(r) {
+                if (r.success == 'true'){
+                    display_friends();
+                }
+                else {
+                    console.log ('could not send requests')
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
 
     $(document).ready(function(){
         var friends = JSON.parse('{{ friends|tojson|safe }}')
         var pending = JSON.parse('{{ pending|tojson|safe }}')
-        console.log(friends)
-        console.log(pending)
 
         var col_li = "<li class='friendsCollectionInstance collection-item avatar'> \
                         </li>"
         
         $("#friendsCollection").empty()
-        for (i = 0; i < friends.length; i++){
-            var friends_card =  `<img src="/images/profiles/${friends[i]['profile_pic']}" alt="" class="circle">\
-                                 <span class="title">${friends[i]['name']}</span>\
-                                 <p>Email: ${friends[i]['email']}<br>\
-                                    Shared calendars: TODO\
+        friends.forEach(friend => {
+            var friends_card =  `<img src="/images/profiles/${friend['profile_pic']}" alt="" class="circle">\
+                                 <span class="title">${friend['name']}</span>\
+                                 <p>Email: ${friend['email']}<br>\
                                 </p>\
-                                <a href="#!" class="secondary-content"><i class="material-icons">star_border</i></a>`
+                                <a href="#!" onclick="remove_friend('${friend['email']}')" class="secondary-content"><i class="material-icons">remove_circle_outline</i></a>`
 
 
             $("#friendsCollection").append(col_li)
             $(".friendsCollectionInstance:last").append(friends_card)
-        }
-        $('.collapsible').collapsible();
+        });
+        $("#friendsCollection").append(`<li class="collection-header"><h4>Pending</h4></li>`) 
+        pending.forEach(email => {
+            $("#friendsCollection").append(`<li class="friendsCollectionInstance collection-item">\
+                                                <span>${email}</span>\
+                                                <a href="#!" onclick="remove_friend('${email}')" class="secondary-content">\
+                                                    <i class="material-icons">remove_circle_outline\
+                                                </i></a>\
+                                            </li>`)
+        });
         init_forms();
+
+        $(".friendsCollectionInstance").hover(function(){
+            $(this).children(".secondary-content").show('slow')
+        }, function(){
+            $(this).children(".secondary-content").hide('slow')
+        });
     })
 </script>

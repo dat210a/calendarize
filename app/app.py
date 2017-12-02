@@ -480,14 +480,13 @@ def accept_friend():
 
 @app.route('/remove_friend', methods=['POST', 'GET'])
 @login_required
-def remove_friends():
+def remove_friend():
     print(request.form)
     if request.method == 'POST':
-        friend_id = request.form.get('friend_id', None)
         friend_email = request.form.get('email', None)
-        if friend_id or friend_email:
+        if friend_email:
             with friends_queries() as queries:
-                friend_email = friend_email if friend_email else queries.get_user_email(friend_id)
+                friend_id = queries.get_user_id(friend_email)
                 row = queries.check_friend(current_user.user_id, friend_id, friend_email)
                 if row:
                     queries.remove_friend(row)

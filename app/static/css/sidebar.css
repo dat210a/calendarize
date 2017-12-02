@@ -136,3 +136,7 @@ form .input-field label,
 .form-sub-body{
     background-color: white;
 }
+
+.friendsCollectionInstance .secondary-content{
+    display: none;
+}
