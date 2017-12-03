@@ -242,6 +242,7 @@
                 default:
                 // endDate.setDate(endDate.getDate()+1)
             }
+            if (endDate.getMonth() < startDate.getMonth()) endDate.setFullYear(2001)
             oData.set('startDate', startDate.getTime())
             oData.set('endDate', endDate.getTime())
         }

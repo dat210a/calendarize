@@ -5,6 +5,8 @@ from flask_login import login_required, current_user
 from classes import db_queries as db
 from classes.db_queries_friends import ConnectionInstanceFriends as friends_queries
 from funcs.send_email import send_invite
+from funcs import data_verification as verify
+from funcs.helpers import type_handler
 
 
 mainApp = Blueprint('mainApp', __name__,
@@ -48,18 +50,6 @@ def get_data():
         cal_details = queries.get_calendars_details(calendar_ids)
         event_details = queries.get_events_details(calendar_ids)
     return json.dumps([cal_details, event_details], default=type_handler)
-
-
-# helper function, should be moved
-def type_handler(x):
-    if isinstance(x, (date, datetime)):
-        x = pytz.utc.localize(x)
-        # TODO if desired timezone set use this line:
-        # x = x.astimezone(tz)
-        return x.isoformat()
-    elif isinstance(x, bytearray):
-        return x.decode('utf-8')
-    raise TypeError("Unknown type")
 
 
 @mainApp.route('/add_calendar', methods=['POST', 'GET'])
@@ -175,7 +165,7 @@ def leave_calander():
 @mainApp.route('/add_event', methods=['POST', 'GET'])
 def add_event():
     if request.method == "POST":
-        response, data = prepare_new_event_data()
+        response, data = verify.prepare_new_event_data()
         if not response:
             return json.dumps({'success' : 'false', 'message': data})
         with db.ConnectionInstance() as queries:
@@ -188,30 +178,6 @@ def add_event():
     return json.dumps({'success' : 'false'})
 
 
-def prepare_new_event_data():
-    data = {}
-    data['event_name'] = request.form.get('newEventName', None)
-    data['event_calendar_id'] = request.form.get('calendarID', None)
-    if not data['event_name'] or not data['event_calendar_id']:
-        return False, 'basic information'
-    try:
-        data['event_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
-    except:
-        return False, 'date'
-    try:
-        data['event_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
-        if data['event_end'] < data['event_start']:
-            data['event_end'] = data['event_start']
-    except:
-        data['event_end'] = data['event_start']
-    data['event_date_created'] = datetime.utcnow()
-    data['event_owner_id'] = current_user.user_id
-    data['event_recurring'] = 1 if 'recurring' in request.form else 0
-    data['event_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
-    data['event_details'] = request.form.get('event_details', None)
-    return True, data
-
-
 @mainApp.route('/edit_event', methods=['POST', 'GET'])
 def edit_event():
     if request.method == "POST":
@@ -219,7 +185,7 @@ def edit_event():
         if eid is None:
             return json.dumps({'success' : 'false', 'message': 'Missing event id'})
 
-        response, data = prepare_edit_event_data()
+        response, data = verify.prepare_edit_event_data()
         if not response:
             return json.dumps({'success' : 'false', 'message': data})
 
@@ -245,27 +211,6 @@ def edit_event():
     return json.dumps({'success' : 'false'})
 
 
-def prepare_edit_event_data():
-    data = {}
-    name = request.form.get('newEventName', None)
-    if name:
-        data['event_name'] = name
-    cal = request.form.get('calendarID', None)
-    if cal:
-        data['event_calendar_id'] = cal
-    try:
-        data['event_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
-        data['event_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
-        if data['event_end'] < data['event_start']:
-            data['event_end'] = data['event_start']
-    except:
-        pass
-    data['event_recurring'] = 1 if 'recurring' in request.form else 0
-    data['event_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
-    data['event_details'] = request.form.get('event_details', None)
-    return True, data
-
-
 @mainApp.route('/set_instance', methods=['POST', 'GET'])
 def set_instance():
     if request.method == "POST":
@@ -274,7 +219,7 @@ def set_instance():
         if not eid or not year:
             return json.dumps({'success' : 'false', 'message': 'Non specified event id or year'})
 
-        response, data = prepare_set_instance_data()
+        response, data = verify.prepare_set_instance_data()
         if not response:
             return json.dumps({'success' : 'false', 'message': data})
 
@@ -295,23 +240,6 @@ def set_instance():
                     success = [queries.add_child_file(file, eid, chid) for file in request.files.getlist('file')]
                     return json.dumps({'success' : 'true', 'files': success})
     return json.dumps({'success' : 'false'})
-
-
-def prepare_set_instance_data():
-    data = {}
-    try:
-        data['child_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
-    except:
-        return False, 'date'
-    try:
-        data['child_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
-        if data['child_end'] < data['child_start']:
-            data['child_end'] = data['child_start']
-    except:
-        data['child_end'] = data['child_start']
-    data['child_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
-    data['child_details'] = request.form.get('event_details', None)
-    return True, data
 
 
 @mainApp.route('/delete_event', methods=['POST', 'GET'])

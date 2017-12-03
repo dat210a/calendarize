@@ -73,11 +73,12 @@ function rescale() {
         d3.selectAll(".data").selectAll('.points')
             .each(function(d, i){
                 d.x = timeRescaled(d.event_start)
-                // d.length = timeRescaled(d.event_end) - d.x
+                d.length = timeRescaled(d.event_end) - d.x
                 if (d.event_recurring == 1){
                     var year = d.event_start.getFullYear()
-                    // year -= Math.floor((d.x + d.length) / Math.round(width*k))
-                    year -= Math.floor((d.x) / Math.round(width*k))
+                    year -= Math.floor((d.x + d.length) / Math.round(width*k))
+                    if (d.event_end.getMonth() < d.event_start.getMonth()) d.event_end.setFullYear(year + 1)
+                    else d.event_end.setFullYear(year)
                     d.event_start.setFullYear(year)
                     var child = d.children.filter(c => year == +c.child_year)
                     if (child.length > 0){
@@ -101,9 +102,6 @@ function rescale() {
                                             });
                     }
                     else {
-                        d.x = timeRescaled(d.event_start);
-                        d.event_end.setFullYear(year)
-                        d.length = timeRescaled(d.event_end) - d.x;
                         d3.select(this.parentNode).selectAll(".miniDate")
                                                     .text(function(data){
                                                         if (data.fixed == 1){
@@ -120,9 +118,6 @@ function rescale() {
                                                         }
                                                     });
                     }
-                }
-                else{
-                    d.length = timeRescaled(d.event_end) - d.x;
                 }
             })
             .attr('width', function(d){

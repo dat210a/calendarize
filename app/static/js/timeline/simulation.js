@@ -34,7 +34,7 @@ function gravity(alpha){
                             })
     selection.selectAll('.points')
                 .each(function(d){
-                    d.vy += (0 - d.y)*0.4*alpha
+                    d.vy += (0 - d.y)*0.1*alpha
                 })
     selection.selectAll('.detailContainer')
                 .each(function(d){
