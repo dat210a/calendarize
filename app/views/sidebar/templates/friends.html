@@ -45,7 +45,7 @@
     $("#addFriends").submit(function(e){
         e.preventDefault()
         $.ajax({
-            url: '/friend_request',
+            url: '/side/friend_request',
             data: $(this).serialize(), 
             type: 'POST',
             dataType: 'json',
@@ -65,7 +65,7 @@
 
     function remove_friend(email){
         $.ajax({
-            url: '/remove_friend',
+            url: '/side/remove_friend',
             data: {'email' : email}, 
             type: 'POST',
             dataType: 'json',

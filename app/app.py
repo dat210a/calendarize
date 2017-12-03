@@ -11,55 +11,34 @@ Links to documentation for the packages used can be found
 in the GitHub repository README.md
 
 """
-import logging
-import json, string, re, random
-import pytz
-# from pytz import timezone
+import logging, json
 from datetime import datetime, date
 from classes import db_queries as db
-from classes.db_queries_friends import ConnectionInstanceFriends as friends_queries
 from flask import Flask, flash, render_template, session, g, request, url_for, redirect
-from flask_mobility import Mobility
-from flask_mobility.decorators import mobile_template
 from classes.user import User
-from flask_login import *
-from flask_login import login_user, current_user
-from funcs.logIn import check_password, hash_password
-from funcs.logIn import login_func
-from funcs import file_tools
-from flask_mail import Mail, Message
+from flask_login import login_required, fresh_login_required, logout_user, login_user, current_user
+from funcs.logIn import check_password, hash_password, init_login, user_exists, load_user
 from funcs.file_tools import load_file, load_profile_pic
-from funcs.send_email import *
-from funcs.reset import *
+from funcs.send_email import init_mail, send_verification, random_key
 from views.sidebar import sidebar
+from views.main_app import main_app
+from views.verify_and_recover import verify_and_recover
 
 # app initialization
 app = Flask(__name__)
 app.register_blueprint(sidebar.sidebar, url_prefix='/side')
-Mobility(app)
+app.register_blueprint(main_app.mainApp)
+app.register_blueprint(verify_and_recover.verifyAndRecover)
 
 # config setup
 app.config['DEBUG'] = True  # Testing only
 
 # needed for session cookies
 app.secret_key = 'hella secret'
-mail = Mail(app)
 
-# initialization of login manager
-# it keeps the given user logged in via use of cookies
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = '/'
-
-# stores returned user into current session
-@login_manager.user_loader
-def load_user(email):
-    """Returns an object of class User based on provided unique identifier
-       if user in the database, otherwise None
-    """
-    if user_exists(email):
-        return User(email)
-    return None
+# initialize login and mail modules
+init_login(app)
+init_mail(app)
 
 
 def setup_logging():
@@ -113,30 +92,8 @@ def log_basic():
         logger.info(request_data(request))
 
 
-# It should be moved to a separate file if there
-# ends up being more functions like this one
-def user_exists(email):
-    """Returnes True if user with provided identifier exists,
-       otherwise False
-    """
-    with db.ConnectionInstance() as queries:
-        if queries.get_user_id(email) is None:
-            return False
-        return True
-
-
-
-##################################################################
-
-# Some of the routes below might warrant moving out and
-# into separate files, but until the scope of the operations
-# that need to be performed are clear, they stay here
-# as a skeleton for easy reference.
-# #################################################################
-
 @app.route('/')
-@mobile_template('/{mobile/}index.html')
-def index(template):
+def index():
     """
     """
 #    from classes.dummy_classes import ShardTestingClass
@@ -147,21 +104,7 @@ def index(template):
 #        print(app.config['shards'])
     if (current_user.is_authenticated):
         return redirect('/index_user')
-    return render_template(template)
-
-
-@app.route('/index_user')
-@mobile_template('/{mobile/}index_user.html')
-@login_required
-def index_user(template):
-    """
-    """
-    with db.ConnectionInstance() as queries:
-        invites = queries.get_user_invites(current_user.user_id)
-        invites = len(invites) if invites else 0
-    with friends_queries() as q:
-        invites += len(q.get_friend_requests(current_user.email))
-    return render_template(template, name=current_user.username(), notifier=invites)
+    return render_template('index.html')
 
 
 @app.route('/user_availability', methods=['GET', 'POST'])
@@ -243,73 +186,20 @@ def logout():
     """ Logs user out and redirects to main page
     """
     logout_user()
-    # TODO redirect to: you have been successfully logged out
+    # TODO redirect to: you have successfully logged out
     return redirect('/')
 
 
-@app.route("/recover/", methods=["GET", "POST"])
-def recover():
-    if request.method=="POST":
-        email = request.form.get("email", None)
-        if not email:
-            flash("You need to fill out an email!")
-            return redirect(url_for('recover'))
-        if user_exists(email):
-            send_recover(email)
-            return render_template("recoverconfirm.html",email=email)
-        else:
-            return render_template("recoverconfirm.html",email=email)
-    return render_template("recover.html")
-
-
-@app.route("/reset/<resetkey>", methods=["GET", "POST"])
-def reset(resetkey):
-    with db.ConnectionInstance() as queries:
-        email = queries.get_reset_info(resetkey)
-    if email:
-        if request.method =="POST":
-            if reset_password(email):
-                return render_template("resetsuccess.html")
-        return render_template("reset.html")
-    else:
-        return render_template("invalidlink.html")
-
-@app.route('/calendar')
-@mobile_template('/{mobile/}calendar.html')
-@login_required
-def calendar(template):
-    """
-    """
-    with db.ConnectionInstance() as queries:
-        invites = queries.get_user_invites(current_user.user_id)
-        invites = len(invites) if invites else 0
-    with friends_queries() as q:
-        invites += len(q.get_friend_requests(current_user.email))
-    return render_template(template, name=current_user.username(), notifier=invites)
-
-
-@app.route('/get_data')
-@login_required
-def get_data():
-    """
-    """
-    with db.ConnectionInstance() as queries:
-        calendar_ids = queries.get_calendars(current_user.user_id)
-        cal_details = queries.get_calendars_details(calendar_ids)
-        event_details = queries.get_events_details(calendar_ids)
-    return json.dumps([cal_details, event_details], default=type_handler)
-
-
-# helper function, should be moved
-def type_handler(x):
-    if isinstance(x, (date, datetime)):
-        x = pytz.utc.localize(x)
-        # TODO if desired timezone set use this line:
-        # x = x.astimezone(tz)
-        return x.isoformat()
-    elif isinstance(x, bytearray):
-        return x.decode('utf-8')
-    raise TypeError("Unknown type")
+# @app.route('/add_files', methods=['POST'])
+# @login_required
+# def add_files():
+#     with db.ConnectionInstance() as q:
+#         for file in request.files:
+#             success = q.add_file(request.files[file], request.form['event_id'])
+#             if not success:
+#                 # TODO handle what happens if the file fails to upload
+#                 pass
+#     return 'true'
 
 
 @app.route('/uploads/<filename>')
@@ -329,330 +219,6 @@ def uploaded_file(filename):
 def profile_picture(folder, filename):
     return load_profile_pic(folder, filename)
 
-
-@app.route('/add_calendar', methods=['POST', 'GET'])
-@login_required
-def add_calendar():
-    if request.method == "POST":
-        cal_name = request.form.get('newCalendarName', None)
-        cal_color = request.form.get('color', None)
-        if cal_name and cal_color and len(cal_name) < 45 and len(cal_color) == 7:
-            with db.ConnectionInstance() as queries:
-                new_cal_id = queries.add_calendar(datetime.utcnow(), current_user.user_id, cal_name, cal_color[1:])
-                if new_cal_id:
-                    # parse 'invites' string and send invites
-                    invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
-                    invites = re.split(',| |;', invites)
-                    for email in invites:
-                        # send email to email
-                        sent = send_invite(current_user.username(),email,cal_name)
-                        if sent and queries.check_invite(email, new_cal_id):
-                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
-                            queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role, email)
-                    cal_data = queries.get_calendars_details((new_cal_id,))[0]
-                    return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
-    return json.dumps({'success' : 'false'})
-
-
-@app.route('/edit_calendar', methods=['POST', 'GET'])
-@login_required
-def edit_calendar():
-    cal_data = {}
-    if request.method == "POST":
-        cal_data['calendar_name'] = request.form.get('newCalendarName', None)
-        cal_data['calendar_color'] = request.form.get('color', None)[1:]
-        cid = request.form.get('cal_id', None)
-        with db.ConnectionInstance() as queries:
-            role = queries.get_calendar_role(current_user.user_id, cid)
-            if role is not None and role <= 2:
-                success = queries.update_calendar(cal_data, cid)
-                if success:
-                    # parse 'invites' string and send invites
-                    invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
-                    invites = re.split(',| |;', invites)
-                    for email in invites:
-                        # send email to email
-                        sent = send_invite(current_user.username(),email,cal_data['calendar_name'])
-                        if sent and queries.check_invite(email, cid):
-                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
-                            queries.send_invite(cid, queries.get_user_id(email), current_user.user_id, role, email)
-                    cal_data = queries.get_calendars_details((cid,))[0]
-                    return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
-    return json.dumps({'success' : 'false'})
-
-
-@app.route('/request_calandar', methods=['POST', 'GET'])
-@login_required
-def request_calandar():
-    if request.method == "POST":
-        cal_id = request.form.get('cal_id', None)
-        if cal_id:
-            with db.ConnectionInstance() as queries:
-                role = queries.get_calendar_role(current_user.user_id, cal_id)
-                if role is not None:
-                    cal_data = queries.get_calendars_details((cal_id,))[0]
-                    return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
-    return json.dumps({'success' : 'false'})
-
-
-@app.route('/join_calander', methods=['POST', 'GET'])
-@login_required
-def join_calander():
-    if request.method == 'POST':
-        id = request.form.get("calendar_id", None)
-        role = request.form.get("role", None)
-        with db.ConnectionInstance() as q:
-            if q.check_for_invite(current_user.user_id, id, role) == True:
-                q.join_calander(id, current_user.user_id, role)
-                return 'true'
-    return 'false'
-
-
-@app.route('/decline_calander', methods=['POST', 'GET'])
-@login_required
-def decline_calander():
-    if request.method == 'POST':
-        id = request.form.get("calendar_id", None)
-        role = request.form.get("role", None)
-        with db.ConnectionInstance() as q:
-            if q.check_for_invite(current_user.user_id, id, role) == True:
-                return 'true'
-    return 'false'
-
-
-@app.route('/invite_calendar', methods=['POST', 'GET'])
-@login_required
-def invite_calander():
-    if request.method == 'POST':
-        email = request.form.get("email", None)
-        if len(email) > 45:
-            return 'false'
-        calendar_id = request.form.get("calendar_id", None)
-        role = request.form.get("role", None)
-        with db.ConnectionInstance() as q:
-            if q.get_calendar_role(current_user.user_id, calendar_id) == 0 and q.check_invite(email, calendar_id):
-                q.send_invite(calendar_id, q.get_user_id(email), current_user.user_id, role, email)
-                return 'true'
-    return 'false'
-
-
-@app.route('/leave_calander', methods=['POST', 'GET'])
-@login_required
-def leave_calander():
-    if request.method == 'POST':
-        cid = request.form.get("calender_id", None)
-        with db.ConnectionInstance() as q:
-            q.leave_calander(cid, current_user.user_id)
-        return 'true'
-    return 'false'
-
-
-@app.route('/friend_request', methods=['POST', 'GET'])
-@login_required
-def friend_request():
-    if request.method == 'POST':
-        invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
-        invites = re.split(',| |;', invites)
-        with friends_queries() as queries:
-            for email in invites:
-                # send email to email
-                sender = current_user.username()
-                sent = send_friend_request(sender,email)
-                #add request to database
-                if sent and not queries.check_friend(current_user.user_id, queries.get_user_id(email), email):
-                    queries.add_friend(current_user.user_id, email)
-            return json.dumps({'success' : 'true'})
-    return json.dumps({'success' : 'false'})
-
-
-@app.route('/accept_friend', methods=['POST', 'GET'])
-@login_required
-def accept_friend():
-    if request.method == 'POST':
-        sender = request.form.get('friend_id', None)
-        if sender:
-            with friends_queries() as queries:
-                if queries.check_friend(sender, None, current_user.email):
-                    queries.accept_friend(sender, current_user.user_id, current_user.email)
-            return json.dumps({'success' : 'true'})
-    return json.dumps({'success' : 'false'})
-
-
-@app.route('/remove_friend', methods=['POST', 'GET'])
-@login_required
-def remove_friend():
-    print(request.form)
-    if request.method == 'POST':
-        friend_email = request.form.get('email', None)
-        if friend_email:
-            with friends_queries() as queries:
-                friend_id = queries.get_user_id(friend_email)
-                row = queries.check_friend(current_user.user_id, friend_id, friend_email)
-                if row:
-                    queries.remove_friend(row)
-                row = queries.check_friend(friend_id, current_user.user_id, current_user.email)
-                if row:
-                    queries.remove_friend(row)
-            return json.dumps({'success' : 'true'})
-    return json.dumps({'success' : 'false'})
-
-
-@app.route('/add_event', methods=['POST', 'GET'])
-@login_required
-def add_event():
-    if request.method == "POST":
-        response, data = prepare_new_event_data()
-        if not response:
-            return json.dumps({'success' : 'false', 'message': data})
-        with db.ConnectionInstance() as queries:
-            role = queries.get_calendar_role(current_user.user_id, data['event_calendar_id'])
-            if role is not None and role <= 2:
-                eid = queries.add_event(data)
-                if eid:
-                    success = [queries.add_event_file(file, eid) for file in request.files.getlist('file')]
-                    return json.dumps({'success' : 'true', 'id': eid, 'files': success})
-    return json.dumps({'success' : 'false'})
-
-
-def prepare_new_event_data():
-    data = {}
-    data['event_name'] = request.form.get('newEventName', None)
-    data['event_calendar_id'] = request.form.get('calendarID', None)
-    if not data['event_name'] or not data['event_calendar_id']:
-        return False, 'basic information'
-    try:
-        data['event_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
-    except:
-        return False, 'date'
-    try:
-        data['event_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
-        if data['event_end'] < data['event_start']:
-            data['event_end'] = data['event_start']
-    except:
-        data['event_end'] = data['event_start']
-    data['event_date_created'] = datetime.utcnow()
-    data['event_owner_id'] = current_user.user_id
-    data['event_recurring'] = 1 if 'recurring' in request.form else 0
-    data['event_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
-    data['event_details'] = request.form.get('event_details', None)
-    return True, data
-
-
-@app.route('/edit_event', methods=['POST', 'GET'])
-@login_required
-def edit_event():
-    if request.method == "POST":
-        eid = request.form.get('event_id', None)
-        if eid is None:
-            return json.dumps({'success' : 'false', 'message': 'Missing event id'})
-
-        response, data = prepare_edit_event_data()
-        if not response:
-            return json.dumps({'success' : 'false', 'message': data})
-
-        with db.ConnectionInstance() as queries:
-            current_calendar = queries.get_event_calendar_id(eid)
-            if current_calendar is None:
-                return json.dumps({'success' : 'false', 'message': 'bad event ID'})
-
-            role_old = queries.get_calendar_role(current_user.user_id, current_calendar)
-            if role_old is None or role_old > 1:
-                return json.dumps({'success' : 'false', 'message': 'no permission'})
-
-            if data['event_calendar_id'] and data['event_calendar_id'] != current_calendar:
-                role_new = queries.get_calendar_role(current_user.user_id, data['event_calendar_id'])
-                if role_new is None or role_new > 1:
-                    return json.dumps({'success' : 'false', 'message': 'no permission'})
-
-            edit = queries.update_event(data, eid)
-            if edit:
-                success = [queries.add_event_file(file, eid) for file in request.files.getlist('file')]
-                return json.dumps({'success' : 'true', 'files': success})
-
-    return json.dumps({'success' : 'false'})
-
-
-def prepare_edit_event_data():
-    data = {}
-    name = request.form.get('newEventName', None)
-    if name:
-        data['event_name'] = name
-    cal = request.form.get('calendarID', None)
-    if cal:
-        data['event_calendar_id'] = cal
-    try:
-        data['event_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
-        data['event_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
-        if data['event_end'] < data['event_start']:
-            data['event_end'] = data['event_start']
-    except:
-        pass
-    data['event_recurring'] = 1 if 'recurring' in request.form else 0
-    data['event_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
-    data['event_details'] = request.form.get('event_details', None)
-    return True, data
-
-
-@app.route('/set_instance', methods=['POST', 'GET'])
-@login_required
-def set_instance():
-    print(request.form)
-    if request.method == "POST":
-        eid = request.form.get('event_id', None)
-        year = request.form.get('year', None)
-        if not eid or not year:
-            return json.dumps({'success' : 'false', 'message': 'Non specified event id or year'})
-
-        response, data = prepare_set_instance_data()
-        if not response:
-            return json.dumps({'success' : 'false', 'message': data})
-
-        with db.ConnectionInstance() as queries:
-            cid = queries.get_event_calendar_id(eid)
-            role = queries.get_calendar_role(current_user.user_id, cid)
-            if role is not None and role <= 2:
-                chid = queries.get_child_id(eid, year)
-                if chid:
-                    queries.update_child(data, chid)
-                else:
-                    data['child_date_created'] = datetime.utcnow()
-                    data['child_owner_id'] = current_user.user_id
-                    data['child_parent_id'] = eid
-                    data['child_year'] = year
-                    chid = queries.add_child(data)
-                if chid:
-                    success = [queries.add_child_file(file, eid, chid) for file in request.files.getlist('file')]
-                    return json.dumps({'success' : 'true', 'files': success})
-    return json.dumps({'success' : 'false'})
-
-
-def prepare_set_instance_data():
-    data = {}
-    try:
-        data['child_start'] = datetime.utcfromtimestamp(int(request.form['startDate'])/1000.0)
-    except:
-        return False, 'date'
-    try:
-        data['child_end'] = datetime.utcfromtimestamp(int(request.form['endDate'])/1000.0)
-        if data['child_end'] < data['child_start']:
-            data['child_end'] = data['child_start']
-    except:
-        data['child_end'] = data['child_start']
-    data['child_fixed_date'] = 1 if 'fixedSwitch' in request.form else 0
-    data['child_details'] = request.form.get('event_details', None)
-    return True, data
-
-
-# @app.route('/add_files', methods=['POST'])
-# @login_required
-# def add_files():
-#     with db.ConnectionInstance() as q:
-#         for file in request.files:
-#             success = q.add_file(request.files[file], request.form['event_id'])
-#             if not success:
-#                 # TODO handle what happens if the file fails to upload
-#                 pass
-#     return 'true'
 
 
 @app.route('/update_profile', methods=['POST'])
@@ -687,79 +253,6 @@ def delete_user():
         logout_user()
         # TODO redirect to user has been deleted page
     return redirect(url_for('index'))
-
-
-@app.route('/delete_event', methods=['POST', 'GET'])
-@fresh_login_required
-def delete_event():
-    if request.method=="POST":
-        event = request.form.get('event_id', None)
-        if event:
-            with db.ConnectionInstance() as queries:
-                cal = queries.get_event_calendar_id(event)
-                role = queries.get_calendar_role(current_user.user_id, cal)
-                if role is not None and role == 0:
-                    queries.db_del_event(event)
-                    # TODO delete files
-                    return 'true'
-    return 'false'
-
-
-@app.route('/delete_instance', methods=['POST', 'GET'])
-@fresh_login_required
-def delete_instance():
-    if request.method=="POST":
-        event = request.form.get('event_id', None)
-        year = request.form.get('year', None)
-        if event and year:
-            with db.ConnectionInstance() as queries:
-                cal = queries.get_event_calendar_id(event)
-                role = queries.get_calendar_role(current_user.user_id, cal)
-                if role is not None and role < 2:
-                    queries.db_del_child(event, year)
-                    # TODO delete files
-                    return 'true'
-    return 'false'
-
-
-@app.route('/delete_calendar', methods=['POST', 'GET'])
-@fresh_login_required
-def delete_cal():
-    if request.method=="POST":
-        cal = request.form.get('calendar_id', None)
-        if cal:
-            with db.ConnectionInstance() as queries:
-                role = queries.get_calendar_role(current_user.user_id, cal)
-                if role is not None and role == 0:
-                    queries.db_del_cal(cal)
-                    return 'true'
-    return 'false'
-
-
-@app.route("/verify/<verify_key>", methods=["GET", "POST"])
-def verify(verify_key):
-    with db.ConnectionInstance() as queries:
-        email = queries.get_verify_info(verify_key)
-    if email:
-        with db.ConnectionInstance() as queries:
-            queries.activate_user(email)
-            user = load_user(email)
-            login_user(user)
-        return render_template("verify_confirm.html")
-    else:
-        return ("Your account has been already verified or the link is no longer valid")
-
-
-@app.route("/verifyoption", methods=["GET", "POST"])
-def verifyoption():
-    email = request.form.get("email", None)
-    user = load_user(email)
-    if email:
-        key = random_key(10) + email
-        with db.ConnectionInstance() as queries:
-            queries.make_verifykey(user.user_id,key)
-        send_verification(email,key)
-        return render_template("verify_send.html", email=email)
 
 
 

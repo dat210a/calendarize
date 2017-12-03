@@ -10,7 +10,7 @@
       <div class="card-panel white center-align">
         <h3 class="accentgrey-dark-text">Please verify your account</h3>
         <br>
-        <form action="{{ url_for("verifyoption") }}" method="POST">
+        <form action="{{ url_for('verifyAndRecover.verifyoption') }}" method="POST">
         <input type="hidden" name="email" value= "{{ email }}" />
         <button type="submit" name="action" value="do_1" class="left btn waves-effect waves-light">Resend Link</button>
         <a class="right btn waves-effect waves-light" href="{{ url_for('index') }}">Return to homepage</a>

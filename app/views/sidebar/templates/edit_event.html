@@ -220,6 +220,7 @@
             oData.delete("fixedSwitch")
             var startDate = new Date()
             if (!$("#repeatEvent").prop("checked")) startDate.setFullYear($("#yearSelector").val())
+            else startDate.setFullYear(2000)
             startDate.setMonth($("#month").val())
             startDate.setDate(2)
             startDate.setHours(0, 0, 0, 0)

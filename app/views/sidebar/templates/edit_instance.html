@@ -204,7 +204,7 @@
         else{
             oData.delete("fixedSwitch")
             var startDate = new Date()
-            startDate.setFullYear(year)
+            startDate.setFullYear(current_event.year)
             startDate.setMonth($("#month").val())
             startDate.setDate(2)
             startDate.setHours(0, 0, 0, 0)
@@ -226,8 +226,8 @@
                 default:
                 // endDate.setDate(endDate.getDate()+1)
             }
-            oData.set('startDate', startDate.getTime())
-            oData.set('endDate', endDate.getTime())
+            oData.set('startDate', new Date(startDate).getTime())
+            oData.set('endDate', new Date(endDate).getTime())
         }
         return oData;
     }

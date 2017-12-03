@@ -44,7 +44,7 @@ function decline_calendar(data){
 
 function accept_friend(id){
     $.ajax({
-        url: '/accept_friend',
+        url: '/side/accept_friend',
         method: 'POST',
         dataType: 'json',
         data: {'friend_id' : id},
@@ -59,7 +59,7 @@ function accept_friend(id){
 
 function decline_friend(id){
     $.ajax({
-        url: '/remove_friend',
+        url: '/side/remove_friend',
         method: 'POST',
         dataType: 'json',
         data: {'friend_id' : id},

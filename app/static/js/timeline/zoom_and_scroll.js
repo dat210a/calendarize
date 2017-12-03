@@ -73,21 +73,56 @@ function rescale() {
         d3.selectAll(".data").selectAll('.points')
             .each(function(d, i){
                 d.x = timeRescaled(d.event_start)
+                // d.length = timeRescaled(d.event_end) - d.x
                 if (d.event_recurring == 1){
                     var year = d.event_start.getFullYear()
-                    year -= Math.floor(d.x / Math.round(width*k))
+                    // year -= Math.floor((d.x + d.length) / Math.round(width*k))
+                    year -= Math.floor((d.x) / Math.round(width*k))
                     d.event_start.setFullYear(year)
                     var child = d.children.filter(c => year == +c.child_year)
                     if (child.length > 0){
-                        d.x = timeRescaled( new Date(child[0].child_start))
-                        d.length = timeRescaled(new Date( child[0].child_end)) - d.x;
+                        child = child[0]
+                        d.x = timeRescaled( new Date(child.child_start))
+                        d.length = timeRescaled(new Date( child.child_end)) - d.x;
+                        d3.select(this.parentNode).selectAll(".miniDate")
+                                            .text(function(){
+                                                if (child.child_fixed_date == 1){
+                                                    if (child.child_start == data.child_end){
+                                                        return d3.timeFormat('%d / %m')(new Date(child.child_start));
+                                                    }
+                                                    else{
+                                                        return d3.timeFormat('%d/%m')(new Date(child.child_start)) + '  -  ' 
+                                                            + d3.timeFormat('%d/%m')(new Date(child.child_end));
+                                                    }
+                                                }
+                                                else{
+                                                    return 'In ' + d3.timeFormat('%B')(new Date(child.child_start));
+                                                }
+                                            });
                     }
                     else {
                         d.x = timeRescaled(d.event_start);
                         d.event_end.setFullYear(year)
                         d.length = timeRescaled(d.event_end) - d.x;
+                        d3.select(this.parentNode).selectAll(".miniDate")
+                                                    .text(function(data){
+                                                        if (data.fixed == 1){
+                                                            if (data.start == data.end){
+                                                                return d3.timeFormat('%d / %m')(new Date(data.start));
+                                                            }
+                                                            else{
+                                                                return d3.timeFormat('%d/%m')(new Date(data.start)) + '  -  ' 
+                                                                    + d3.timeFormat('%d/%m')(new Date(data.end));
+                                                            }
+                                                        }
+                                                        else{
+                                                            return 'In ' + d3.timeFormat('%B')(new Date(data.start));
+                                                        }
+                                                    });
                     }
-                    // TODO make duplicate if need to display more on same screen
+                }
+                else{
+                    d.length = timeRescaled(d.event_end) - d.x;
                 }
             })
             .attr('width', function(d){

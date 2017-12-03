@@ -20,9 +20,17 @@ function ready(error, allData){
         return;
     }
 
-    datapoints = allData[1]
-    groups = allData[0]
-    
+    var groups = allData[0]
+    var eventData = allData[1]
+
+    // event instances have to be displayed as separate objects
+    var instanceData = new Array();
+    for (i = 0; i < eventData.length; i++){
+        // console.log(eventData[i])
+        instanceData.push({'name': eventData[i].event_name, 'start': eventData[i].event_start, 'end': eventData[i].event_end, 'fixed': eventData[i].event_fixed_date});
+    }
+
+
     // fix color tag
     groups.forEach(function(d){d.calendar_color = '#' + d.calendar_color;})
 
@@ -32,22 +40,17 @@ function ready(error, allData){
     // clear data before assigning new one
     // TODO figure out whether it's possible to do with update() enter() exit()
     d3.selectAll('.data').remove()
-    if (datapoints.length == 0) return
-
-    //sort data so its displayed from right to left
-    //due to overlap
-    var myData = datapoints.sort(function(x, y){
-        return d3.descending(+x.event_start, +y.event_start);
-    })
+    if (eventData.length == 0) return
 
     //objects whith coordinates for detail boxes
-    var detailsPoints = new Array(myData.length);
+    var detailsPoints = new Array(eventData.length);
     for (i = 0; i < detailsPoints.length; i++){
-        detailsPoints[i] = {'name': myData[i].event_name, 'start': myData[i].event_start, 'end': myData[i].event_end, 'fixed': myData[i].event_fixed_date};
+        detailsPoints[i] = {'name': eventData[i].event_name, 'start': eventData[i].event_start, 'end': eventData[i].event_end, 'fixed': eventData[i].event_fixed_date};
     }
 
     //setup simulation based on data
-    nodes = myData.concat(detailsPoints);
+    nodes = eventData.concat(detailsPoints);
+    nodes = nodes.concat(instanceData)
     simulation.nodes(nodes)
                 .on('tick', ticked);
 
@@ -56,7 +59,7 @@ function ready(error, allData){
                         .insert('g', '.g-today')
                         .attr("class", "data")
                         .selectAll('.datapoints')
-                            .data(myData)
+                            .data(eventData)
                             .enter()
                                 .append("g")
                                     .attr("class", function(d, i){return 'datapoints e' + d.event_id;})
@@ -186,6 +189,10 @@ function ready(error, allData){
             d3.select(this).selectAll('.detailBox')
                 .style('fill', function(){return data.calendar_color;});
         });
+
+    d3.selectAll('.data').selectAll('.datapoints').sort(function(x, y){
+        return d3.descending(+x.x, +y.x);
+    });
     
     // center to and display the newly created event
     if (current_event == null) svg.call(zoom.translateBy, 0)
