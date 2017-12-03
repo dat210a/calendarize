@@ -99,3 +99,16 @@ ENV/
 
 # mypy
 .mypy_cache/
+.idea/
+
+# sensitive information
+app/cfg/
+
+# files
+app/files/
+
+app/classes/.DS_Store
+.DS_Store
+
+# images
+app/static/images

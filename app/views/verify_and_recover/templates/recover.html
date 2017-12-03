@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="{{ url_for('static', filename='css/verify.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+
+<div class="container">
+	<div class="row">
+		<div class="col s12 m6 offset-m3">
+			<div class="card-panel white center-align">
+				<h3 class="accentgrey-dark-text">Recover password</h3>
+				<div class="row">
+					<div class="col s12 ">
+						<form action="" method="POST">
+							<div class="row">
+								<div class="input-field">
+									<input type="text" id="email" name="email" size="35">
+									<label>Email address</label>
+								</div>
+							</div>
+							<div class="row">
+								<button class="btn waves-effect waves-light right" type="submit">send
+									<i class="material-icons right">send</i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

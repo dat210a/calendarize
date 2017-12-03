@@ -1,0 +1,271 @@
+<div class="event_details_container" id="eventDisplay">
+    <div class="row z-depth-1 eventdetailsfixedheader">
+        <div class=" col s12">
+            <h4 class="left-align grey-text text-lighten-5 eventName">Nan</h4>
+            <span class="grey-text text-lighten-3" id="event_owner"></span>
+        </div>
+    </div>
+    <a class="btn-floating btn-large waves-effect waves-light right eventdetailsheaderBtn" onclick="edit()"><i class="material-icons">edit</i></a>
+    <div style="padding-top: 7em">
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs accentgrey-light" style="display:none;">
+                    <li class="tab col s6"><a id="recurring_event" class="active" href="#event"></a></li>
+                    <li class="tab col s6"><a id="specific_event" href="#child"></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- main event information -->
+
+        <div id="event" class="col s12">
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Group</strong></span>
+                    <br>
+                    <span class="eventGroup"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Date</strong></span>
+                    <br>
+                    <div id="dateOfEvent"></div>
+                    <span class="sub">Recurring: </span><span class="sub eventRecur"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Notes</strong></span>
+                    <br>
+                    <span id="event_notes"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Attachments</strong></span>
+                    <br>
+                    <div  id="eventFiles"></div>
+                </div>
+            </div>
+            <div class="row deletion">
+                <div class="col s12">
+                    <a id="delete_event" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete event</a>
+                </div>
+            </div>
+       </div>
+
+       <!-- instance -->
+
+       <div id="child" class="col s12">
+            <div id="instanceDoesntExist" class="container">
+                <div class="row">
+                    <span>You have not yet specified any information for this year. Click on the button below to set your event.</span>
+                </div>
+                <div>
+                    <a class="waves-effect waves-light btn" onclick="edit_instance()">Create</a>
+                </div>
+            </div>
+            <div id="instanceExists">
+                <div class="row">
+                    <div class="col s12">
+                        <span class="infotitle"><strong>Date</strong></span>
+                        <br>
+                        <div id="dateOfInstance">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <span class="infotitle"><strong>Notes</strong></span>
+                        <br>
+                        <span id="instanceNotes"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <span class="infotitle"><strong>Attachments</strong></span>
+                        <br>
+                        <div id="instanceFiles"></div>
+                    </div>
+                </div>
+                <div class="row deletion">
+                    <div class="col s12">
+                        <a id="delete_instance" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete instance</a>
+                    </div>
+                </div>
+            </div>
+       </div>
+    </div>
+</div>
+<script>
+    $("#eventDisplay").hide(0)
+
+    function populate_event(){
+        if (current_event.event_fixed_date == 1){
+            var format = d3.timeFormat('%d %B, %Y')
+            if (current_event.event_start.getTime() == current_event.event_end.getTime())
+                $("#dateOfEvent").append(`<span>On: ${format(current_event.event_start)}</span>`)
+            else
+                $("#dateOfEvent").append(`<span>From: ${format(current_event.event_start)}</span> \
+                                          <br> \
+                                          <span> To: ${format(current_event.event_end)}</span>`)
+        }
+        else{
+            var start = current_event.event_start.getDate(),
+                end = current_event.event_end.getDate()
+            if (start < 5){
+                if (end > 15) var when = ''
+                else var when = 'the beginning of '
+            }
+            else if (start < 15) var when = 'the middle of '
+            else var when = 'the end of '
+            $("#dateOfEvent").append(`<span>Sometime in ${when}${d3.timeFormat('%B')(current_event.event_start)}</span>`)
+        }
+        $('.eventGroup').text(() => $(".groupInstance").filter(function() {
+                                                            return $(this).data("data").calendar_id == current_event.event_calendar_id;
+                                                        })
+                                                        .data('data').calendar_name)
+        $('.eventRecur').text(() => +current_event.event_recurring == 1 ? 'YES' : 'NO')
+        
+        $('#event_notes').empty()
+        if (current_event.event_details == '') $('#event_notes').text("No notes added")
+        else $('#event_notes').text(current_event.event_details)
+
+        $('#eventFiles').empty()
+        if (current_event.files.length > 0){
+            current_event.files.forEach (function(filename){
+                $('#eventFiles').append("<a href='/uploads/"+ filename +"?id="+ current_event.event_id +"' download='"+ filename +"'>"+ filename +"</a><br>")
+            })
+        }
+        else{
+            $('#eventFiles').append("<span>No files added</span>")
+        }
+    }
+
+    function populate_instance(){
+        var child = current_event.children.filter(d => +d.child_year == current_event.year)
+        if (child.length > 0){
+            var child_data = child[0]
+            child_data.child_start = new Date(child_data.child_start)
+            child_data.child_end = new Date(child_data.child_end)
+            $("#instanceDoesntExist").remove()
+            if (child_data.child_fixed_date == 1){
+                var format = d3.timeFormat('%d %B, %Y')
+                if (child_data.child_start.getTime() == child_data.child_end.getTime())
+                    $("#dateOfInstance").append(`<span>On: ${format(child_data.child_start)}</span>`)
+                else
+                    $("#dateOfInstance").append(`<span>From: ${format(child_data.child_start)}</span> \
+                                                 <br> \
+                                                 <span> To: ${format(child_data.child_end)}</span>`)
+            }
+            else{
+                var start = child_data.child_start.getDate(),
+                    end = child_data.child_end.getDate()
+                if (start < 5){
+                    if (end > 15) var when = ''
+                    else var when = 'the beginning of '
+                }
+                else if (start < 15) var when = 'the middle of '
+                else var when = 'the end of '
+                $("#dateOfInstance").append(`<span>Sometime in ${when}${d3.timeFormat('%B')(child_data.child_start)}</span>`)
+            }
+
+            $('#instanceNotes').empty()
+            if (child_data.child_details == '') $('#instanceNotes').text("No notes added")
+            else $('#instanceNotes').text(child_data.child_details)
+
+            $('#instanceFiles').empty()
+            if (child_data.files.length > 0){
+                child_data.files.forEach (function(filename){
+                    $('#instanceFiles').append("<a href='/uploads/"+ filename +"?id="+ current_event.event_id + "&chid=" + child_data.child_id + "' download='"+ filename +"'>"+ filename +"</a><br>")
+                })
+            }
+            else{
+                $('#instanceFiles').append("<span>No files added</span>")
+            }
+        }
+        else{
+            $("#instanceExists").remove()
+        }
+        // $('.carousel.carousel-slider').carousel({fullWidth: true, indicators: false});
+    }
+
+    function edit(){
+        if ($("#specific_event").hasClass("active")) edit_instance();
+        else edit_event();
+    }
+
+    $(document).ready(function(){
+        current_event.year = current_event.event_start.getFullYear();
+        $("#recurring_event").text("event")
+        $("#specific_event").text(() => "Year: " + current_event.year)
+
+        $('.eventdetailsfixedheader').css('background-color', current_event.calendar_color);
+        $('.eventdetailsheaderBtn').css('background-color', current_event.calendar_color);
+
+        $('.eventName').text(current_event.event_name)
+        $('#event_owner').text("Created by: "+current_event.event_owner_id)
+
+        console.log(current_event)
+        populate_event();
+        if (current_event.event_recurring == 1){
+            populate_instance();
+
+            $('ul.tabs').css("display", "block")
+            $('ul.tabs').tabs()
+            $("#eventDisplay").slideDown('slow', function(){
+                $('ul.tabs').tabs()
+            })
+        }
+        else{
+            $('ul.tabs').remove()
+            $('#child').remove()
+            $("#eventDisplay").slideDown('slow')
+        }
+
+
+        $('#delete_event').click(function(e){
+            e.preventDefault()
+            $.ajax({
+                url: '/delete_event',
+                type: 'POST',
+                data: {'event_id': current_event.event_id},
+                success: function(response) {
+                    if (response == 'true') {
+                        $("#sidebar").empty()
+                        current_event = null;
+                        load_data();
+                    }
+                    else {
+                        console.log (response, 'could not delete this event')
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        $('#delete_instance').click(function(e){
+            e.preventDefault()
+            $.ajax({
+                url: '/delete_instance',
+                type: 'POST',
+                data: {'event_id': current_event.event_id, 'year': current_event.children.child_year},
+                success: function(response) {
+                    if (response == 'true') {
+                        $("#sidebar").empty()
+                        load_data();
+                    }
+                    else {
+                        console.log (response, 'could not delete this event')
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>

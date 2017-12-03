@@ -1,0 +1,18 @@
+
+.dropdown-content.active{
+    min-width: 200px;
+    max-width: 200px;
+
+}
+
+.dropdown-content li>a{
+    color: #F1F0F0;
+}
+.dropdown-content li>a:hover{
+    background-color: #F1F0F0;
+    color: #3D4148;
+}
+
+nav {
+	z-index: 11;
+}

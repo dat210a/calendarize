@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block inner %}
+<header>
+  <div><h1>Page not found</h1></div>
+</header>
+<div>
+<label>Your link is invalid or expired</label>
+</br></br>
+<a class="btn waves-effect waves-light" href="{{ url_for('index') }}">Return to homepage</a>
+</div>
+{% endblock %}

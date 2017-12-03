@@ -1,0 +1,51 @@
+
+#preloader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    background: white;
+}
+
+svg {
+    min-height: 300px;
+    background-color: #F1F0F0;
+    max-height: 100%;
+}
+
+rect {
+    fill: #F1F0F0;
+}
+
+.shadow {
+    filter: url(#dropshadow);
+}
+
+text {
+    pointer-events: none;
+    font-family: sans-serif;
+}
+
+line {
+    pointer-events: none;
+}
+
+.yearBox {
+    fill: #3D4148;
+}
+
+.yearText {
+    stroke: #F1F0F0;
+    fill: #F1F0F0;
+}
+
+.backdrop {
+    background-color: transparent;
+}
+
+.material-tooltip {
+    background-color: rgba(0, 0, 0, 0.1);
+}

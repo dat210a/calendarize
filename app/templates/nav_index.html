@@ -1,0 +1,13 @@
+{% extends 'base.html' %} 
+{% block title %}calendarize.main{% endblock %}
+{% block nav %}
+<nav class="accentgrey-dark z-depth-3">
+    <div class="nav-wrapper container hide-on-med-and-down">
+        <a href="#"><img src="{{ url_for('static', filename='images/logo_nav.png') }}" class="placeholderimg"></a>
+        <ul class="right">
+            <li><a class="waves-effect waves-light btn" href="#" id="login_btn">Log In</a></li>
+            <li><a class="waves-effect waves-light btn" href="#" id="signup_btn">Sign Up</a></li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}

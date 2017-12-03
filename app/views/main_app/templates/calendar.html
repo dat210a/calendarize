@@ -1,0 +1,113 @@
+﻿{% extends 'nav_user.html' %}
+
+{% block content %}
+    <link href="{{ url_for('static', filename='css/calendar.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="{{ url_for('static', filename='css/bottombar.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="{{ url_for('static', filename='css/sidebar.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+    <div id="preloader">
+        <div class="body_valign center">
+            <div class="preloader-wrapper big active body_valign">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div><div class="gap-patch">
+                        <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="timelineScreen col m12 l9" style="position: relative; padding: 0px;">
+        <div class="calendarContainer">
+            <!-- options button for small screens-->
+            <div class="fixed-action-btn horizontal hide-on-large-only", style="position: absolute; height: 0; display: inline-block; right: 15px; top: 15px;">
+                <a class="waves-effect waves-light btn-floating btn-large accentgrey-dark" onclick="Materialize.toast('Not yet implemented', 4000)">
+                    <i class="large material-icons">menu</i>
+                </a>
+            </div>
+            <!-- main calendar -->
+            <svg class="calendarMain">
+                <defs>
+                    <filter id="dropshadow" x="-100%" y="-100%" width="200%" height="200%" filterUnits="userSpaceOnUse">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="2"/> <!-- stdDeviation is how much to blur -->
+                        <feOffset dx="1.5" dy="1.5" result="offsetblur"/> 
+                        <!-- <feOffset dx="-5" dy="-5" result="offsetblur"/> -->
+                        <feMerge> 
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+            </svg>
+            <!-- toolbar -->
+            <div class="calendarToolbox open anim">
+                <!-- FAB -->
+                <div class="fixed-action-btn horizontal mainAddButtonContainer">
+                    <a class="btn-floating btn-large accentgrey-dark"><i class="large material-icons">add</i></a>
+                    <ul>
+                        <li><a id="resetToToday" class="waves-effect waves-light btn-floating blue tooltipped" data-position="top" data-delay="50" data-tooltip="Today"><i class="material-icons">center_focus_strong</i></a></li>
+                        <!-- <li><a id="addUsers" class="waves-effect waves-light btn-floating green"><i class="material-icons">group_add</i></a></li> -->
+                        <li><a id="addCalendarForm" onclick="add_calendar()" class="waves-effect waves-light btn-floating yellow darken-1 tooltipped" data-position="top" data-delay="50" data-tooltip="New calendar"><i class="material-icons">insert_invitation</i></a></li>
+                        <li><a id='addEventForm' onclick="add_event()" class="waves-effect waves-light btn-floating red tooltipped" data-position="top" data-delay="50" data-tooltip="New event"><i class="material-icons">playlist_add</i></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- show/hide groups -->
+                <div class="center upDown">
+                    <a class="waves-effect waves-light btn accentgrey-dark toggleGroupVisibility" onclick="ToggleAgendaMenu()">
+                        <i class="material-icons left toggleArrow">arrow_drop_down</i>groups
+                    </a>
+                </div>
+                <!-- zoom -->
+                <div class="valign-wrapper slidecontainer">
+                    <span class="valign-wrapper left-align" style="display: inline-block; margin-right: 5px"><strong>1Y</strong></span>
+                    <input class="browser-default z-depth-1" id="zoomSlider" type="range" min="1" max="12" step="0.01" style="display: inline-block"/>
+                    <span class="valign-wrapper right-align"  style="display: inline-block;  margin-left: 5px"><strong>1M</strong></span>
+                </div>
+                <!-- bottom / main future calendar selector ? -->
+                <div class="calendarsContainer open anim accentgrey-dark">
+                    <div style="position: relative; margin-right: 60px;">
+                        <div class="calendarsContainerInner">
+                        </div>
+                    </div>
+                    <div class="calendarsContainerNav right">
+                        <div>
+                            <a class="calendarsContainerNavUp" href="#!" onclick="calendarsContainerInnerUp()"><i class="material-icons accentgrey-light-text medium">keyboard_arrow_up</i></a>
+                        </div>
+                        <div style="padding-top: 20px">
+                            <a class="calendarsContainerNavDown" href="#!" onclick="calendarsContainerInnerDown()"><i class="material-icons accentgrey-light-text medium">keyboard_arrow_down</i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- sidebar -->
+    <div class="col m3 hide-on-med-and-down z-depth-3 overflow fwheader accentgrey-light" id="sidebar">
+    </div>
+<!-- TODO make a bundle -->
+<script src="/static/js/lib/d3.min.js"></script>
+<script src="/static/js/timeline/DisplayCalendar.js"></script>
+<script src="/static/js/timeline/navigation_buttons.js"></script>
+<script src="/static/js/timeline/bottom_bar.js"></script>
+<script src="/static/js/timeline/simulation.js"></script>
+<script src="/static/js/timeline/DisplayData.js"></script>
+<script src="/static/js/timeline/zoom_and_scroll.js"></script>
+<script src="/static/js/timeline/resize_timeline.js"></script>
+<script src="/static/js/side_forms.js"></script>
+<script>
+(function($) {
+    $(function() {
+        init_forms();
+        load_data();
+    });
+
+    jQuery(window).on('load', function(){
+        $('#preloader').fadeOut('slow',function(){$(this).remove();});
+    });
+})(jQuery);
+</script>
+{% endblock %}

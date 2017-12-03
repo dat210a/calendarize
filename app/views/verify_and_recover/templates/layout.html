@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}calendarize.recover{% endblock %}
+{% block content %}
+	<nav class="accentgrey-dark z-depth-3">
+		<div class="container">
+			<div class="right">
+				<a href="{{ url_for('index') }}">Homepage</a>
+			</div>
+		</div>
+	</nav>
+	<div class="body_valign center">
+		<div>
+			<div>
+				<div><h1>Recover Password</h1></div>
+			</div>
+			<div>
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					<ul class="notifications">
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+			{% endwith %}
+
+			{% block inner %}
+			{% endblock %}
+			</div>
+		</div>
+	</div>
+{% endblock  %}

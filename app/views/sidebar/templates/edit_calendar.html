@@ -1,0 +1,104 @@
+<div class="edit_calendar_container" id="editCalendarForm">
+    <form class="editCalendar" id="editCalendar">
+        <div class="row neweventfixedheader accentgrey-dark z-depth-1">
+            <div class="col s12">
+                <h4 class="left-align grey-text text-lighten-5">Edit calendar</h4>
+            </div>
+        </div>
+        <button id="btnEditCalendar" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
+        <a id="btnCancelEditCalendar" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn cancel accentgrey-dark"><i class="material-icons">close</i></a>
+        <div style="padding-top: 5em">
+            <div class="row form-sub-head">
+                <h5 style="padding: 0.75rem">Basic information</h5>
+                <hr>
+            </div>
+            <div class="row form-sub-body">
+                <div class="row">
+                    <div class="col s12 input-field">
+                        <input placeholder="Group name" id="newCalendarName" name="newCalendarName" type="text" required>
+                        <label for="newCalendarName">Name of group</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea placeholder="john@mail.com" id="calInvites" name="invites" class="materialize-textarea"></textarea>
+                        <label for="calInvites">Share</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 input-field" id="setColorContainer">
+                        <select id="setCalendarColor" name="color">
+                        </select>
+                        <label>Color</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input id="cal_id" type="hidden" name="cal_id" value>
+    </form>
+</div>
+<script>
+    $("#editCalendarForm").hide(0)
+    function populate(cal_data){
+        $("#newCalendarName").val(cal_data.calendar_name)
+        // color picker
+        selector = $('#setCalendarColor');
+        selector.empty()
+        colors.forEach(function(color){
+            selector.append("<option value=" + color + "></option>");
+        })
+        selector.on("change", function(){
+            $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid " + $(this).val())
+        });
+        init_forms();
+        selector.val("#"+cal_data.calendar_color);
+        $("#setColorContainer").find(".select-dropdown").css("border-bottom", () => "5px solid #" + cal_data.calendar_color)
+        $("#setColorContainer").find("li").each(function(i){
+            $(this).empty().addClass("valign-wrapper")
+                .append("<div></div>").children("div").addClass("coloredLine").css("background-color", colors[i])
+        })
+        $("#cal_id").val(cal_data.calendar_id)
+
+        $("#btnCancelEditCalendar").on("click", function(){
+            display_calendar(cal_data)
+        })
+    }
+
+    $("#calInvites").on('keydown', function(e){
+        if(e.which == 186 || e.which == 188 || e.which == 32 || e.which == 13){
+            e.preventDefault()
+            var emails = $(this).val();
+            var cursorPosition = $(this).prop("selectionStart");
+            var cutoff = emails.length - cursorPosition;
+            var modifiedRow = cutoff == 0 ? emails.split('\n').slice(-1)[0] : emails.slice(0, -cutoff).split('\n').slice(-1)[0]
+            if (cursorPosition == emails.length)
+            {
+                if (!(modifiedRow.length < 3 || modifiedRow.indexOf('@') == -1))
+                    $(this).val((i, val) => val + ',\n')
+            }
+        }
+    })
+
+    $("#editCalendar").submit(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '/edit_calendar',
+            data: $(this).serialize(),
+            type: 'POST',
+            dataType: 'json',
+            success: function(r) {
+                if (r.success == 'true'){
+                    load_data();
+                    display_calendar(JSON.parse(r.data));
+                }
+                else {
+                    console.log ('could not create new calendar')
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    $("#editCalendarForm").show(700)
+</script>

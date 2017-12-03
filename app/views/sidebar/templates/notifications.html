@@ -1,0 +1,113 @@
+<div class="row">
+    <div class="row neweventfixedheader accentgrey-dark z-depth-1">
+        <div class=" col s12">
+            <h4 class="left-align grey-text text-lighten-5 eventName">Notifications</h4>
+            <span class="grey-text text-lighten-3" id="event_owner"></span>
+        </div>
+    </div>
+    <div class="row" style="padding-top: 7em">
+        <ul class="collapsible" id="notificationAccordian" data-collapsible="expandable">
+        </ul>
+    </div>
+</div>
+<script>
+function accept_calendar(data){
+    $.ajax({
+        url: '/join_calander',
+        method: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function(response){
+            notifications();
+            load_data();
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    })
+}
+
+function decline_calendar(data){
+    $.ajax({
+        url: '/decline_calander',
+        method: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function(response){
+            notifications();
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    })
+}
+
+function accept_friend(id){
+    $.ajax({
+        url: '/side/accept_friend',
+        method: 'POST',
+        dataType: 'json',
+        data: {'friend_id' : id},
+        success: function(response){
+            notifications();
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    })
+}
+
+function decline_friend(id){
+    $.ajax({
+        url: '/side/remove_friend',
+        method: 'POST',
+        dataType: 'json',
+        data: {'friend_id' : id},
+        success: function(response){
+            notifications();
+        },
+        error: function(error) {
+            console.log(error);
+        },
+    })
+}
+
+$(document).ready(function(){
+    var cal_invites = JSON.parse('{{ cal_invites|tojson|safe }}')
+    var friend_requests = JSON.parse('{{ friend_requests|tojson|safe }}')
+    update_notifier(cal_invites.length + friend_requests.length);
+
+    var accord_li = "<li class='notificationAccordianInstance'> \
+                        <div class='collapsible-header accentgrey-dark accentgrey-light-text'></div> \
+                        <div class='collapsible-body accentgrey-light'></div> \
+                    </li>"
+    
+    $("#notificationAccordian").empty()
+    for (i = 0; i < friend_requests.length; i++){
+        var invite_card =  `<div class='card-content'> \
+                                <p> <strong>${friend_requests[i]['sender']}</strong> has sent you a friend request </p> \
+                            </div>\
+                            <div class='card-action right'> \
+                                <a href='#!' onclick='decline_friend('${friend_requests[i]['user_id']}')' style='color:#ffab40; margin-right:5px'>Decline</a> \
+                                <a href='#!' onclick='accept_friend('${friend_requests[i]['user_id']}')' style='color:#ffab40'>Accept</a> \
+                            </div>`
+
+        $("#notificationAccordian").append(accord_li).find(".collapsible-header:last").text('Friend request')
+        $("#notificationAccordian").find(".collapsible-body:last").append(invite_card)
+    }
+    for (i = 0; i < cal_invites.length; i++){
+        var data = JSON.stringify(cal_invites[i])
+        var invite_card =  `<div class='card-content'> \
+                                <p> <strong>${cal_invites[i]['sender']}</strong> invited you to join <strong style='display: inline-block'>${cal_invites[i]['calendar_name']}</strong> calendar </p> \
+                            </div>\
+                            <div class='card-action right'> \
+                                <a href='#!' onclick='decline_calendar(${data})' style='color:#ffab40; margin-right:5px'>Decline</a> \
+                                <a href='#!' onclick='accept_calendar(${data})' style='color:#ffab40'>Accept</a> \
+                            </div>`
+
+        $("#notificationAccordian").append(accord_li).find(".collapsible-header:last").text('Calendar invite')
+        $("#notificationAccordian").find(".collapsible-body:last").append(invite_card)
+    }
+    $('.collapsible').collapsible();
+})
+</script>

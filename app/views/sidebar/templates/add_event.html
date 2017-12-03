@@ -1,0 +1,260 @@
+<div class="add_event_container" id="eventForm">
+  <form class="addEvent" id="addEvent">
+    <div class="row neweventfixedheader accentgrey-dark z-depth-1">
+      <div class="col s12">
+        <h4 class="left-align grey-text text-lighten-5">New event</h4>
+      </div>
+    </div>
+    <button id="btnNewEvent" type="submit" class="btn-floating btn-large waves-effect waves-light right neweventheaderBtn accentgrey-dark"><i class="material-icons">done</i></button>
+    <div style="padding-top: 4em">
+      <div class="row form-sub-head">
+        <h5 style="padding: 0.75rem">Basic information</h5>
+        <hr>
+      </div>
+      <div class="form-sub-body">
+        <div class="row">
+          <div class="col s12 input-field">
+            <input id="newEventName" Name="newEventName" type="text" class="" validate required>
+            <label for="newEventName">Name of event</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="calendarID" Name="calendarID">
+                      </select>
+            <label>Calendar</label>
+          </div>
+        </div>
+      </div>
+      <!--  -->
+      <div class="dateHead form-sub-head">
+        <div class="row">
+            <h5 style="padding: 0.75rem">Date</h5>
+            <hr>
+        </div>
+        <div class="row">
+          <div class="col s4">
+            <input type="checkbox" id="repeatEvent" name="recurring" />
+            <label for="repeatEvent">Recurring</label>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 0.75rem">
+          <div class="col s4">
+            <p>
+              <input class="with-gap" name="fixedSwitch" type="radio" id="checkFixed" checked />
+              <label for="checkFixed">Fixed</label>
+            </p>
+          </div>
+          <div class="col s8">
+            <p>
+              <input class="with-gap" name="fixedSwitch" type="radio" id="checkNotfixed" />
+              <label for="checkNotfixed">Not Fixed</label>
+            </p>
+          </div>
+        </div>
+      </div>
+        <!--  -->
+      <div class="form-sub-body" id="switchFixed">
+        <div class="row">
+          <div class="col s12">
+            <label for="startDate">Start date</label>
+            <input id="startDate" Name="startDate" type="text" data-error="Invalid date" class="datepicker" validate required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <label for="endDate">End date</label>
+            <input id="endDate" placeholder="Optional" Name="endDate" type="text" class="datepicker">
+          </div>
+        </div>
+      </div>
+      <!--  -->
+      <div class="form-sub-body" id="switchNotfixed">
+        <div class="row">
+          <div class="col s7 input-field">
+            <select id="month">
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+            <label>Month</label>
+          </div>
+          <div class="col s5 input-field" id="yearContainer">
+            <select id="yearSelector"></select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12 input-field">
+            <select id="whenInMonth">
+              <option value="0" selected>Unspecified</option>
+              <option value="1">Beginning</option>
+              <option value="2">Middle</option>
+              <option value="3">End</option>
+            </select>
+            <label>Part of the Month</label>
+          </div>
+        </div>
+      </div>
+      <!--  -->
+      <div class="row form-sub-head">
+        <h5 style="padding: 0.75rem">Additional information</h5>
+        <hr>
+      </div>
+      <div class="form-sub-body">
+        <div class="row">
+          <div class="input-field col s12">
+            <textarea id="textarea1" name="event_details" placeholder="Optional" class="materialize-textarea"></textarea>
+            <label for="textarea1">Notes</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="file-field input-field col s12">
+            <div class="btn">
+              <span>File</span>
+              <input type="file" name="file" multiple>
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text" placeholder="Upload one or more files">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<script>
+  $("#eventForm").hide(0)
+  // possible calendars for the event to belong to
+  calSelector = $('#calendarID');
+  calSelector.empty()
+  $('.groupInstance').each(function() {
+    var d = $(this).data('data')
+    calSelector.append("<option value=" + d.calendar_id + ">" + d.calendar_name + "</option>");
+  })
+  // set month and year to current on month and year choosers
+  $("#month").val(new Date().getMonth())
+  yearSelector = $('#yearSelector');
+  yearSelector.empty()
+  var thisYear = new Date().getFullYear()
+  for (var year = thisYear-10; year <= thisYear+10; year++) {
+    yearSelector.append("<option value=" + year + ">" + year + "</option>");
+    if (thisYear == year){
+      yearSelector.children().last().attr("selected", 'selected')
+    }
+  }
+  init_date();
+
+  // toggle fixed / non fixed date choosers
+  $("#switchNotfixed").hide(0)
+  $("input[name=fixedSwitch]").change(function(){
+    if (this.id == 'checkNotfixed'){
+      $("#switchFixed").slideUp('fast', function(){
+        $("#switchNotfixed").slideDown('slow')
+      })
+    }
+    else {
+      $("#switchNotfixed").slideUp('fast', function(){
+        $("#switchFixed").slideDown('slow')
+      })
+    }
+  })
+
+  // if calendar is a repeated event we don't need year selector
+  $("#repeatEvent").change(function(){
+    if ($(this).prop("checked")) $("#yearContainer").hide('fast')
+    else $("#yearContainer").show('fast')
+  })
+
+  // set start date as minimum for end date on date picker
+  $("#startDate").change(function() {
+    var $input = $('#endDate').pickadate()
+    var picker = $input.pickadate('picker')
+    picker.set('min', $(this).val())
+  });
+
+  function prepare_data(form){
+    var oData = new FormData($(form)[0]);
+    if ($("#checkFixed").prop( "checked" )){
+      oData.set("fixedSwitch", 1)
+      oData.set('startDate', new Date(oData.get('startDate')).getTime())
+      if (oData.get('endDate') != '') oData.set('endDate', new Date(oData.get('endDate')).getTime())
+    }
+    else{
+      oData.delete("fixedSwitch")
+      var startDate = new Date()
+      if (!$("#repeatEvent").prop("checked")) startDate.setFullYear($("#yearSelector").val())
+      startDate.setMonth($("#month").val())
+      startDate.setDate(2)
+      startDate.setHours(0, 0, 0, 0)
+      var endDate = new Date(startDate)
+      endDate.setMonth(endDate.getMonth()+1)
+      endDate.setDate(0)
+      var numDays = endDate.getDate()-startDate.getDate() + 2
+      switch (parseInt($("#whenInMonth").val())){
+        case 1:
+          endDate.setDate(numDays/3)
+          break;
+        case 2:
+          startDate.setDate(numDays/3+2)
+          endDate.setDate(numDays*2/3)
+          break;
+        case 3:
+          startDate.setDate(numDays*2/3+2)
+          break;
+        default:
+        // endDate.setDate(endDate.getDate()+1)
+      }
+      oData.set('startDate', startDate.getTime())
+      oData.set('endDate', endDate.getTime())
+    }
+    return oData;
+  }
+
+  $("#addEvent").submit(function(e) {
+    e.preventDefault()
+    data = prepare_data(this)
+    $.ajax({
+      url: '/add_event',
+      type: 'POST',
+      data: data,
+      encType: "multipart/form-data",
+      processData: false,
+      contentType: false,
+      cache: false,
+      success: function(response) {
+        r = JSON.parse(response)
+        if (r.success == 'true') {
+          $("#sidebar").empty();
+          current_event = {
+            "event_id": r.id
+          };
+          load_data()
+        } 
+        else {
+          if (r.message == 'date') {
+            $('#startDate').addClass("validate invalid")
+              .blur(function() {
+                $(this).removeClass('validate invalid');
+              });
+          } 
+          else {
+            console.log('Cannot create new event at this time')
+          }
+        }
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  });
+  $("#eventForm").show(700)
+</script>

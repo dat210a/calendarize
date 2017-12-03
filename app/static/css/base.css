@@ -1,0 +1,65 @@
+body{
+    display: flex; 
+    /*min-height: 100vh;*/
+    height: 100vh;
+    flex-direction: column;
+    margin: 0;
+    overflow: hidden;
+}
+
+html {
+    margin: 0; height: 100%; overflow: hidden
+}
+
+nav ul a {
+    color: #F1F0F0;
+    display: block;
+
+}
+
+.btn,
+.btn-large {
+    background-color: #15A5C6;
+    color: #F1F0F0;
+}
+
+.btn:hover,
+.btn-large:hover,
+.btn:active,
+.btn-large:active {
+    background-color: #268DAF;
+}
+
+a {
+    color: #15A5C6;
+}
+
+.placeholderimg {
+    height: 90%;
+    margin-left: 10px;
+}
+
+.body_valign{
+    position: absolute;
+    top: 30%;
+    width: 100%;
+    margin: auto;
+}
+
+.bodyMain {
+    flex: 1; 
+    width: 100%; 
+    height: 0%; 
+    margin: 0px;
+}
+
+.coloredLine { 
+    display: block;
+    margin-left: 15%;
+    margin-right: 15%;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    width: 100%;
+    min-height: 10px;
+}

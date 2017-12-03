@@ -1,0 +1,93 @@
+<div class="row">
+    <div class="calendar_details_container">
+        <div class="row z-depth-1 calendardetailsfixedheader">
+            <div class=" col s12">
+                <h4 class="left-align grey-text text-lighten-5 calendarName"></h4>
+                <span class="grey-text text-lighten-3" id="calendarOwner">Created by: Person X</span>
+            </div>
+        </div>
+        <a id="editCalendar" class="btn-floating btn-large waves-effect waves-light right calendardetailsheaderBtn"><i class="material-icons">edit</i></a>
+        <!-- <a id="displayCalendar" onclick="calendars_list()" class="btn-floating btn-large waves-effect waves-light right cancel calendardetailsheaderBtn"><i class="material-icons">arrow_back</i></a> -->
+        <div style="padding-top: 7em">
+            <div class="row">
+            <div class="row">
+                <div class="col s12">
+                    <span class="infotitle"><strong>Members</strong></span>
+                    <div class="row">
+                        <div class="col s12" style="padding:0">
+                            <ul id="members">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col s12">
+                        <span class="infotitle"><strong>Pending members</strong></span>
+                        <div class="row">
+                            <div class="col s12" style="padding:0">
+                                <ul id="pending">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col s12">
+                    <a id="delete_calendar" class="waves-effect red darken-2 waves-red accentgrey-light-text btn-flat">Delete group</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    $(".calendar_details_container").hide(0)
+
+    function populate(data){
+        $('.calendardetailsfixedheader').css('background-color', "#"+data.calendar_color);
+        $('.calendardetailsheaderBtn').css('background-color', "#"+data.calendar_color);
+        $('.calendarName').text(data.calendar_name);
+        $('#calendarOwner').text(() => "Created by: " + data.calendar_owner_id);
+        if (data.members.length > 0){
+            $('#members').empty()
+            data.members.forEach(function(member){
+                $('#members').append(`<li>${ member }</li>`)
+            })
+        }
+        if (data.pending.length > 0){
+            $('#pending').empty()
+            data.pending.forEach(function(pending){
+                $('#pending').append(`<li>${ pending }</li>`)
+            })
+        }
+
+        $("#editCalendar").on('click', function(){
+            edit_calendar(data);
+        })
+
+        $('#delete_calendar').click(function(e){
+            e.preventDefault()
+            $.ajax({
+                url: '/delete_calendar',
+                type: 'POST',
+                data: {'calendar_id': data.calendar_id}, 
+                success: function(response) {
+                    if (response == 'true') {
+                        $("#sidebar").empty()
+                        current_event = null
+                        load_data();
+                    }
+                    else {
+                        console.log (response, 'could not delete this calendar')
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        $(".calendar_details_container").show('slow')
+    }
+</script>
