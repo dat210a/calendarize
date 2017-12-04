@@ -61,8 +61,7 @@ function pointCollider(alpha){
             var dist = capsuleCollider(capsule, point, capsule.length);
             if (dist < radius*2+2) {
                 numOverlap++;
-                if (capsule.length < point.length*0.9
-                    || (point.length > 0.9*capsule.length && point.y + point.vy > capsule.y + capsule.vy + radius/2))
+                if (capsule.length < point.length*0.9)
                     {
                         capsule.vy -= (radius*2+2 - dist);
                     }

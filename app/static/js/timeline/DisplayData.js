@@ -198,6 +198,19 @@ function ready(error, allData){
     if (current_event == null) svg.call(zoom.translateBy, 0)
     else{
         current_event = d3.selectAll(".datapoints").filter(d => d.event_id == current_event.event_id).data()[0]
+        if (+current_event.event_recurring == 1){
+            var today = new Date()
+            if (today.getMonth() > current_event.event_start.getMonth()){
+                if (current_event.event_end.getMonth() < current_event.event_start.getMonth()) current_event.event_end.setFullYear(today.getFullYear() + 2)
+                else current_event.event_end.setFullYear(today.getFullYear() + 1)
+                current_event.event_start.setFullYear(today.getFullYear() + 1)
+            }
+            else{
+                if (current_event.event_end.getMonth() < current_event.event_start.getMonth()) current_event.event_end.setFullYear(today.getFullYear() + 1)
+                else current_event.event_end.setFullYear(today.getFullYear())
+                current_event.event_start.setFullYear(today.getFullYear())
+            }
+        }
         display_event()
         resetView(new Date(current_event.event_start))
     }

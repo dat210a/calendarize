@@ -220,13 +220,14 @@
             oData.delete("fixedSwitch")
             var startDate = new Date()
             if (!$("#repeatEvent").prop("checked")) startDate.setFullYear($("#yearSelector").val())
-            else startDate.setFullYear(2000)
+            else startDate.setFullYear(2016)
             startDate.setMonth($("#month").val())
-            startDate.setDate(2)
+            startDate.setDate(3)
             startDate.setHours(0, 0, 0, 0)
             var endDate = new Date(startDate)
             endDate.setMonth(endDate.getMonth()+1)
             endDate.setDate(0)
+            endDate.setDate(endDate.getDate() - 1)
             var numDays = endDate.getDate()-startDate.getDate() + 2
             switch (parseInt($("#whenInMonth").val())){
                 case 1:
