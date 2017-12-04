@@ -14,15 +14,15 @@ function simUpdate(){
 };
 
 function pushDown(container){
-    // d3.selectAll('.data').selectAll('.e' + container.event_id)
-    //     .selectAll('.detailContainer')
-    //         .each(function(d){ if (d.y <= 0) d.y = 100;})
+    d3.selectAll('.data').selectAll('.e' + container.event_id)
+        .selectAll('.detailContainer')
+            .each(function(d){ if (d.y <= 0) d.y = 100;})
 }
 
 function pullUp(container){
-    // d3.selectAll('.data').selectAll('.e' + container.event_id)
-    //     .selectAll('.detailContainer')
-    //         .each(function(d){ if (d.y > 0) d.y = -140;})
+    d3.selectAll('.data').selectAll('.e' + container.event_id)
+        .selectAll('.detailContainer')
+            .each(function(d){ if (d.y > 0) d.y = -140;})
 }
 
 //pull towards the mid line 

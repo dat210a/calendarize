@@ -102,6 +102,8 @@ function rescale() {
                                             });
                     }
                     else {
+                        d.x = timeRescaled(d.event_start)
+                        d.length = timeRescaled(d.event_end) - d.x
                         d3.select(this.parentNode).selectAll(".miniDate")
                                                     .text(function(data){
                                                         if (data.fixed == 1){
