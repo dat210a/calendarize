@@ -2,6 +2,7 @@
 This contains the schema for the database, and once the database is complete, or mostly complete, 
 also tools to populate and test it.
 
+**NOTE** Below information not up to date...
 Current overview of the database as found in the c_db_norm_0_2.sql file:  
 Note: The unique_id is an auto-incrementing primary key that allows for proper foreign keys.  
 Also note that foreign keys are not currently implemented.
