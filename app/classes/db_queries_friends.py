@@ -31,7 +31,7 @@ class ConnectionInstanceFriends(ConnectionInstance):
 
 
     def check_friend(self, uid, fid, email):
-        sql = "SELECT unique_id FROM user_friends WHERE user_id = ? AND friend_id = ? OR friend_email = ?"
+        sql = "SELECT unique_id FROM user_friends WHERE user_id = ? AND (friend_id = ? OR friend_email = ?)"
         self.__cur.execute(sql, (uid, fid, email))
         try:
             res = self.__cur.fetchone()

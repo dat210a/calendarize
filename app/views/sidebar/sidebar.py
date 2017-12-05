@@ -99,17 +99,21 @@ def accept_friend():
 
 @sidebar.route('/remove_friend', methods=['POST', 'GET'])
 def remove_friend():
-    print(request.form)
     if request.method == 'POST':
         friend_email = request.form.get('email', None)
-        if friend_email:
-            with friends_queries() as queries:
+        friend_id = request.form.get('friend_id', None)
+        with friends_queries() as queries:
+            if friend_email:
                 friend_id = queries.get_user_id(friend_email)
-                row = queries.check_friend(current_user.user_id, friend_id, friend_email)
-                if row:
-                    queries.remove_friend(row)
-                row = queries.check_friend(friend_id, current_user.user_id, current_user.email)
-                if row:
-                    queries.remove_friend(row)
+            elif friend_id:
+                friend_email = queries.get_user_email(friend_id)
+            else:
+                return json.dumps({'success' : 'false'})
+            row = queries.check_friend(current_user.user_id, friend_id, friend_email)
+            if row:
+                queries.remove_friend(row)
+            row = queries.check_friend(friend_id, current_user.user_id, current_user.email)
+            if row:
+                queries.remove_friend(row)
             return json.dumps({'success' : 'true'})
     return json.dumps({'success' : 'false'})

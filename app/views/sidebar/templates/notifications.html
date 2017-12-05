@@ -88,8 +88,8 @@ $(document).ready(function(){
                                 <p> <strong>${friend_requests[i]['sender']}</strong> has sent you a friend request </p> \
                             </div>\
                             <div class='card-action right'> \
-                                <a href='#!' onclick='decline_friend('${friend_requests[i]['user_id']}')' style='color:#ffab40; margin-right:5px'>Decline</a> \
-                                <a href='#!' onclick='accept_friend('${friend_requests[i]['user_id']}')' style='color:#ffab40'>Accept</a> \
+                                <a href='#!' onclick='decline_friend("${friend_requests[i]['user_id']}")' style='color:#ffab40; margin-right:5px'>Decline</a> \
+                                <a href='#!' onclick='accept_friend("${friend_requests[i]['user_id']}")' style='color:#ffab40'>Accept</a> \
                             </div>`
 
         $("#notificationAccordian").append(accord_li).find(".collapsible-header:last").text('Friend request')

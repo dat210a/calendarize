@@ -68,7 +68,7 @@ def add_calendar():
                         # send email to email
                         sent = send_invite(current_user.username(),email,cal_name)
                         if sent and queries.check_invite(email, new_cal_id):
-                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
+                            role = 1 # 0: owner, 1: admin, 2: contributor, 3: user
                             queries.send_invite(new_cal_id, queries.get_user_id(email), current_user.user_id, role, email)
                     cal_data = queries.get_calendars_details((new_cal_id,))[0]
                     return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
@@ -94,7 +94,7 @@ def edit_calendar():
                         # send email to email
                         sent = send_invite(current_user.username(),email,cal_data['calendar_name'])
                         if sent and queries.check_invite(email, cid):
-                            role = 3 # 0: owner, 1: admin, 2: contributor, 3: user
+                            role = 1 # 0: owner, 1: admin, 2: contributor, 3: user
                             queries.send_invite(cid, queries.get_user_id(email), current_user.user_id, role, email)
                     cal_data = queries.get_calendars_details((cid,))[0]
                     return json.dumps({'success' : 'true', 'data' : json.dumps(cal_data, default=type_handler)})
@@ -250,7 +250,7 @@ def delete_event():
             with db.ConnectionInstance() as queries:
                 cal = queries.get_event_calendar_id(event)
                 role = queries.get_calendar_role(current_user.user_id, cal)
-                if role is not None and role == 0:
+                if role is not None and role < 2:
                     queries.db_del_event(event)
                     # TODO delete files
                     return 'true'
@@ -280,7 +280,7 @@ def delete_cal():
         if cal:
             with db.ConnectionInstance() as queries:
                 role = queries.get_calendar_role(current_user.user_id, cal)
-                if role is not None and role == 0:
+                if role is not None and role <= 1:
                     queries.db_del_cal(cal)
                     return 'true'
     return 'false'
