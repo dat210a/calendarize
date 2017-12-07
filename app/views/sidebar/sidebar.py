@@ -4,7 +4,7 @@ from jinja2 import TemplateNotFound
 from flask_login import login_required, current_user
 from classes import db_queries as db
 from classes.db_queries_friends import ConnectionInstanceFriends as friends_queries
-from funcs.send_email import send_friend_request
+from funcs.send_email import send_friend_request, send_bulk_friend_request
 
 
 sidebar = Blueprint('sidebar', __name__,
@@ -73,11 +73,10 @@ def friend_request():
     if request.method == 'POST':
         invites = re.sub( '\s+', ' ', request.form.get('invites', '')).strip()
         invites = re.split(',| |;', invites)
+        sender = current_user.username()
+        sent = send_bulk_friend_request(sender, invites)
         with friends_queries() as queries:
-            for email in invites:
-                # send email to email
-                sender = current_user.username()
-                sent = send_friend_request(sender,email)
+            for email in sent:
                 #add request to database
                 if sent and not queries.check_friend(current_user.user_id, queries.get_user_id(email), email):
                     queries.add_friend(current_user.user_id, email)

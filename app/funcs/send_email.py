@@ -53,6 +53,19 @@ def send_invite(sender_name,invited_email,calendar_name):
     except:
         return False
 
+def send_bulk_calendar_invite(sender, emails):
+    sent = []
+    with mail.connect() as conn:
+        for email in emails:
+            try:
+                msg = Message("Invitation to join "+ calendar_name + ".",sender=sender,recipients=[ invited_email ])
+                msg.body = sender_name + " has invited you to join " + calendar_name +".\nVisit our webpage: http://localhost:5000"
+                conn.send(msg)
+                sent.append(email)
+            except:
+                pass
+    return sent
+
 def send_friend_request(sender, email):
     try:
         msg = Message("Friend request",sender=sender,recipients=[ email ])
@@ -61,3 +74,17 @@ def send_friend_request(sender, email):
         return True
     except:
         return False
+
+
+def send_bulk_friend_request(sender, emails):
+    sent = []
+    with mail.connect() as conn:
+        for email in emails:
+            try:
+                msg = Message("Friend request",sender=sender,recipients=[ email ])
+                msg.body = sender + " has sent you a friend request on Calendarize.\nVisit our webpage: http://localhost:5000"
+                conn.send(msg)
+                sent.append(email)
+            except:
+                pass
+    return sent

@@ -141,6 +141,28 @@
         else{
             $('#eventFiles').append("<span>No files added</span>")
         }
+
+        $('#delete_event').click(function(e){
+            e.preventDefault()
+            $.ajax({
+                url: '/delete_event',
+                type: 'POST',
+                data: {'event_id': current_event.event_id},
+                success: function(response) {
+                    if (response == 'true') {
+                        $("#sidebar").empty()
+                        current_event = null;
+                        load_data();
+                    }
+                    else {
+                        console.log (response, 'could not delete this event')
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
     }
 
     function populate_instance(){
@@ -184,6 +206,28 @@
             else{
                 $('#instanceFiles').append("<span>No files added</span>")
             }
+
+            $('#delete_instance').click(function(e){
+            e.preventDefault()
+            $.ajax({
+                url: '/delete_instance',
+                type: 'POST',
+                data: {'event_id': current_event.event_id, 'year': child_data.child_year},
+                success: function(response) {
+                    if (response == 'true') {
+                        $("#sidebar").empty()
+                        load_data();
+                    }
+                    else {
+                        console.log (response, 'could not delete this event')
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+
         }
         else{
             $("#instanceExists").remove()
@@ -223,49 +267,5 @@
             $('#child').remove()
             $("#eventDisplay").slideDown('slow')
         }
-
-
-        $('#delete_event').click(function(e){
-            e.preventDefault()
-            $.ajax({
-                url: '/delete_event',
-                type: 'POST',
-                data: {'event_id': current_event.event_id},
-                success: function(response) {
-                    if (response == 'true') {
-                        $("#sidebar").empty()
-                        current_event = null;
-                        load_data();
-                    }
-                    else {
-                        console.log (response, 'could not delete this event')
-                    }
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        });
-
-        $('#delete_instance').click(function(e){
-            e.preventDefault()
-            $.ajax({
-                url: '/delete_instance',
-                type: 'POST',
-                data: {'event_id': current_event.event_id, 'year': current_event.children.child_year},
-                success: function(response) {
-                    if (response == 'true') {
-                        $("#sidebar").empty()
-                        load_data();
-                    }
-                    else {
-                        console.log (response, 'could not delete this event')
-                    }
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        });
     });
 </script>

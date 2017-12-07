@@ -88,7 +88,7 @@ function rescale() {
                         d3.select(this.parentNode).selectAll(".miniDate")
                                             .text(function(){
                                                 if (child.child_fixed_date == 1){
-                                                    if (child.child_start == data.child_end){
+                                                    if (child.child_start == child.child_end){
                                                         return d3.timeFormat('%d / %m')(new Date(child.child_start));
                                                     }
                                                     else{

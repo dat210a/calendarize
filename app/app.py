@@ -31,7 +31,7 @@ app.register_blueprint(main_app.mainApp)
 app.register_blueprint(verify_and_recover.verifyAndRecover)
 
 # config setup
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
 
 # needed for session cookies
 app.secret_key = 'hella secret'
