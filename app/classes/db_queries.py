@@ -268,10 +268,9 @@ class ConnectionInstance:
     def get_calendars_details(self, cids):
         if len(cids) == 0:
             return None
-        cal_keys = ["calendar_id", "calendar_name", "calendar_color", "calendar_owner_id"]
+        cal_keys = ["calendar_id", "calendar_name", "calendar_color", "calendar_owner_id", "deleted"]
         sql = "SELECT " + ",".join(cal_keys) + " FROM calendars " \
-              "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ") " \
-              "AND deleted = 0"
+              "WHERE calendar_id IN(" + ",".join("?"*len(cids)) + ")"
         self.__cur.execute(sql, cids)
         try:
             calendars = []

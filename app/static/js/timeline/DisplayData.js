@@ -20,8 +20,21 @@ function ready(error, allData){
         return;
     }
 
-    var groups = allData[0]
-    var eventData = allData[1]
+    // var groups = allData[0]
+    // var eventData = allData[1]
+
+    var groups = new Array()
+    var deleted = new Array()
+    var eventData = new Array()
+    allData[0].forEach(function(group){
+        if (+group.deleted == 0) {
+            groups.push(group)
+            eventData.push(allData[1].filter(data => data.event_calendar_id == group.calendar_id)[0])
+        }
+        else deleted.push(group)
+    })
+
+    console.log(deleted)
 
     // event instances have to be displayed as separate objects
     var instanceData = new Array();
