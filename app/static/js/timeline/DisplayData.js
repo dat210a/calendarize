@@ -29,7 +29,7 @@ function ready(error, allData){
     allData[0].forEach(function(group){
         if (+group.deleted == 0) {
             groups.push(group)
-            eventData.push(allData[1].filter(data => data.event_calendar_id == group.calendar_id)[0])
+            eventData = eventData.concat(allData[1].filter(data => data.event_calendar_id == group.calendar_id))
         }
         else deleted.push(group)
     })
